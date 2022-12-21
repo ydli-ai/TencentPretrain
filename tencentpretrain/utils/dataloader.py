@@ -751,7 +751,7 @@ class AudioDataloader(Dataloader):
             x = torch.sub(x, mean)
         if normalize_vars:
             var = square_sums / x.size(0) - mean ** 2
-            std = torch.sqrt(torch.maximum(var, torch.full(var.size() , 1e-10)).cuda(self.gpu_id))
+            std = torch.sqrt(torch.maximum(var, torch.full(var.size() , 1e-10).cuda(self.gpu_id)))
             x = torch.div(x, std)
 
         return x
