@@ -759,7 +759,7 @@ class S2tDataloader(AudioDataloader):
         import torchaudio
         import torchaudio.compliance.kaldi as ta_kaldi
 
-        padding_vector = torch.FloatTensor(self.audio_feature_size * [self.padding_value] if self.audio_feature_size > 1 else self.padding_value).unsqueeze(0)
+        padding_vector = torch.FloatTensor(self.audio_feature_size * [self.padding_value] if self.audio_feature_size > 1 else self.padding_value).unsqueeze(0).cuda(self.gpu_id)
 
         while True:
             while self._empty():
@@ -784,6 +784,7 @@ class S2tDataloader(AudioDataloader):
 
                 waveform, _ = torchaudio.load(ins[2])  # waveform, sample_rate
                 waveform = waveform * (2 ** 15)  # Kaldi compliance: 16-bit signed integers
+                waveform = waveform.cuda(self.gpu_id)
                 feature = ta_kaldi.fbank(waveform, num_mel_bins=self.audio_feature_size,
                                          sample_frequency=self.sampling_rate)
                 if self.ceptral_normalize:
