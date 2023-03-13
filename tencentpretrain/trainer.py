@@ -184,8 +184,10 @@ class MlmTrainer(Trainer):
             "loss": self.total_loss / self.report_steps,
             "acc": self.total_correct / self.total_denominator
         }
-
-        report_progress(progress)
+        try:
+            report_progress(progress)
+        except:
+            pass
 
         self.total_loss = 0.0
         self.total_correct = 0.0
