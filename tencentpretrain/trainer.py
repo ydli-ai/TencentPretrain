@@ -9,7 +9,7 @@ from tencentpretrain.utils.logging import init_logger
 from tencentpretrain.utils.optimizers import *
 from tencentpretrain.utils import *
 from tencentpretrain.utils.seed import set_seed
-
+from tencentpretrain.utils.jizhi import report_progress
 
 def train_and_validate(args):
     set_seed(args.seed)
@@ -176,6 +176,16 @@ class MlmTrainer(Trainer):
                   done_tokens / (time.time() - self.start_time),
                   self.total_loss / self.report_steps,
                   self.total_correct / self.total_denominator))
+
+        progress = {
+            "step": self.current_step,
+            "type": "train",
+            "tokens/s": done_tokens / (time.time() - self.start_time),
+            "loss": self.total_loss / self.report_steps,
+            "acc": self.total_correct / self.total_denominator
+        }
+
+        report_progress(progress)
 
         self.total_loss = 0.0
         self.total_correct = 0.0
