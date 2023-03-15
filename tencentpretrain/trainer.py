@@ -9,7 +9,6 @@ from tencentpretrain.utils.logging import init_logger
 from tencentpretrain.utils.optimizers import *
 from tencentpretrain.utils import *
 from tencentpretrain.utils.seed import set_seed
-from tencentpretrain.utils.jizhi import report_progress
 
 def train_and_validate(args):
     set_seed(args.seed)
@@ -184,10 +183,6 @@ class MlmTrainer(Trainer):
             "loss": self.total_loss / self.report_steps,
             "acc": self.total_correct / self.total_denominator
         }
-        try:
-            report_progress(progress)
-        except:
-            pass
 
         self.total_loss = 0.0
         self.total_correct = 0.0
