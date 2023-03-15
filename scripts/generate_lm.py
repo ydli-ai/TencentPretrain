@@ -82,7 +82,7 @@ if __name__ == '__main__':
     args.tokenizer = str2tokenizer[args.tokenizer](args)
 
     model = GenerateLm(args)
-    model = load_model(model, args.load_model_path)
+    model = load_model(model, args.load_model_path, True)
     model.eval()
 
     with open(args.test_path, mode="r", encoding="utf-8") as f:
