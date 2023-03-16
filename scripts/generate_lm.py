@@ -99,18 +99,18 @@ if __name__ == '__main__':
             seg = seg[:args.seq_length]
     src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
-    with open(args.prediction_path, mode="w", encoding="utf-8") as f:
-        for i in range(args.seq_length - beginning_length):
-            output = model(src_tensor, seg_tensor)
-            next_token_logits = output[0][-1] / args.temperature
-            filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
-            next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
 
-            src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
-            seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
+    for i in range(args.seq_length - beginning_length):
+        output = model(src_tensor, seg_tensor)
+        next_token_logits = output[0][-1] / args.temperature
+        filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
+        next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
 
-        f.write(line + "\n")
-        generated_sentence = "".join(
-            args.tokenizer.convert_ids_to_tokens([token_id.item() for token_id in src_tensor[0]])
-        )
-        f.write(generated_sentence)
+        src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
+        seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
+
+    generated_sentence = "".join(
+        args.tokenizer.convert_ids_to_tokens([token_id.item() for token_id in src_tensor[0]])
+    )
+    print(generated_sentence + '\n')
+    print(src_tensor[0])
