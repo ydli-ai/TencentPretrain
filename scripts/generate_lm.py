@@ -97,7 +97,7 @@ if __name__ == '__main__':
         if len(src) > args.seq_length:
             src = src[:args.seq_length]
             seg = seg[:args.seq_length]
-    src_tensor, seg_tensor = torch.LongTensor([src]), torch.LongTensor([seg])
+    src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
     with open(args.prediction_path, mode="w", encoding="utf-8") as f:
         for i in range(args.seq_length - beginning_length):
