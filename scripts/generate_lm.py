@@ -107,7 +107,7 @@ if __name__ == '__main__':
             next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
 
             src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
-            seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]])], dim=1)
+            seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
 
         f.write(line + "\n")
         generated_sentence = "".join(
