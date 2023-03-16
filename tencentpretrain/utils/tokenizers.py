@@ -48,7 +48,7 @@ class Tokenizer(object):
 
     def convert_ids_to_tokens(self, ids):
         if self.sp_model:
-            return [self.sp_model.IdToPiece(id_) for id_ in ids]
+            return self.sp_model.decode(ids)
         else:
             return convert_by_vocab(self.inv_vocab, ids)
 
