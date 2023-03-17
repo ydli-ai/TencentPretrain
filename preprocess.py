@@ -3,6 +3,7 @@ import six
 from packaging import version
 from tencentpretrain.utils import *
 from tencentpretrain.opts import *
+from tencentpretrain.utils.constants import *
 
 
 assert version.parse(six.__version__) >= version.parse("1.12.0")
@@ -63,7 +64,6 @@ def main():
     if args.data_processor == "mt":
         args.tgt_tokenizer = str2tokenizer[args.tgt_tokenizer](args, False)
 
-    from tencentpretrain.utils.constants import *
     print(tokenizer)
     t = tokenizer.tokenize("今天天气真好")
     print(tokenizer.convert_tokens_to_ids(t))
