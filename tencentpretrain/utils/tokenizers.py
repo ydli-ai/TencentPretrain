@@ -625,7 +625,7 @@ class SPTokenizer:
     @staticmethod
     def _configure_tokenizer(
             text_tokenizer: TextTokenizer,
-            special_tokens: List[str],
+            special_tokens,
             max_blank_length: int,
             byte_fallback: bool,
             encode_special_tokens=False,
