@@ -63,6 +63,7 @@ class Dataset(object):
         Start workers_num processes and each process deals with a part of data.
         """
         lines_num = count_lines(self.corpus_path)
+        print(lines_num)
         print("Starting %d workers for building datasets ... " % workers_num)
         assert (workers_num >= 1)
         if workers_num == 1:
