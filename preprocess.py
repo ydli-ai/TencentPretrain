@@ -62,6 +62,9 @@ def main():
     tokenizer = str2tokenizer[args.tokenizer](args)
     if args.data_processor == "mt":
         args.tgt_tokenizer = str2tokenizer[args.tgt_tokenizer](args, False)
+        
+    print(tokenizer)
+    print(tokenizer.tokenize("今天天气真好"))
 
     # Build and save dataset.
     dataset = str2dataset[args.data_processor](args, tokenizer.vocab, tokenizer)
