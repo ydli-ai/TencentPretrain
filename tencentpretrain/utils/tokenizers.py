@@ -700,7 +700,7 @@ class SPTokenizer:
 
     def encode(
             self, text: str, linebreak=True, whitespaces=True, special_tokens=False, add_dummy_prefix=True
-    ) -> List[int]:
+    ):
         """
         @param text: Text to encode.
         @param linebreak: Whether to encode newline (\n) in text.
@@ -715,7 +715,7 @@ class SPTokenizer:
         tokens = [x + self.num_image_tokens for x in tmp]
         return tokens if add_dummy_prefix else tokens[2:]
 
-    def decode(self, text_ids: List[int], special_tokens=False) -> str:
+    def decode(self, text_ids, special_tokens=False) -> str:
         ids = [int(_id) - self.num_image_tokens for _id in text_ids]
         ids = [_id for _id in ids if _id >= 0]
         text = self._get_text_tokenizer(encode_special_tokens=special_tokens).decode(ids)
@@ -727,7 +727,7 @@ class SPTokenizer:
 
     def tokenize(
             self, text: str, linebreak=True, whitespaces=True, special_tokens=False, add_dummy_prefix=True
-    ) -> List[str]:
+    ):
         """
         @param text: Text to encode.
         @param linebreak: Whether to encode newline (\n) in text.
