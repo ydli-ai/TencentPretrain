@@ -38,7 +38,7 @@ for i in range(args.layers_num):
         output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers." + str(j) + ".weight"] = \
             get_weight_from_name("transformer.layers." + str(i) + ".attention.query_key_value.weight")[j*emb_size:(j+1)*emb_size, :]
         output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers." + str(j) + ".bias"] = \
-            get_weight_from_name("transformer.layers." + str(i) + ".attention.query_key_value.bias")[j*emb_size:(j+1)*emb_size, :]
+            get_weight_from_name("transformer.layers." + str(i) + ".attention.query_key_value.bias")[j*emb_size:(j+1)*emb_size]
 
     output_model["encoder.transformer." + str(i) + ".self_attn.final_linear.weight"] = \
         get_weight_from_name("transformer.layers." + str(i) + ".attention.dense.weight")
