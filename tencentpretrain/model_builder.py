@@ -16,16 +16,16 @@ def build_model(args):
 
     embedding = Embedding(args)
     for embedding_name in args.embedding:
-        tmp_emb = str2embedding[embedding_name](args, len(args.tokenizer.vocab))
+        tmp_emb = str2embedding[embedding_name](args, args.tokenizer.vocab_size)
         embedding.update(tmp_emb, embedding_name)
 
     encoder = str2encoder[args.encoder](args)
 
     if args.decoder is not None:
         if args.data_processor == "mt":
-            tgt_vocab_size = len(args.tgt_tokenizer.vocab)
+            tgt_vocab_size = args.tgt_tokenizer.vocab_size
         else:
-            tgt_vocab_size = len(args.tokenizer.vocab)
+            tgt_vocab_size = args.tokenizer.vocab_size
 
         tgt_embedding = Embedding(args)
         for embedding_name in args.tgt_embedding:
@@ -40,9 +40,9 @@ def build_model(args):
     target = Target()
     for target_name in args.target:
         if args.data_processor == "mt":
-            tmp_target = str2target[target_name](args, len(args.tgt_tokenizer.vocab))
+            tmp_target = str2target[target_name](args, args.tgt_tokenizer.vocab_size)
         else:
-            tmp_target = str2target[target_name](args, len(args.tokenizer.vocab))
+            tmp_target = str2target[target_name](args, args.tokenizer.vocab_size)
         target.update(tmp_target, target_name)
     model = Model(args, embedding, encoder, tgt_embedding, decoder, target)
 
