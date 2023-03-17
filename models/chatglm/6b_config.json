@@ -14,5 +14,6 @@
   "encoder": "transformer",
   "mask": "causal",
   "layernorm_positioning": "pre",
-  "target": ["lm"]
+  "target": ["lm"],
+  "vocab_size": 150528
 }
