@@ -869,7 +869,7 @@ class ChatGLMTokenizer(Tokenizer):
         return [self._convert_token_to_id(token) for token in tokens]
 
     def convert_ids_to_tokens(self, ids):
-        return [self.convert_tokens_to_ids(i) for i in ids]
+        return [self._convert_id_to_token(i) for i in ids]
 
     def build_inputs_with_special_tokens(
             self, token_ids_0, token_ids_1 = None
