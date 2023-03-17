@@ -26,7 +26,7 @@ class GenerateLm(torch.nn.Module):
         super(GenerateLm, self).__init__()
         self.embedding = Embedding(args)
         for embedding_name in args.embedding:
-            tmp_emb = str2embedding[embedding_name](args, len(args.tokenizer.vocab))
+            tmp_emb = str2embedding[embedding_name](args, args.tokenizer.vocab_size)
             self.embedding.update(tmp_emb, embedding_name)
         self.encoder = str2encoder[args.encoder](args)
         self.target = Target()
