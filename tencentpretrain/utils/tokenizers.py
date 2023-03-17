@@ -741,7 +741,7 @@ class SPTokenizer:
         tokens = self._get_text_tokenizer(encode_special_tokens=special_tokens).tokenize(text)
         return tokens if add_dummy_prefix else tokens[2:]
 
-    def __getitem__(self, x: Union[int, str]):
+    def __getitem__(self, x):
         if isinstance(x, int):
             if x < self.num_image_tokens:
                 return "<image_{}>".format(x)
@@ -793,7 +793,7 @@ class ChatGLMTokenizer(Tokenizer):
         """ Initialisation """
 
     @property
-    def eop_token_id(self) -> Optional[int]:
+    def eop_token_id(self):
         """
         `Optional[int]`: Id of the end of sentence token in the vocabulary. Returns `None` if the token has not been
         set.
@@ -834,7 +834,7 @@ class ChatGLMTokenizer(Tokenizer):
 
     def decode(
             self,
-            token_ids: Union[List[int], List[List[int]]],
+            token_ids,
             skip_special_tokens: bool = False,
             clean_up_tokenization_spaces: bool = True,
             spaces_between_special_tokens: bool = True,
@@ -867,8 +867,8 @@ class ChatGLMTokenizer(Tokenizer):
         return [self.convert_tokens_to_ids(i) for i in ids]
 
     def build_inputs_with_special_tokens(
-            self, token_ids_0: List[int], token_ids_1: Optional[List[int]] = None
-    ) -> List[int]:
+            self, token_ids_0, token_ids_1 = None
+    ):
         """
         Build model inputs from a sequence or a pair of sequence for sequence classification tasks by concatenating and
         adding special tokens. A BERT sequence has the following format:
