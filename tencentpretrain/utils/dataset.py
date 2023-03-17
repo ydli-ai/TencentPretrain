@@ -63,7 +63,6 @@ class Dataset(object):
         Start workers_num processes and each process deals with a part of data.
         """
         lines_num = count_lines(self.corpus_path)
-        print(lines_num)
         print("Starting %d workers for building datasets ... " % workers_num)
         assert (workers_num >= 1)
         if workers_num == 1:
@@ -447,8 +446,6 @@ class LmDataset(Dataset):
 
                 document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
-
-                print(document)
 
                 instances_num = len(document) // (self.seq_length + 1)
                 for i in range(instances_num):
