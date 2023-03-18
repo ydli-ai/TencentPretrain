@@ -84,6 +84,7 @@ if __name__ == '__main__':
 
     model = GenerateLm(args)
     model = load_model(model, args.load_model_path, True)
+    model = model.half()
     model.eval()
 
     with open(args.test_path, mode="r", encoding="utf-8") as f:
@@ -99,7 +100,8 @@ if __name__ == '__main__':
 
     with open(args.prediction_path, mode="w", encoding="utf-8") as f:
         for i in range(args.seq_length - beginning_length):
-            output = model(src_tensor, seg_tensor)
+            with torch.no_grad:
+                output = model(src_tensor, seg_tensor)
             next_token_logits = output[0][-1] / args.temperature
             filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
             next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
