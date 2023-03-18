@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 from tencentpretrain.layers.layer_norm import *
 from tencentpretrain.layers.position_ffn import PositionwiseFeedForward, GatedFeedForward
 from tencentpretrain.layers.multi_headed_attn import MultiHeadedAttention
@@ -147,6 +148,7 @@ class TransformerDecoderLayer(nn.Module):
             output = self.layer_norm_3(output + mid_norm)
         else:
             hidden_norm = self.layer_norm_1(hidden)
+            print("hidden_norm: ", torch.mean(hidden_norm), torch.sum(hidden_norm))
             query, _ = self.self_attn(hidden_norm, hidden_norm, hidden_norm, mask_decoder, self_position_bias)
             query = self.dropout_1(query)
             query = query + hidden
