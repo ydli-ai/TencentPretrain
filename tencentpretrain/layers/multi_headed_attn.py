@@ -58,8 +58,14 @@ class MultiHeadedAttention(nn.Module):
                              transpose(1, 2) \
                              for l, x in zip(self.linear_layers, (query, key, value))
                             ]
+        print("query", torch.sum(query))
+        print("key", torch.sum(key))
+        print("value", torch.sum(value))
+
         if freqs_cis is not None:
             query, key = apply_rotary_emb(query.transpose(1,2), key.transpose(1,2), freqs_cis=freqs_cis)
+
+
         scores = torch.matmul(query, key.transpose(-2, -1))
         if position_bias is not None:
             scores = scores + position_bias
