@@ -23,7 +23,9 @@ with open(os.path.join(args.input_model_path, "pytorch_model.bin.index.json")) a
     weight_map = model_index["weight_map"]
 
 
-input_model = None
+head_num = 32
+pre_head_size = 128
+
 
 output_model = collections.OrderedDict()
 
@@ -34,11 +36,15 @@ output_model["embedding.word.embedding.weight"] = get_weight_from_name("lm_head.
 emb_size = output_model["embedding.word.embedding.weight"].shape[1]
 for i in range(args.layers_num):
 
-    for j in range(3):
+    l = []
+    for i in range(head_num):
+        for j in range(pre_head_size):
+            l.append(j + i * pre_head_size * 3)
+    for j in range(3)
         output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers." + str(j) + ".weight"] = \
-            get_weight_from_name("transformer.layers." + str(i) + ".attention.query_key_value.weight")[j*emb_size:(j+1)*emb_size, :]
+            get_weight_from_name("transformer.layers." + str(i) + ".attention.query_key_value.weight")[[i + 128 * j for i in l], :]
         output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers." + str(j) + ".bias"] = \
-            get_weight_from_name("transformer.layers." + str(i) + ".attention.query_key_value.bias")[j*emb_size:(j+1)*emb_size]
+            get_weight_from_name("transformer.layers." + str(i) + ".attention.query_key_value.bias")[[i + 128 * j for i in l]]
 
     output_model["encoder.transformer." + str(i) + ".self_attn.final_linear.weight"] = \
         get_weight_from_name("transformer.layers." + str(i) + ".attention.dense.weight")
