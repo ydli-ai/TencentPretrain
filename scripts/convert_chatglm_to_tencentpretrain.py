@@ -37,9 +37,9 @@ emb_size = output_model["embedding.word.embedding.weight"].shape[1]
 for i in range(args.layers_num):
 
     l = []
-    for i in range(head_num):
-        for j in range(pre_head_size):
-            l.append(j + i * pre_head_size * 3)
+    for x in range(head_num):
+        for y in range(pre_head_size):
+            l.append(y + x * pre_head_size * 3)
     for j in range(3):
         output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers." + str(j) + ".weight"] = \
             get_weight_from_name("transformer.layers." + str(i) + ".attention.query_key_value.weight")[[i + 128 * j for i in l], :]
