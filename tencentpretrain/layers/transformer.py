@@ -71,6 +71,7 @@ class TransformerLayer(nn.Module):
             inter = self.layer_norm_1(hidden)
             print("hidden_norm: ", torch.mean(inter), torch.sum(inter))
             inter, prev_attn_out = self.self_attn(inter, inter, inter, mask, position_bias, has_residual_attention, prev_attn, freqs_cis)
+            print("attention_out: ", torch.mean(inter), torch.sum(inter))
             inter = self.dropout_1(inter)
             hidden = hidden + inter
             output = self.layer_norm_2(hidden)
