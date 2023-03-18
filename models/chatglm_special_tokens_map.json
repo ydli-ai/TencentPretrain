@@ -3,5 +3,6 @@
   "unk_token": "<unk>",
   "cls_token": "<sop>",
   "sep_token": "</s>",
-  "mask_token": "[MASK]"
+  "mask_token": "[MASK]",
+  "gmask_token": "[gMASK]"
 }
