@@ -34,7 +34,7 @@ class GenerateLm(torch.nn.Module):
 
     def forward(self, src, seg):
         emb = self.embedding(src, seg)
-        print(torch.mean(emb), emb.size())
+        print(torch.mean(emb), torch.sum(emb), emb.size())
         output = self.encoder(emb, seg)
         output = self.target.lm.output_layer(output)
         return output
