@@ -69,6 +69,7 @@ class TransformerLayer(nn.Module):
             output = self.layer_norm_2(output + inter)
         else:
             inter = self.layer_norm_1(hidden)
+            print("hidden_norm: ", torch.mean(inter), torch.sum(inter))
             inter, prev_attn_out = self.self_attn(inter, inter, inter, mask, position_bias, has_residual_attention, prev_attn, freqs_cis)
             inter = self.dropout_1(inter)
             hidden = hidden + inter
@@ -148,7 +149,6 @@ class TransformerDecoderLayer(nn.Module):
             output = self.layer_norm_3(output + mid_norm)
         else:
             hidden_norm = self.layer_norm_1(hidden)
-            print("hidden_norm: ", torch.mean(hidden_norm), torch.sum(hidden_norm))
             query, _ = self.self_attn(hidden_norm, hidden_norm, hidden_norm, mask_decoder, self_position_bias)
             query = self.dropout_1(query)
             query = query + hidden
