@@ -14,3 +14,9 @@ try:
     SENTINEL_TOKEN = special_tokens_map["sentinel_token"]
 except KeyError:
     pass
+
+try:
+    # For GLM models.
+    GMASK_TOKEN = special_tokens_map["gmask_token"]
+except KeyError:
+    pass
