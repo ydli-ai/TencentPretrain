@@ -9,7 +9,7 @@ from tencentpretrain.utils.logging import init_logger
 from tencentpretrain.utils.optimizers import *
 from tencentpretrain.utils import *
 from tencentpretrain.utils.seed import set_seed
-
+from transformers import AutoModel
 
 def train_and_validate(args):
     set_seed(args.seed)
@@ -23,7 +23,7 @@ def train_and_validate(args):
     args.vocab = args.tokenizer.vocab
 
     # Build model.
-    model_for_training = build_model(args)
+    model_for_training = AutoModel.from_pretrained(args.pretrained_model_path, trust_remote_code=True, cache_dir=args.pretrained_model_path).half()
 
     # Load or initialize parameters.
     if args.pretrained_model_path is not None:
@@ -242,7 +242,38 @@ class AlbertTrainer(BertTrainer):
 
 
 class LmTrainer(MlmTrainer):
-    pass
+    def __init__(self, args):
+        super(LmTrainer, self).__init__(args)
+        self.total_correct = 0.0
+        self.total_denominator = 0.0
+
+    def forward_propagation(self, batch, model):
+        src, tgt, seg = batch
+        loss, logits = model(input_ids=src, labels=tgt)
+        #loss, correct, denominator = loss_info
+        self.total_loss += loss.item()
+        #self.total_correct += correct.item()
+        #self.total_denominator += denominator.item()
+        loss = loss / self.accumulation_steps
+        return loss
+
+    def report_and_reset_stats(self):
+        done_tokens = self.batch_size * self.seq_length * self.report_steps
+        if self.dist_train:
+            done_tokens *= self.world_size
+        self.logger.info("| {:8d}/{:8d} steps"
+                         "| {:8.2f} tokens/s"
+                         "| loss {:7.2f}"
+                         "| acc: {:3.3f}".format(
+            self.current_step,
+            self.total_steps,
+            done_tokens / (time.time() - self.start_time),
+            self.total_loss / self.report_steps,
+            self.total_correct / self.total_denominator))
+
+        self.total_loss = 0.0
+        self.total_correct = 0.0
+        self.total_denominator = 0.0
 
 
 class BilmTrainer(Trainer):
