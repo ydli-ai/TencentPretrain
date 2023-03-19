@@ -68,6 +68,7 @@ def main():
     t = tokenizer.tokenize("今天天气真好")
     print(tokenizer.convert_tokens_to_ids(t))
     ids = tokenizer.convert_tokens_to_ids(t)
+    tokenizer.convert_tokens_to_ids(t)
     print([tokenizer.vocab.get(CLS_TOKEN)] + ids + [tokenizer.vocab.get(SEP_TOKEN)])
 
     # Build and save dataset.

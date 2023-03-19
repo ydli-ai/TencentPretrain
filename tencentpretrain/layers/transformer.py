@@ -25,6 +25,7 @@ class TransformerLayer(nn.Module):
         with_scale = bool(1 - args.remove_attention_scale)
 
         # Multi-headed self-attention.
+
         self.self_attn = MultiHeadedAttention(
             args.hidden_size, args.heads_num, attention_head_size, args.dropout, has_bias=has_bias, with_scale = with_scale
         )

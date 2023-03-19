@@ -33,9 +33,11 @@ class TransformerEncoder(nn.Module):
         if self.parameter_sharing:
             self.transformer = TransformerLayer(args)
         else:
-            self.transformer = nn.ModuleList(
-                [TransformerLayer(args) for _ in range(self.layers_num)]
-            )
+            self.transformer = nn.ModuleList()
+            for i in range(self.layers_num):
+                args.layer_id = i
+                self.transformer.append(TransformerLayer(args))
+
         if self.layernorm_positioning == "pre":
             if args.layernorm == "t5":
                 self.layer_norm = T5LayerNorm(args.hidden_size)
