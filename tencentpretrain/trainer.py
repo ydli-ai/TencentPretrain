@@ -27,8 +27,9 @@ def train_and_validate(args):
 
     # Load or initialize parameters.
     if args.pretrained_model_path is not None:
+        pass
         # Initialize with pretrained model.
-        model_for_training = load_model(model_for_training, args.pretrained_model_path)
+        #model_for_training = load_model(model_for_training, args.pretrained_model_path)
     else:
         # Initialize with normal distribution.
         if args.deep_init:
