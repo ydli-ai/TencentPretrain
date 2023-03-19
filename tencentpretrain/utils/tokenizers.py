@@ -785,7 +785,6 @@ class ChatGLMTokenizer(Tokenizer):
         self.remove_space = remove_space
         self.vocab_file = args.vocab_path
         # chatGLM has different vocab_size in tokenizer and model
-        self.vocab_size_num = args.vocab_size
 
         self.bos_token = bos_token
         self.eos_token = eos_token
@@ -811,7 +810,7 @@ class ChatGLMTokenizer(Tokenizer):
     @property
     def vocab_size(self):
         """ Returns vocab size """
-        return self.vocab_size_num
+        return self.sp_tokenizer.num_tokens
 
     def get_vocab(self):
         """ Returns vocab as a dict """
