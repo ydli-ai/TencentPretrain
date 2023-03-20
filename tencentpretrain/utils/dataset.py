@@ -486,15 +486,15 @@ class ChatGLMDataset(Dataset):
 
                 instances_num = len(document) // (self.seq_length - 2)
                 for i in range(instances_num):
-                    src = [self.vocab.get(CLS_TOKEN)] + document[i * (self.seq_length - 2): (i + 1) * (self.seq_length - 2)] + \
-                        [self.vocab.get(GMASK_TOKEN), self.vocab.get(CLS_TOKEN)]
+                    src = ["20005"] + document[i * (self.seq_length - 2): (i + 1) * (self.seq_length - 2)] + \
+                        [self.vocab.get(GMASK_TOKEN), self.vocab.get(SEP_TOKEN)]
                     seg_pos = [self.seq_length]
                     src = (src, 0)
                     pickle.dump((src, seg_pos), dataset_writer)
 
                 src = document[instances_num * (self.seq_length - 2):]
                 if len(src) > 0:
-                    src = [self.vocab.get(CLS_TOKEN)] + src + [self.vocab.get(GMASK_TOKEN), self.vocab.get(CLS_TOKEN)]
+                    src = [self.vocab.get(CLS_TOKEN)] + src + [self.vocab.get(GMASK_TOKEN), self.vocab.get(SEP_TOKEN)]
                     seg_pos = [len(src)]
                     pad_num = self.seq_length + 1 - len(src)
                     src = (src, pad_num)

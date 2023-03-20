@@ -209,8 +209,8 @@ class ChatGLMDataloader(Dataloader):
                 src_single, pad_num = ins[0]
                 for _ in range(pad_num):
                     src_single.append(self.vocab.get(PAD_TOKEN))
-                src.append(src_single)
-                tgt.append(src_single)
+                src.append(src_single[:-1])
+                tgt.append(src_single[1:])
                 seg.append([1] * ins[1][0] + [0] * (len(src_single) - ins[1][0]))
 
             yield torch.LongTensor(src), \
