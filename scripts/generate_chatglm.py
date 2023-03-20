@@ -19,25 +19,8 @@ from tencentpretrain.utils import *
 from tencentpretrain.utils.config import load_hyperparam
 from tencentpretrain.model_loader import load_model
 from tencentpretrain.opts import infer_opts, tokenizer_opts
+from transformers import AutoModel
 
-
-class GenerateLm(torch.nn.Module):
-    def __init__(self, args):
-        super(GenerateLm, self).__init__()
-        self.embedding = Embedding(args)
-        for embedding_name in args.embedding:
-            tmp_emb = str2embedding[embedding_name](args, args.tokenizer.vocab_size)
-            self.embedding.update(tmp_emb, embedding_name)
-        self.encoder = str2encoder[args.encoder](args)
-        self.target = Target()
-        self.target.update(LmTarget(args, args.tokenizer.vocab_size), "lm")
-
-    def forward(self, src, seg):
-        emb = self.embedding(src, seg)
-        print(torch.mean(emb), torch.sum(emb), emb.size())
-        output = self.encoder(emb, seg)
-        output = self.target.lm.output_layer(output)
-        return output
 
 
 def top_k_top_p_filtering(logits, top_k, top_p):
@@ -82,8 +65,7 @@ if __name__ == '__main__':
 
     args.tokenizer = str2tokenizer[args.tokenizer](args)
 
-    model = GenerateLm(args)
-    model = load_model(model, args.load_model_path, True)
+    model = AutoModel.from_pretrained(args.load_model_path, trust_remote_code=True, cache_dir=args.load_model_path).half()
     model.eval()
 
     with open(args.test_path, mode="r", encoding="utf-8") as f:
@@ -101,9 +83,11 @@ if __name__ == '__main__':
         for i in range(args.seq_length - beginning_length):
             with torch.no_grad():
                 output = model(src_tensor, seg_tensor)
-            next_token_logits = output[0][-1] / args.temperature
+            next_token_logits = output.logits[0][-1] / args.temperature
             filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
             next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+            print(next_token)
+            print(args.tokenizer.decode([int(next_token)]))
 
             src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
             seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]])], dim=1)
