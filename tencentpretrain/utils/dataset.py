@@ -467,6 +467,45 @@ class LmDataset(Dataset):
         dataset_writer.close()
 
 
+class ChatGLMDataset(Dataset):
+    def worker(self, proc_id, start, end):
+        print("Worker %d is building dataset ... " % proc_id)
+        set_seed(self.seed)
+        dataset_writer = open("dataset-tmp-" + str(proc_id) + ".pt", "wb")
+        pos = 0
+        with open(self.corpus_path, mode="r", encoding="utf-8") as f:
+            while pos < start:
+                f.readline()
+                pos += 1
+            while True:
+                line = f.readline()
+                pos += 1
+
+                document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
+                #document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
+
+                instances_num = len(document) // (self.seq_length - 2)
+                for i in range(instances_num):
+                    src = [self.vocab.get(CLS_TOKEN)] + document[i * (self.seq_length - 2): (i + 1) * (self.seq_length - 2)] + \
+                        [self.vocab.get(GMASK_TOKEN), self.vocab.get(CLS_TOKEN)]
+                    seg_pos = [self.seq_length]
+                    src = (src, 0)
+                    pickle.dump((src, seg_pos), dataset_writer)
+
+                src = document[instances_num * (self.seq_length - 2):]
+                if len(src) > 0:
+                    src = [self.vocab.get(CLS_TOKEN)] + src + [self.vocab.get(GMASK_TOKEN), self.vocab.get(CLS_TOKEN)]
+                    seg_pos = [len(src)]
+                    pad_num = self.seq_length + 1 - len(src)
+                    src = (src, pad_num)
+                    pickle.dump((src, seg_pos), dataset_writer)
+
+                if pos >= end:
+                    break
+
+        dataset_writer.close()
+
+
 class BilmDataset(Dataset):
     def worker(self, proc_id, start, end):
         print("Worker %d is building dataset ... " % proc_id)

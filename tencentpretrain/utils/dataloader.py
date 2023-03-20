@@ -189,6 +189,35 @@ class LmDataloader(Dataloader):
                 torch.LongTensor(seg)
 
 
+class ChatGLMDataloader(Dataloader):
+    def __iter__(self):
+        while True:
+            while self._empty():
+                self._fill_buf()
+            if self.start + self.batch_size >= self.end:
+                instances = self.buffer[self.start:]
+            else:
+                instances = self.buffer[self.start: self.start + self.batch_size]
+
+            self.start += self.batch_size
+
+            src = []
+            tgt = []
+            seg = []
+
+            for ins in instances:
+                src_single, pad_num = ins[0]
+                for _ in range(pad_num):
+                    src_single.append(self.vocab.get(PAD_TOKEN))
+                src.append(src_single)
+                tgt.append(src_single)
+                seg.append([1] * ins[1][0] + [0] * (len(src_single) - ins[1][0]))
+
+            yield torch.LongTensor(src), \
+                  torch.LongTensor(tgt), \
+                  torch.LongTensor(seg)
+
+
 class BilmDataloader(Dataloader):
     def __iter__(self):
         while True:
