@@ -47,9 +47,9 @@ for i in range(args.layers_num):
     output_model["encoder.transformer." + str(i) + ".feed_forward.linear_gate.weight"] = \
         get_weight_from_name("model.layers." + str(i) + ".mlp.gate_proj.weight")
     output_model["encoder.transformer." + str(i) + ".feed_forward.linear_1.weight"] = \
-        get_weight_from_name("model.layers." + str(i) + ".mlp.down_proj.weight")
-    output_model["encoder.transformer." + str(i) + ".feed_forward.linear_2.weight"] = \
         get_weight_from_name("model.layers." + str(i) + ".mlp.up_proj.weight")
+    output_model["encoder.transformer." + str(i) + ".feed_forward.linear_2.weight"] = \
+        get_weight_from_name("model.layers." + str(i) + ".mlp.down_proj.weight")
 
     output_model["encoder.transformer." + str(i) + ".layer_norm_2.weight"] = \
         get_weight_from_name("model.layers." + str(i) + ".post_attention_layernorm.weight")
