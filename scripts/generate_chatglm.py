@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
     with open(args.test_path, mode="r", encoding="utf-8") as f: #  +  [GMASK_TOKEN, CLS_TOKEN ]
         line = f.readline().strip()
-        src = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(line)) + [20005, 94874]
+        src = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(line)) + [150001, 20005, 94874]
         #print(src)
         seg = [1] * len(src)
         beginning_length = len(src)
