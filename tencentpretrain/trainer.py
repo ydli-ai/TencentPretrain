@@ -269,6 +269,14 @@ class ChatGLMTrainer(MlmTrainer):
             done_tokens *= self.world_size
         self.logger.info("| {:8d}/{:8d} steps"
                          "| {:8.2f} tokens/s"
+                         "| loss {:7.2f}".format(
+            self.current_step,
+            self.total_steps,
+            done_tokens / (time.time() - self.start_time),
+            self.total_loss / self.report_steps))
+        """
+        self.logger.info("| {:8d}/{:8d} steps"
+                         "| {:8.2f} tokens/s"
                          "| loss {:7.2f}"
                          "| acc: {:3.3f}".format(
             self.current_step,
@@ -276,6 +284,7 @@ class ChatGLMTrainer(MlmTrainer):
             done_tokens / (time.time() - self.start_time),
             self.total_loss / self.report_steps,
             self.total_correct / self.total_denominator))
+        """
 
         self.total_loss = 0.0
         self.total_correct = 0.0
