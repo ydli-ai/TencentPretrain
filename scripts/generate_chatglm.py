@@ -84,6 +84,7 @@ if __name__ == '__main__':
 
     with open(args.prediction_path, mode="w", encoding="utf-8") as f:
         for i in range(args.seq_length - beginning_length):
+            print(i, src_tensor)
             with torch.no_grad():
                 output = model(src_tensor)
             next_token_logits = output.logits[0][-1] / args.temperature
