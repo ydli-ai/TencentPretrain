@@ -243,8 +243,12 @@ class AlbertTrainer(BertTrainer):
 
 
 class LmTrainer(MlmTrainer):
+    pass
+
+
+class ChatGLMTrainer(MlmTrainer):
     def __init__(self, args):
-        super(LmTrainer, self).__init__(args)
+        super(ChatGLMTrainer, self).__init__(args)
         self.total_correct = 0.0
         self.total_denominator = 0.0
 
@@ -568,7 +572,7 @@ str2trainer = {"bert": BertTrainer, "mlm": MlmTrainer, "lm": LmTrainer,
                "mt": MtTrainer, "t5": T5Trainer, "gsg": GsgTrainer,
                "bart": BartTrainer, "prefixlm": PrefixlmTrainer, "cls_mlm": ClsMlmTrainer,
                "vit": VitTrainer, "vilt": ViltTrainer, "clip": ClipTrainer, "s2t": S2tTrainer,
-               "beit": BeitTrainer, "dalle": DalleTrainer}
+               "beit": BeitTrainer, "dalle": DalleTrainer, "chatglm": ChatGLMTrainer}
 
 
 def worker(proc_id, gpu_ranks, args, model_for_training, model_for_dataloader=None):
