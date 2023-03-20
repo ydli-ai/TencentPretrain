@@ -42,7 +42,7 @@ for i in range(args.layers_num):
         get_weight_from_name("model.layers." + str(i) + ".self_attn.o_proj.weight")
 
     output_model["encoder.transformer." + str(i) + ".layer_norm_1.weight"] = \
-        get_weight_from_name("model.layers." + str(i) + "input_layernorm.weight")
+        get_weight_from_name("model.layers." + str(i) + ".input_layernorm.weight")
 
     output_model["encoder.transformer." + str(i) + ".feed_forward.linear_gate.weight"] = \
         get_weight_from_name("model.layers." + str(i) + ".mlp.gate_proj.weight")
