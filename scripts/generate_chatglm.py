@@ -77,12 +77,12 @@ if __name__ == '__main__':
         if len(src) > args.seq_length:
             src = src[:args.seq_length]
             seg = seg[:args.seq_length]
-    src_tensor, seg_tensor = torch.LongTensor([src]), torch.LongTensor([seg])
+    src_tensor, seg_tensor = torch.LongTensor([src]).to(torch.float16), torch.LongTensor([seg]).to(torch.float16)
 
     with open(args.prediction_path, mode="w", encoding="utf-8") as f:
         for i in range(args.seq_length - beginning_length):
             with torch.no_grad():
-                output = model(src_tensor, seg_tensor)
+                output = model(src_tensor)
             next_token_logits = output.logits[0][-1] / args.temperature
             filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
             next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
