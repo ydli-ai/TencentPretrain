@@ -852,8 +852,8 @@ class ChatGLMTokenizer(Tokenizer):
                 tokens.append(self.sp_tokenizer.decode(single_token_ids))
             return (tokens)
         else:
-            if self.pad_token_id in token_ids:  # remove pad
-                token_ids = list(filter((self.pad_token_id).__ne__, token_ids))
+            #if self.pad_token_id in token_ids:  # remove pad
+            #    token_ids = list(filter((self.pad_token_id).__ne__, token_ids))
             return self.sp_tokenizer.decode(token_ids)
 
     def _convert_token_to_id(self, token):
