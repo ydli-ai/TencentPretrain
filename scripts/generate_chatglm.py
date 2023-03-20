@@ -65,7 +65,10 @@ if __name__ == '__main__':
 
     args.tokenizer = str2tokenizer[args.tokenizer](args)
 
-    model = AutoModel.from_pretrained(args.load_model_path, trust_remote_code=True, cache_dir=args.load_model_path)
+    model = AutoModel.from_pretrained(args.load_model_path, trust_remote_code=True, cache_dir=args.load_model_path).half()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+
     model.eval()
 
     with open(args.test_path, mode="r", encoding="utf-8") as f:
@@ -77,7 +80,7 @@ if __name__ == '__main__':
         if len(src) > args.seq_length:
             src = src[:args.seq_length]
             seg = seg[:args.seq_length]
-    src_tensor, seg_tensor = torch.LongTensor([src]), torch.LongTensor([seg])
+    src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
     with open(args.prediction_path, mode="w", encoding="utf-8") as f:
         for i in range(args.seq_length - beginning_length):
@@ -90,7 +93,7 @@ if __name__ == '__main__':
             print(args.tokenizer.decode([int(next_token)]))
 
             src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
-            seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]])], dim=1)
+            seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]], device = device)], dim=1)
 
         f.write(line + "\n")
         generated_sentence = "".join(
