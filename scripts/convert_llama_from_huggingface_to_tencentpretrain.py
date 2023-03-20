@@ -28,33 +28,33 @@ output_model = collections.OrderedDict()
 def get_weight_from_name(layer_name):
     return input_models[weight_map[layer_name]][layer_name]
 
-output_model["embedding.word.embedding.weight"] = get_weight_from_name["model.embed_tokens.weight"]
+output_model["embedding.word.embedding.weight"] = get_weight_from_name("model.embed_tokens.weight")
 
 for i in range(args.layers_num):
 
     output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers.0.weight"] = \
-        get_weight_from_name["model.layers." + str(i) + ".self_attn.q_proj.weight"]
+        get_weight_from_name("model.layers." + str(i) + ".self_attn.q_proj.weight")
     output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers.1.weight"] = \
-        get_weight_from_name["model.layers." + str(i) + ".self_attn.k_proj.weight"]
+        get_weight_from_name("model.layers." + str(i) + ".self_attn.k_proj.weight")
     output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers.2.weight"] = \
-        get_weight_from_name["model.layers." + str(i) + ".self_attn.v_proj.weight"]
+        get_weight_from_name("model.layers." + str(i) + ".self_attn.v_proj.weight")
     output_model["encoder.transformer." + str(i) + ".self_attn.final_linear.weight"] = \
-        get_weight_from_name["model.layers." + str(i) + ".self_attn.o_proj.weight"]
+        get_weight_from_name("model.layers." + str(i) + ".self_attn.o_proj.weight")
 
     output_model["encoder.transformer." + str(i) + ".layer_norm_1.weight"] = \
-        get_weight_from_name["model.layers." + str(i) + "input_layernorm.weight"]
+        get_weight_from_name("model.layers." + str(i) + "input_layernorm.weight")
 
     output_model["encoder.transformer." + str(i) + ".feed_forward.linear_gate.weight"] = \
-        get_weight_from_name["model.layers." + str(i) + ".mlp.gate_proj.weight"]
+        get_weight_from_name("model.layers." + str(i) + ".mlp.gate_proj.weight")
     output_model["encoder.transformer." + str(i) + ".feed_forward.linear_1.weight"] = \
-        get_weight_from_name["model.layers." + str(i) + ".mlp.down_proj.weight"]
+        get_weight_from_name("model.layers." + str(i) + ".mlp.down_proj.weight")
     output_model["encoder.transformer." + str(i) + ".feed_forward.linear_2.weight"] = \
-        get_weight_from_name["model.layers." + str(i) + ".mlp.up_proj.weight"]
+        get_weight_from_name("model.layers." + str(i) + ".mlp.up_proj.weight")
 
     output_model["encoder.transformer." + str(i) + ".layer_norm_2.weight"] = \
-        get_weight_from_name["model.layers." + str(i) + ".post_attention_layernorm.weight"]
+        get_weight_from_name("model.layers." + str(i) + ".post_attention_layernorm.weight")
 
-output_model["encoder.layer_norm.weight"] = get_weight_from_name["model.norm.weight"]
-output_model["target.lm.output_layer.weight"] = get_weight_from_name["lm_head.weight"]
+output_model["encoder.layer_norm.weight"] = get_weight_from_name("model.norm.weight")
+output_model["target.lm.output_layer.weight"] = get_weight_from_name("lm_head.weight")
 
 torch.save(output_model, args.output_model_path)
