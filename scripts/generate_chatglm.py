@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     args.tokenizer = str2tokenizer[args.tokenizer](args)
 
-    model = AutoModel.from_pretrained(args.load_model_path, trust_remote_code=True, cache_dir=args.load_model_path).half()
+    model = AutoModel.from_pretrained(args.load_model_path, trust_remote_code=True, cache_dir=args.load_model_path)
     model.eval()
 
     with open(args.test_path, mode="r", encoding="utf-8") as f:
@@ -77,7 +77,7 @@ if __name__ == '__main__':
         if len(src) > args.seq_length:
             src = src[:args.seq_length]
             seg = seg[:args.seq_length]
-    src_tensor, seg_tensor = torch.LongTensor([src]).to(torch.float16), torch.LongTensor([seg]).to(torch.float16)
+    src_tensor, seg_tensor = torch.LongTensor([src]), torch.LongTensor([seg])
 
     with open(args.prediction_path, mode="w", encoding="utf-8") as f:
         for i in range(args.seq_length - beginning_length):
