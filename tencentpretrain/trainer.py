@@ -254,7 +254,8 @@ class ChatGLMTrainer(MlmTrainer):
 
     def forward_propagation(self, batch, model):
         src, tgt, seg = batch
-        loss, logits = model(input_ids=src, labels=tgt)
+        output = model(input_ids=src, labels=tgt)
+        loss = output.loss
         #loss, correct, denominator = loss_info
         self.total_loss += loss.item()
         #self.total_correct += correct.item()
