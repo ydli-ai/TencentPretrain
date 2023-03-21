@@ -30,7 +30,7 @@
     "contiguous_gradients": true,
     "overlap_comm": true,
     "reduce_scatter": false,
-    "reduce_bucket_size": "auto",
+    "reduce_bucket_size": 5e7,
     "allgather_bucket_size": 5e7
   },
   "activation_checkpointing": {
