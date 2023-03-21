@@ -2,7 +2,7 @@ import time
 import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel
-from tencentpretrain.model_loader import *
+from tencentpretrain.model_loader import _load_state_dict_into_model, load_model
 from tencentpretrain.model_saver import save_model
 from tencentpretrain.model_builder import build_model
 from tencentpretrain.utils.logging import init_logger
