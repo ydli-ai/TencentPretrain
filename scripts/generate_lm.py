@@ -83,6 +83,8 @@ if __name__ == '__main__':
 
     model = GenerateLm(args)
     model = load_model(model, args.load_model_path)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
     model.eval()
 
     with open(args.test_path, mode="r", encoding="utf-8") as f:
@@ -103,10 +105,11 @@ if __name__ == '__main__':
             next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
 
             src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
-            seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]])], dim=1)
+            seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
 
         f.write(line + "\n")
         generated_sentence = "".join(
             args.tokenizer.convert_ids_to_tokens([token_id.item() for token_id in src_tensor[0]])
         )
+        print(args.tokenizer.sp_model.decode([token_id.item() for token_id in src_tensor[0]]))
         f.write(generated_sentence)
