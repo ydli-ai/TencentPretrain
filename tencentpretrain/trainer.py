@@ -603,8 +603,8 @@ def worker(proc_id, gpu_ranks, args, model_for_training, model_for_dataloader=No
                                                     model=model_for_training,
                                                     model_parameters=optimizer_grouped_parameters,
                                                     args=args,
-                                                    optimizer=custom_optimizer,
-                                                    lr_scheduler=custom_scheduler,
+                                                    #optimizer=custom_optimizer,
+                                                    #lr_scheduler=custom_scheduler,
                                                     mpu=None,
                                                     dist_init_required=False)
     else:
