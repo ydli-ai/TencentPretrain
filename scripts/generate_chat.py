@@ -89,6 +89,11 @@ if __name__ == '__main__':
 
     model.eval()
 
+    print('CSL_ID: ', args.tokenizer.convert_tokens_to_ids([CLS_TOKEN]))
+    print('SEP_ID: ', args.tokenizer.convert_tokens_to_ids([SEP_TOKEN]))
+    print('PAD_ID: ', args.tokenizer.convert_tokens_to_ids([PAD_TOKEN]))
+    print('UNK_ID: ', args.tokenizer.convert_tokens_to_ids([UNK_TOKEN]))
+
     with open(args.test_path, mode="r", encoding="utf-8") as f:
         line = "".join(f.readlines())
         src = args.tokenizer.convert_tokens_to_ids([CLS_TOKEN] + args.tokenizer.tokenize(line))
