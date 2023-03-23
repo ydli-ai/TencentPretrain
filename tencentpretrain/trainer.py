@@ -133,7 +133,7 @@ class Trainer(object):
                     model.save_checkpoint(self.output_model_path, str(self.current_step))
                     if loss.item() < self.best_loss:
                         self.best_loss = loss.item()
-                        model.save_checkpoint(self.output_model_path, "-best")
+                        #model.save_checkpoint(self.output_model_path, "-best")
             else:
                 if self.current_step % self.save_checkpoint_steps == 0 and \
                         (not self.dist_train or (self.dist_train and rank == 0)):
