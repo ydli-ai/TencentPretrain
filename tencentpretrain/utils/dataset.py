@@ -994,12 +994,19 @@ class AlpacaDataset(Dataset):
                 document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line_text))
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
 
-                src = document[: self.seq_length]
-                seg_pos = [len(src)]
-                pad_num = self.seq_length - len(src)
-                src = (src, pad_num)
-                pickle.dump((src, seg_pos), dataset_writer)
+                instances_num = len(document) // (self.seq_length + 1)
+                for i in range(instances_num):
+                    src = document[i * (self.seq_length + 1): (i + 1) * (self.seq_length + 1)]
+                    seg_pos = [self.seq_length]
+                    src = (src, 0)
+                    pickle.dump((src, seg_pos), dataset_writer)
 
+                #src = document[instances_num * (self.seq_length + 1):]
+                #if len(src) > 0:
+                #    seg_pos = [len(src)]
+                #    pad_num = self.seq_length + 1 - len(src)
+                #    src = (src, pad_num)
+                #    pickle.dump((src, seg_pos), dataset_writer)
                 if pos >= end:
                     break
 
