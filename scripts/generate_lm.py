@@ -90,7 +90,7 @@ if __name__ == '__main__':
     model.eval()
 
     with open(args.test_path, mode="r", encoding="utf-8") as f:
-        line = f.readline().strip()
+        line = ''.join(f.readlines())
         src = args.tokenizer.convert_tokens_to_ids([CLS_TOKEN] + args.tokenizer.tokenize(line))
         seg = [1] * len(src)
         beginning_length = len(src)
