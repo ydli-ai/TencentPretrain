@@ -94,7 +94,7 @@ def formular_data_to_str(data_list, type):
         for points_list in keypoints:
             output = output + '['
             for i, point in enumerate(points_list):
-                output = output + ' ' + num2char[i] + ' $' + str(point[0][0]) + ' $'+ str(point[0][0])
+                output = output + ' ' + 'm'+str(i) + ' $' + str(point[0][0]) + ' $'+ str(point[0][0])
             output = output + '] '
         return output
 
