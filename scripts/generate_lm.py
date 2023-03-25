@@ -89,6 +89,8 @@ if __name__ == '__main__':
 
     model.eval()
 
+    print('UNK', args.tokenizer.convert_tokens_to_ids([CLS_TOKEN]))
+
     with open(args.test_path, mode="r", encoding="utf-8") as f:
         line = ''.join(f.readlines())
         src = args.tokenizer.convert_tokens_to_ids([CLS_TOKEN] + args.tokenizer.tokenize(line))
