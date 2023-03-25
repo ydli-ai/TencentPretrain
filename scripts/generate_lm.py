@@ -80,6 +80,7 @@ if __name__ == '__main__':
     args = load_hyperparam(args)
 
     args.tokenizer = str2tokenizer[args.tokenizer](args)
+    print('UNK', args.tokenizer.convert_tokens_to_ids([CLS_TOKEN]))
 
     model = GenerateLm(args)
     model = load_model(model, args.load_model_path, True)
@@ -89,7 +90,7 @@ if __name__ == '__main__':
 
     model.eval()
 
-    print('UNK', args.tokenizer.convert_tokens_to_ids([CLS_TOKEN]))
+
 
     with open(args.test_path, mode="r", encoding="utf-8") as f:
         line = ''.join(f.readlines())
