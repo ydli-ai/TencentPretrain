@@ -987,9 +987,9 @@ class AlpacaDataset(Dataset):
                 pos += 1
                 data = json.loads(line)
 
-                instruction = data.get("instruction", "").replace('\\n', '').replace('\n','')
-                input = data.get("input", "").replace('\\n', '').replace('\n','')
-                output = data.get("output", "").replace('\\n', '').replace('\n','')
+                instruction = data.get("instruction", "").replace('\\n', '\n')
+                input = data.get("input", "").replace('\\n', '\n')
+                output = data.get("output", "").replace('\\n', '\n')
                 line_text = instruction + input + output
                 document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line_text))
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
@@ -1001,12 +1001,12 @@ class AlpacaDataset(Dataset):
                     src = (src, 0)
                     pickle.dump((src, seg_pos), dataset_writer)
 
-                #src = document[instances_num * (self.seq_length + 1):]
-                #if len(src) > 0:
-                #    seg_pos = [len(src)]
-                #    pad_num = self.seq_length + 1 - len(src)
-                #    src = (src, pad_num)
-                #    pickle.dump((src, seg_pos), dataset_writer)
+                src = document[instances_num * (self.seq_length + 1):]
+                if len(src) > 0:
+                    seg_pos = [len(src)]
+                    pad_num = self.seq_length + 1 - len(src)
+                    src = (src, pad_num)
+                    pickle.dump((src, seg_pos), dataset_writer)
                 if pos >= end:
                     break
 
