@@ -66,7 +66,7 @@ def keypoint_to_formular_data(keypoints):
         output_single = {"anno_type": "key point",
                          "prefix": "Multiple instances",
                          "flag": None,
-                         "instances_num": len(kp_list),
+                         "instances_num": 0,
                          "keypoints_num": None,
                          "categories": [],
                          "coordinate": []
@@ -77,9 +77,13 @@ def keypoint_to_formular_data(keypoints):
                 if np.where(np.array(point)[:, -1] != 0)[0].shape[0] < 3:
                     continue
                 # ----- kinhane
+                output_single["instances_num"] += 1
                 output_single["categories"].append(name)
                 output_single["coordinate"].append(point)
                 output_single["keypoints_num"] = len(point)
+
+                if output_single["instances_num"] > 7:
+                    break
 
         # ----- kinhane omit idle list
         if len(output_single["coordinate"]) == 0:
@@ -96,10 +100,13 @@ def keypoint_to_formular_data(keypoints):
 def mask_to_formular_data(keypoints):
     output = []
     for mask_list in keypoints:
+        point_counter = 0
+
+        random.shuffle(keypoints)
         output_single = {"anno_type": "mask",
                          "prefix": "Multiple instances",
                          "flag": None,
-                         "instances_num": len(mask_list),
+                         "instances_num": 0,
                          "keypoints_num": 0,
                          "categories": [],
                          "coordinate": []
@@ -109,9 +116,17 @@ def mask_to_formular_data(keypoints):
                 # ----- kinhane omit very small masks
                 if len(point) < 5:
                     continue
+                if point_counter + len(point) >= 150:
+                    break
+                else:
+                    point_counter += len(point)
+
                 # ----- kinhane
                 output_single["categories"].append(name)
                 output_single["coordinate"].append(point)
+                output_single["instances_num"] += 1
+
+
 
         # ----- kinhane omit idle list
         if len(output_single["coordinate"]) == 0:
@@ -128,18 +143,20 @@ def mask_to_formular_data(keypoints):
 def box_to_formular_data(keypoints):
     output = []
     for mask_list in keypoints:
+        random.shuffle(mask_list)
         output_single = {"anno_type": "box",
                          "prefix": "multiple instances",
                          "flag": None,
-                         "instances_num": len(mask_list),
+                         "instances_num": 0,
                          "keypoints_num": 0,
                          "categories": [],
                          "coordinate": []
                          }
-        for mask in mask_list:
+        for mask in mask_list[:20]:
             for name, point in mask.items():
                 output_single["categories"].append(name)
                 output_single["coordinate"].append(point)
+                output_single["instances_num"] += 1
 
         flag = get_size(output_single["coordinate"], type='box')  # add by kinhane
         output_single["flag"] = flag  # add by kinhane
@@ -158,7 +175,7 @@ def formular_data_to_str(data_list, type):
         for points_list in keypoints:
             output = output + '['
             for i, point in enumerate(points_list):
-                output = output + ' ' + num2char[i] + ' $' + str(point[0]) + ' $'+ str(point[0])
+                output = output + ' ' + num2char[i] + ' $' + str(point[0]) + ' $'+ str(point[1])
             output = output + '] '
         return output
 
@@ -167,7 +184,7 @@ def formular_data_to_str(data_list, type):
         for points_list in keypoints:
             output = output + '['
             for i, point in enumerate(points_list):
-                output = output + ' ' + 'm'+str(i) + ' $' + str(point[0][0]) + ' $'+ str(point[0][0])
+                output = output + ' ' + 'm'+str(i) + ' $' + str(point[0][0]) + ' $'+ str(point[0][1])
             output = output + '] '
         return output
 
@@ -180,7 +197,7 @@ def formular_data_to_str(data_list, type):
 
     output = []
     for data in data_list:
-        output_single = '; '.join([data["anno_type"], data["prefix"], str(data["instances_num"]), str(data["keypoints_num"])])
+        output_single = '; '.join([data["anno_type"], data["prefix"], str(data["instances_num"]), str(data["keypoints_num"]), data['flag']])
         output_single = output_single + '; ' + ', '.join(data["categories"]) +'; '
         if type == "keypoint":
             output_single = output_single + keyporint_coord_to_str(data["coordinate"])
