@@ -5,6 +5,7 @@ import json
 import numpy as np
 import random
 from interval import Interval
+from tqdm import tqdm
 
 # [Annotation type] [Object centric or Multiple instances] [Number of instances] [Number of keypoints] [Class A, Class B, ...] [Box A, Box B, ...]
 
@@ -61,7 +62,7 @@ def filter_keypoint(keypoints):
 
 def keypoint_to_formular_data(keypoints):
     output = []
-    for kp_list in keypoints:
+    for kp_list in tqdm(keypoints):
         random.shuffle(kp_list)
         output_single = {"anno_type": "key point",
                          "prefix": "Multiple instances",
@@ -99,7 +100,7 @@ def keypoint_to_formular_data(keypoints):
 
 def mask_to_formular_data(keypoints):
     output = []
-    for mask_list in keypoints:
+    for mask_list in tqdm(keypoints):
         point_counter = 0
 
         random.shuffle(keypoints)
@@ -142,7 +143,7 @@ def mask_to_formular_data(keypoints):
 
 def box_to_formular_data(keypoints, centric=0):
     output = []
-    for mask_list in keypoints:
+    for mask_list in tqdm(keypoints):
         random.shuffle(mask_list)
         output_single = {"anno_type": "box",
                          "prefix": "multiple instances",
@@ -198,7 +199,7 @@ def formular_data_to_str(data_list, type):
         return output
 
     output = []
-    for data in data_list:
+    for data in tqdm(data_list):
         output_single = '; '.join([data["anno_type"], data["prefix"], str(data["instances_num"]), str(data["keypoints_num"]), data['flag']])
         output_single = output_single + '; ' + ', '.join(data["categories"]) +'; '
         if type == "keypoint":
@@ -224,7 +225,7 @@ def main():
         data = json.load(f)
 
     print("data_type ", args.data_type)
-    
+
 
     if args.data_type == "keypoint":
         keypoints = filter_keypoint(data['keypoints'] )
