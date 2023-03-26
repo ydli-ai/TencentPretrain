@@ -231,7 +231,7 @@ def main():
         keypoints = filter_keypoint(data['keypoints'] )
         data_json = keypoint_to_formular_data(keypoints)
     elif args.data_type == "box":
-        data_json = box_to_formular_data(data['bboxes'])
+        data_json = box_to_formular_data(data['bboxes'], args.centric)
     else:
         data_json = mask_to_formular_data(data['masks'])
 
