@@ -3,9 +3,48 @@ import collections
 import torch
 import json
 import numpy as np
+import random
+from interval import Interval
 
 # [Annotation type] [Object centric or Multiple instances] [Number of instances] [Number of keypoints] [Class A, Class B, ...] [Box A, Box B, ...]
 
+# ----- kinhane
+def get_size(coordinate, type, small=Interval(0, 32**2), medium=Interval(32**2, 96**2, lower_closed=False)):
+
+    if type == 'box':
+        coordinate = np.array(coordinate)
+        mean_area = np.mean((coordinate[:, 2] - coordinate[:, 0]) * (coordinate[:, 3] - coordinate[:, 1]))
+        # import ipdb
+        # ipdb.set_trace()
+    elif type == 'keypoint' or type == 'mask':
+        area_list = []
+        for coord in coordinate:
+            if type == 'mask':
+                coord = np.array(coord).squeeze(1)
+            else:
+                # delete unannotated key points
+                tmp = []
+                for kpt in coord:
+                    _, _, v = kpt
+                    if v != 0:
+                        tmp.append(kpt)
+                coord = np.array(tmp)
+            # import ipdb
+            # ipdb.set_trace()
+            area = (np.max(coord[:, 0]) - np.min(coord[:, 0])) * (np.max(coord[:, 1]) - np.min(coord[:, 1]))
+            area_list.append(area)
+        mean_area = np.mean(area_list)
+    else:
+        raise NotImplementedError
+
+    if mean_area in small:
+        return 'small'
+    elif mean_area in medium:
+        return 'medium'
+    else:
+        return 'large'
+
+# ----- kinhane
 
 def filter_keypoint(keypoints):
     output = []
@@ -23,8 +62,10 @@ def filter_keypoint(keypoints):
 def keypoint_to_formular_data(keypoints):
     output = []
     for kp_list in keypoints:
+        random.shuffle(kp_list)
         output_single = {"anno_type": "key point",
                          "prefix": "Multiple instances",
+                         "flag": None,
                          "instances_num": len(kp_list),
                          "keypoints_num": None,
                          "categories": [],
@@ -32,10 +73,23 @@ def keypoint_to_formular_data(keypoints):
                          }
         for kp in kp_list:
             for name, point in kp.items():
+                # ----- kinhane omit instances with less 3 key points
+                if np.where(np.array(point)[:, -1] != 0)[0].shape[0] < 3:
+                    continue
+                # ----- kinhane
                 output_single["categories"].append(name)
                 output_single["coordinate"].append(point)
-                output_single["keypoints_num"]= len(point)
+                output_single["keypoints_num"] = len(point)
+
+        # ----- kinhane omit idle list
+        if len(output_single["coordinate"]) == 0:
+            continue
+        # ----- kinhane
+
+        flag = get_size(output_single["coordinate"], type='keypoint')  # add by kinhane
+        output_single["flag"] = flag  # add by kinhane
         output.append(output_single)
+
     return output
 
 
@@ -44,6 +98,7 @@ def mask_to_formular_data(keypoints):
     for mask_list in keypoints:
         output_single = {"anno_type": "mask",
                          "prefix": "Multiple instances",
+                         "flag": None,
                          "instances_num": len(mask_list),
                          "keypoints_num": 0,
                          "categories": [],
@@ -51,9 +106,22 @@ def mask_to_formular_data(keypoints):
                          }
         for mask in mask_list:
             for name, point in mask.items():
+                # ----- kinhane omit very small masks
+                if len(point) < 5:
+                    continue
+                # ----- kinhane
                 output_single["categories"].append(name)
                 output_single["coordinate"].append(point)
+
+        # ----- kinhane omit idle list
+        if len(output_single["coordinate"]) == 0:
+            continue
+        # ----- kinhane
+
+        flag = get_size(output_single["coordinate"], type='mask')  # add by kinhane
+        output_single["flag"] = flag  # add by kinhane
         output.append(output_single)
+
     return output
 
 
@@ -61,7 +129,8 @@ def box_to_formular_data(keypoints):
     output = []
     for mask_list in keypoints:
         output_single = {"anno_type": "box",
-                         "prefix": "Multiple instances",
+                         "prefix": "multiple instances",
+                         "flag": None,
                          "instances_num": len(mask_list),
                          "keypoints_num": 0,
                          "categories": [],
@@ -71,7 +140,11 @@ def box_to_formular_data(keypoints):
             for name, point in mask.items():
                 output_single["categories"].append(name)
                 output_single["coordinate"].append(point)
+
+        flag = get_size(output_single["coordinate"], type='box')  # add by kinhane
+        output_single["flag"] = flag  # add by kinhane
         output.append(output_single)
+
     return output
 
 num2char = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h', 8: 'i', 9: 'j',
@@ -102,7 +175,7 @@ def formular_data_to_str(data_list, type):
         output = ""
         for box in boxes:
             output = output + '[  xmin $' + str(box[0]) + ' ymin $'+ str(box[1]) + \
-            ' ymax $'+ str(box[2]) + ' ymax $'+ str(box[3]) +'] '
+                     ' ymax $'+ str(box[2]) + ' ymax $'+ str(box[3]) +'] '
         return output
 
     output = []
@@ -121,9 +194,9 @@ def formular_data_to_str(data_list, type):
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--input_path", type=str, help=".")
-    parser.add_argument("--output_path", type=str, help=".")
-    parser.add_argument("--data_type", type=str, help=".")
+    parser.add_argument("--input_path", type=str, default='data/xjh_coco_val.json', help="data/xjh_coco_val.json")
+    parser.add_argument("--output_path", type=str, default='test.txt', help="test.txt")
+    parser.add_argument("--data_type", type=str, default='mask', help="box")
 
     args = parser.parse_args()
 
