@@ -223,6 +223,9 @@ def main():
     with open(args.input_path) as f:
         data = json.load(f)
 
+    print("data_type ", args.data_type)
+    
+
     if args.data_type == "keypoint":
         keypoints = filter_keypoint(data['keypoints'] )
         data_json = keypoint_to_formular_data(keypoints)
