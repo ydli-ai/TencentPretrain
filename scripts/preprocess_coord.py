@@ -194,7 +194,7 @@ def formular_data_to_str(data_list, type):
     def box_coord_to_str(boxes):
         output = ""
         for box in boxes:
-            output = output + '[  xmin $' + str(box[0]) + ' ymin $'+ str(box[1]) + \
+            output = output + '[ xmin $' + str(box[0]) + ' ymin $'+ str(box[1]) + \
                      ' ymax $'+ str(box[2]) + ' ymax $'+ str(box[3]) +'] '
         return output
 
