@@ -91,7 +91,10 @@ def keypoint_to_formular_data(keypoints):
             continue
         # ----- kinhane
 
-        flag = get_size(output_single["coordinate"], type='keypoint')  # add by kinhane
+        if random.random() < 0.5:
+            flag = get_size(output_single["coordinate"], type='keypoint')  # add by kinhane
+        else:
+            flag = "random"
         output_single["flag"] = flag  # add by kinhane
         output.append(output_single)
 
