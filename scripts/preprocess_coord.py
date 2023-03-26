@@ -140,7 +140,7 @@ def mask_to_formular_data(keypoints):
     return output
 
 
-def box_to_formular_data(keypoints):
+def box_to_formular_data(keypoints, centric=0):
     output = []
     for mask_list in keypoints:
         random.shuffle(mask_list)
@@ -152,6 +152,8 @@ def box_to_formular_data(keypoints):
                          "categories": [],
                          "coordinate": []
                          }
+        if centric == 1:
+            output_single["prefix"] = "object centric"
         for mask in mask_list[:20]:
             for name, point in mask.items():
                 output_single["categories"].append(name)
@@ -214,6 +216,7 @@ def main():
     parser.add_argument("--input_path", type=str, default='data/xjh_coco_val.json', help="data/xjh_coco_val.json")
     parser.add_argument("--output_path", type=str, default='test.txt', help="test.txt")
     parser.add_argument("--data_type", type=str, default='mask', help="box")
+    parser.add_argument("--centric", type=int, default=0, help="box")
 
     args = parser.parse_args()
 
