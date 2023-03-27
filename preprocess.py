@@ -63,6 +63,30 @@ def main():
     if args.data_processor == "mt":
         args.tgt_tokenizer = str2tokenizer[args.tgt_tokenizer](args, False)
 
+    print(tokenizer.convert_ids_to_tokens([1002,
+                                          14210,
+                                          23290,
+                                          2629,
+                                          1002,
+                                          22060,
+                                          1002,
+                                          21211,
+                                          23290,
+                                          2575,
+                                          1002,
+                                          26257,
+                                          1002,
+                                          28474,
+                                          23290,
+                                          2581,
+                                          1002,
+                                          24559,
+                                          1002,
+                                          3486,
+                                          2509,
+                                          23290,
+                                          2620]))
+
     # Build and save dataset.
     dataset = str2dataset[args.data_processor](args, tokenizer.vocab, tokenizer)
     dataset.build_and_save(args.processes_num)
