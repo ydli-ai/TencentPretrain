@@ -137,7 +137,10 @@ def mask_to_formular_data(keypoints):
             continue
         # ----- kinhane
 
-        flag = get_size(output_single["coordinate"], type='mask')  # add by kinhane
+        if random.random() < 0.5:
+            flag = get_size(output_single["coordinate"], type='mask')  # add by kinhane
+        else:
+            flag = "random"
         output_single["flag"] = flag  # add by kinhane
         output.append(output_single)
 
@@ -164,7 +167,10 @@ def box_to_formular_data(keypoints, centric=0):
                 output_single["coordinate"].append(point)
                 output_single["instances_num"] += 1
 
-        flag = get_size(output_single["coordinate"], type='box')  # add by kinhane
+        if random.random() < 0.5:
+            flag = get_size(output_single["coordinate"], type='box')  # add by kinhane
+        else:
+            flag = "random"
         output_single["flag"] = flag  # add by kinhane
         output.append(output_single)
 
