@@ -83,7 +83,7 @@ def keypoint_to_formular_data(keypoints):
                 output_single["coordinate"].append(point)
                 output_single["keypoints_num"] = len(point)
 
-                if output_single["instances_num"] > 7:
+                if output_single["instances_num"] > 14:
                     break
 
         # ----- kinhane omit idle list
@@ -120,7 +120,7 @@ def mask_to_formular_data(keypoints):
                 # ----- kinhane omit very small masks
                 if len(point) < 5:
                     continue
-                if point_counter + len(point) >= 150:
+                if point_counter + len(point) >= 300:
                     break
                 else:
                     point_counter += len(point)
@@ -161,7 +161,7 @@ def box_to_formular_data(keypoints, centric=0):
                          }
         if centric == 1:
             output_single["prefix"] = "object centric"
-        for mask in mask_list[:20]:
+        for mask in mask_list[:40]:
             for name, point in mask.items():
                 output_single["categories"].append(name)
                 output_single["coordinate"].append(point)
@@ -187,7 +187,7 @@ def formular_data_to_str(data_list, type):
         for points_list in keypoints:
             output = output + '['
             for i, point in enumerate(points_list):
-                output = output + ' ' + num2char[i] + ' $' + str(point[0]) + ' $'+ str(point[1])
+                output = output + ' ' + num2char[i] + ' ' + str(point[0]) + ' '+ str(point[1])
             output = output + '] '
         return output
 
@@ -196,15 +196,15 @@ def formular_data_to_str(data_list, type):
         for points_list in keypoints:
             output = output + '['
             for i, point in enumerate(points_list):
-                output = output + ' ' + 'm'+str(i) + ' $' + str(point[0][0]) + ' $'+ str(point[0][1])
+                output = output + ' ' + 'm'+str(i) + ' ' + str(point[0][0]) + ' '+ str(point[0][1])
             output = output + '] '
         return output
 
     def box_coord_to_str(boxes):
         output = ""
         for box in boxes:
-            output = output + '[ xmin $' + str(box[0]) + ' ymin $'+ str(box[1]) + \
-                     ' xmax $'+ str(box[2]) + ' ymax $'+ str(box[3]) +'] '
+            output = output + '[ xmin ' + str(box[0]) + ' ymin '+ str(box[1]) + \
+                     ' xmax '+ str(box[2]) + ' ymax '+ str(box[3]) +'] '
         return output
 
     output = []
