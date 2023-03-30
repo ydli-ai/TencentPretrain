@@ -79,3 +79,7 @@ if __name__ == '__main__':
                 args.tokenizer.convert_ids_to_tokens([token_id.item() for token_id in src_tensor[0]])
             )
             f.write(generated_sentence)
+
+            print(generated_sentence + '\n')
+            print(src_tensor[0])
+
