@@ -80,6 +80,6 @@ if __name__ == '__main__':
             )
             f.write(generated_sentence)
 
-            print(generated_sentence + '\n')
+            print(args.tokenizer.decode([token_id.item() for token_id in src_tensor[0]]) + '\n')
             print(src_tensor[0])
 

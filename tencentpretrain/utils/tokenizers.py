@@ -39,9 +39,9 @@ class Tokenizer(object):
     def tokenize(self, text):
         raise NotImplementedError
 
-    def detokenize(self, tokens):
+    def decode(self, token_ids):
         if self.sp_model:
-            return self.sp_model.de
+            return self.sp_model.decode(token_ids)
         raise NotImplementedError
 
     def convert_tokens_to_ids(self, tokens):
