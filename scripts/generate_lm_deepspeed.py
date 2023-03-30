@@ -13,6 +13,7 @@ import deepspeed
 tencentpretrain_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(tencentpretrain_dir)
 
+from tencentpretrain.model_loader import _load_state_dict_into_model, load_model
 from tencentpretrain.opts import deepspeed_opts
 from scripts.generate_lm import *
 
