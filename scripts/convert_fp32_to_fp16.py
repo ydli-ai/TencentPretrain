@@ -58,6 +58,8 @@ if __name__ == '__main__':
 
     args = load_hyperparam(args)
 
+    args.tokenizer = str2tokenizer[args.tokenizer](args)
+
     model = GenerateLm(args)
     model = load_model(model, args.load_model_path)
 
