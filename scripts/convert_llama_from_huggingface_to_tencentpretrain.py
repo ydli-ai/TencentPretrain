@@ -6,9 +6,9 @@ import json
 
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--input_model_path", type=str, default="models/chatglm-6b/",
+parser.add_argument("--input_model_path", type=str, default="models/llama-7b/",
                     help=".")
-parser.add_argument("--output_model_path", type=str, default="models/chatglm_6b.bin",
+parser.add_argument("--output_model_path", type=str, default="models/llama_7b.bin",
                     help=".")
 parser.add_argument("--layers_num", type=int, default=28)
 
