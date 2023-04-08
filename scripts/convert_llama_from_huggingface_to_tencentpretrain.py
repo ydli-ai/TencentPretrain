@@ -28,6 +28,11 @@ output_model = collections.OrderedDict()
 def get_weight_from_name(layer_name):
     return input_models[weight_map[layer_name]][layer_name]
 
+dim = output_model["embedding.word.embedding.weight"].size(1)
+
+def unpermute(w):
+    return w.transpose(2, 1).view(dim, dim)
+
 output_model["embedding.word.embedding.weight"] = get_weight_from_name("model.embed_tokens.weight")
 
 for i in range(args.layers_num):
