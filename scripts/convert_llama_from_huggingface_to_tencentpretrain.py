@@ -6,9 +6,9 @@ import json
 
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--input_model_path", type=str, default="models/chatglm-6b/",
+parser.add_argument("--input_model_path", type=str, default="models/llama-7b/",
                     help=".")
-parser.add_argument("--output_model_path", type=str, default="models/chatglm_6b.bin",
+parser.add_argument("--output_model_path", type=str, default="models/llama_7b.bin",
                     help=".")
 parser.add_argument("--layers_num", type=int, default=28)
 
@@ -30,12 +30,18 @@ def get_weight_from_name(layer_name):
 
 output_model["embedding.word.embedding.weight"] = get_weight_from_name("model.embed_tokens.weight")
 
+dim = output_model["embedding.word.embedding.weight"].size(1)
+
+def unpermute(w):
+    return w.transpose(2, 1).view(dim, dim)
+
 for i in range(args.layers_num):
 
     output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers.0.weight"] = \
-        get_weight_from_name("model.layers." + str(i) + ".self_attn.q_proj.weight")
+        unpermute(get_weight_from_name("model.layers." + str(i) + ".self_attn.q_proj.weight"))
     output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers.1.weight"] = \
-        get_weight_from_name("model.layers." + str(i) + ".self_attn.k_proj.weight")
+        unpermute(get_weight_from_name("model.layers." + str(i) + ".self_attn.k_proj.weight"))
+
     output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers.2.weight"] = \
         get_weight_from_name("model.layers." + str(i) + ".self_attn.v_proj.weight")
     output_model["encoder.transformer." + str(i) + ".self_attn.final_linear.weight"] = \
