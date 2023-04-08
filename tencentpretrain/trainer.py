@@ -36,7 +36,9 @@ def train_and_validate(args):
         if args.deepspeed and args.enable_zero3:
             model_for_training = _load_state_dict_into_model(model_for_training, args.pretrained_model_path)
         else:
-            model_for_training = load_model(model_for_training, args.pretrained_model_path)
+            model_for_training = load_model(model_for_training, args.pretrained_model_path,
+                                        args.lora_pretrained_model_path)
+
     else:
         # Initialize with normal distribution.
         if args.deep_init:
@@ -139,18 +141,26 @@ class Trainer(object):
 
             if args.deepspeed:
                 if self.current_step % self.save_checkpoint_steps == 0:
-                    model.save_checkpoint(self.output_model_path, str(self.current_step))
-                    #if loss.item() < self.best_loss:
-                    #    self.best_loss = loss.item()
-                    #    model.save_checkpoint(self.output_model_path, "-best")
+                    if args.use_lora:
+                        if rank == 0:
+                            save_model(model, self.output_model_path + "-" + str(self.current_step), args.use_lora)
+                    else:
+                        model.save_checkpoint(self.output_model_path, str(self.current_step))
+                    if loss.item() < self.best_loss:
+                        self.best_loss = loss.item()
+                        if args.use_lora:
+                            if rank == 0:
+                                save_model(model, self.output_model_path + "-" + str(self.current_step), args.use_lora)
+                        else:
+                            model.save_checkpoint(self.output_model_path, "-best")
             else:
                 if self.current_step % self.save_checkpoint_steps == 0 and \
                         (not self.dist_train or (self.dist_train and rank == 0)):
-                    save_model(model, self.output_model_path + "-" + str(self.current_step))
+                    save_model(model, self.output_model_path + "-" + str(self.current_step), args.use_lora)
                     if loss.item() < self.best_loss:
                         self.best_loss = loss.item()
                         print("save best model! loss:" + str(self.best_loss))
-                        save_model(model, self.output_model_path + "-best")
+                        save_model(model, self.output_model_path + "-best", args.use_lora)
 
             self.current_step += 1
 
@@ -539,12 +549,16 @@ class DalleTrainer(LmTrainer):
     pass
 
 
+class AlpacaTrainer(LmTrainer):
+    pass
+
+
 str2trainer = {"bert": BertTrainer, "mlm": MlmTrainer, "lm": LmTrainer,
                "albert": AlbertTrainer, "bilm": BilmTrainer, "cls": ClsTrainer,
                "mt": MtTrainer, "t5": T5Trainer, "gsg": GsgTrainer,
                "bart": BartTrainer, "prefixlm": PrefixlmTrainer, "cls_mlm": ClsMlmTrainer,
                "vit": VitTrainer, "vilt": ViltTrainer, "clip": ClipTrainer, "s2t": S2tTrainer,
-               "beit": BeitTrainer, "dalle": DalleTrainer}
+               "beit": BeitTrainer, "dalle": DalleTrainer, "alpaca": AlpacaTrainer}
 
 
 def worker(proc_id, gpu_ranks, args, model_for_training, model_for_dataloader=None):
@@ -576,11 +590,19 @@ def worker(proc_id, gpu_ranks, args, model_for_training, model_for_dataloader=No
 
     # Build optimizer.
     param_optimizer = list(model_for_training.named_parameters())
-    no_decay = ["bias", "gamma", "beta"]
-    optimizer_grouped_parameters = [
-        {"params": [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], "weight_decay": 0.01},
-        {"params": [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], "weight_decay": 0.0}
-    ]
+    if args.use_lora:
+        optimizer_grouped_parameters = [
+            {"params": [p for n, p in param_optimizer if 'lora' in n]}
+        ]
+        for n, p in list(model_for_training.named_parameters()):
+            if 'lora' not in n:
+                p.requires_grad = False
+    else:
+        no_decay = ["bias", "gamma", "beta"]
+        optimizer_grouped_parameters = [
+            {"params": [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], "weight_decay": 0.01},
+            {"params": [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], "weight_decay": 0.0}
+        ]
 
     if args.optimizer in ["adamw"]:
         if args.deepspeed:
