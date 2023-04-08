@@ -59,13 +59,12 @@ def filter_keypoint(keypoints):
             output.append(output_single)
     return output
 
-
 def keypoint_to_formular_data(keypoints):
     output = []
     for kp_list in tqdm(keypoints):
         random.shuffle(kp_list)
         output_single = {"anno_type": "key point",
-                         "prefix": "Multiple instances",
+                         "prefix": "multiple instances",
                          "flag": None,
                          "instances_num": 0,
                          "keypoints_num": None,
@@ -74,8 +73,8 @@ def keypoint_to_formular_data(keypoints):
                          }
         for kp in kp_list:
             for name, point in kp.items():
-                # ----- kinhane omit instances with less 3 key points
-                if np.where(np.array(point)[:, -1] != 0)[0].shape[0] < 3:
+                # ----- kinhane omit instances with less 5 key points
+                if np.where(np.array(point)[:, -1] != 0)[0].shape[0] <= 4:
                     continue
                 # ----- kinhane
                 output_single["instances_num"] += 1
@@ -92,13 +91,7 @@ def keypoint_to_formular_data(keypoints):
             continue
         # ----- kinhane
 
-        if random.random() < 0.5:
-            flag = get_size(output_single["coordinate"], type='keypoint')  # add by kinhane
-        else:
-            flag = "random"
-
-        if random.random() < 0.5:
-            output_single["instances_num"] = "random"
+        flag = get_size(output_single["coordinate"], type='keypoint')  # add by kinhane
 
         output_single["flag"] = flag  # add by kinhane
         output.append(output_single)
@@ -110,43 +103,41 @@ def mask_to_formular_data(keypoints):
     output = []
     for mask_list in tqdm(keypoints):
         point_counter = 0
-
-        random.shuffle(keypoints)
+        random.shuffle(mask_list)
         output_single = {"anno_type": "mask",
-                         "prefix": "Multiple instances",
+                         "prefix": "multiple instances",
                          "flag": None,
                          "instances_num": 0,
                          "keypoints_num": 0,
                          "categories": [],
                          "coordinate": []
                          }
+
+        # import ipdb
+        # ipdb.set_trace()
+
         for mask in mask_list:
             for name, point in mask.items():
+                point = point['coords']
+                # import ipdb
+                # ipdb.set_trace()
                 # ----- kinhane omit very small masks
                 if len(point) < 5:
                     continue
-                point_counter += len(point)
                 # ----- kinhane
                 output_single["categories"].append(name)
                 output_single["coordinate"].append(point)
                 output_single["instances_num"] += 1
 
-            # if point_counter >= 150:
-            if point_counter >= 300:
+            if output_single["instances_num"] > 7:  # 36 points each mask
                 break
 
         # ----- kinhane omit idle list
         if len(output_single["coordinate"]) == 0:
             continue
+
         # ----- kinhane
-
-        if random.random() < 0.5:
-            flag = get_size(output_single["coordinate"], type='mask')  # add by kinhane
-        else:
-            flag = "random"
-
-        if random.random() < 0.5:
-            output_single["instances_num"] = "random"
+        flag = get_size(output_single["coordinate"], type='mask')  # add by kinhane
 
         output_single["flag"] = flag  # add by kinhane
         output.append(output_single)
@@ -174,13 +165,7 @@ def box_to_formular_data(keypoints, centric=0):
                 output_single["coordinate"].append(point)
                 output_single["instances_num"] += 1
 
-        if random.random() < 0.5:
-            flag = get_size(output_single["coordinate"], type='box')  # add by kinhane
-        else:
-            flag = "random"
-
-        if random.random() < 0.5:
-            output_single["instances_num"] = "random"
+        flag = get_size(output_single["coordinate"], type='box')  # add by kinhane
 
         output_single["flag"] = flag  # add by kinhane
         output.append(output_single)
@@ -193,38 +178,12 @@ num2char = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h', 8: '
 
 def formular_data_to_str(data_list, type):
 
-    # def keyporint_coord_to_str(keypoints):
-    #     output = ""
-    #     for points_list in keypoints:
-    #         output = output + '['
-    #         for i, point in enumerate(points_list):
-    #             output = output + ' ' + num2char[i] + ' ' + str(point[0]) + ' '+ str(point[1])
-    #         output = output + '] '
-    #     return output
-
-    # def mask_coord_to_str(keypoints):
-    #     output = ""
-    #     for points_list in keypoints:
-    #         output = output + '['
-    #         for i, point in enumerate(points_list):
-    #             output = output + ' ' + 'm'+str(i) + ' ' + str(point[0][0]) + ' '+ str(point[0][1])
-    #         output = output + '] '
-    #     return output
-
-    # def box_coord_to_str(boxes):
-    #     output = ""
-    #     for box in boxes:
-    #         output = output + '[ xmin ' + str(box[0]) + ' ymin '+ str(box[1]) + \
-    #                  ' xmax '+ str(box[2]) + ' ymax '+ str(box[3]) +'] '
-    #     return output
-
-
-    def keyporint_coord_to_str(keypoints):
+    def keypoint_coord_to_str(keypoints):
         output = ""
         for points_list in keypoints:
             output = output + '['
             for i, point in enumerate(points_list):
-                output = output + ' ' + num2char[i] + ' $' + str(point[0]) + ' $' + str(point[1])
+                output = output + ' ' + num2char[i] + ' ' + str(point[0]) + ' '+ str(point[1])
             output = output + '] '
         return output
 
@@ -233,24 +192,50 @@ def formular_data_to_str(data_list, type):
         for points_list in keypoints:
             output = output + '['
             for i, point in enumerate(points_list):
-                output = output + ' ' + 'm'+str(i) + ' $' + str(point[0][0]) + ' $' + str(point[0][1])
+                output = output + ' ' + 'm'+str(i) + ' ' + str(point[0][0]) + ' '+ str(point[0][1])
             output = output + '] '
         return output
 
     def box_coord_to_str(boxes):
         output = ""
         for box in boxes:
-            output = output + '[ xmin $' + str(box[0]) + ' ymin $' + str(box[1]) + \
-                     ' ymax $' + str(box[2]) + ' ymax $' + str(box[3]) + '] '
+            output = output + '[ xmin ' + str(box[0]) + ' ymin '+ str(box[1]) + \
+                     ' xmax '+ str(box[2]) + ' ymax '+ str(box[3]) +'] '
         return output
 
+    # def keypoint_coord_to_str(keypoints):
+    #     output = ""
+    #     for points_list in keypoints:
+    #         output = output + '['
+    #         for i, point in enumerate(points_list):
+    #             output = output + ' ' + num2char[i] + ' $' + str(point[0]) + ' $' + str(point[1])
+    #         output = output + '] '
+    #     return output
+    #
+    # def mask_coord_to_str(keypoints):
+    #     output = ""
+    #     for points_list in keypoints:
+    #         output = output + '['
+    #         for i, point in enumerate(points_list):
+    #             output = output + ' ' + 'm'+str(i) + ' $' + str(point[0][0]) + ' $' + str(point[0][1])
+    #         output = output + '] '
+    #     return output
+    #
+    # def box_coord_to_str(boxes):
+    #     output = ""
+    #     for box in boxes:
+    #         output = output + '[ xmin $' + str(box[0]) + ' ymin $' + str(box[1]) + \
+    #         ' xmax $' + str(box[2]) + ' ymax $' + str(box[3]) + '] '
+    #     return output
 
     output = []
     for data in tqdm(data_list):
-        output_single = '; '.join([data["anno_type"], data["prefix"], data['flag'], str(data["instances_num"]), str(data["keypoints_num"])])
-        output_single = output_single + '; ' + ', '.join(data["categories"]) +'; '
+
+        output_single = '; '.join([data["anno_type"], data["prefix"], data["flag"], str(data["instances_num"]), str(data["keypoints_num"])])
+
+        output_single = output_single + '; ' + ', '.join(data["categories"]) + '; '
         if type == "keypoint":
-            output_single = output_single + keyporint_coord_to_str(data["coordinate"])
+            output_single = output_single + keypoint_coord_to_str(data["coordinate"])
         elif type == "box":
             output_single = output_single + box_coord_to_str(data["coordinate"])
         else:
