@@ -36,10 +36,10 @@ output_model = collections.OrderedDict()
 def get_weight_from_name(layer_name):
     return input_models[weight_map[layer_name]][layer_name]
 
-output_model["embedding.word.embedding.weight"] = get_weight_from_name("model.embed_tokens.weight")
-
 def unpermute(w):
     return w.reshape(n_heads, 2, dim // n_heads // 2, dim).transpose(2, 1).reshape(dim, dim)
+
+output_model["embedding.word.embedding.weight"] = get_weight_from_name("model.embed_tokens.weight")
 
 for i in range(layers_num):
 
