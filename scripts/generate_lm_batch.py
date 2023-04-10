@@ -91,7 +91,7 @@ if __name__ == '__main__':
         lines = f.readlines()
 
     for line in lines:
-        src = args.tokenizer.convert_tokens_to_ids([CLS_TOKEN] + args.tokenizer.tokenize(line))
+        src = args.tokenizer.convert_tokens_to_ids([CLS_TOKEN] + args.tokenizer.tokenize(line.strip()))
         seg = [1] * len(src)
         beginning_length = len(src)
         if len(src) > args.seq_length:
