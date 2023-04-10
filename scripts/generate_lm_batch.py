@@ -109,3 +109,5 @@ if __name__ == '__main__':
             seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
 
         print(args.tokenizer.decode([token_id.item() for token_id in src_tensor[0]]) + '\n')
+
+        print( '--------------------------------------'+ '\n')
