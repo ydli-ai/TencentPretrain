@@ -31,8 +31,8 @@ class LmTarget(nn.Module):
         tgt_lm = tgt_lm.contiguous().view(-1)
         seg = seg.contiguous().view(-1)
         memory_bank = memory_bank.contiguous().view(-1, self.hidden_size)
-        memory_bank = memory_bank[tgt_lm > 0, :]
-        tgt_lm = tgt_lm[tgt_lm > 0]
+        memory_bank = memory_bank[seg > 0, :]
+        tgt_lm = tgt_lm[seg > 0]
         output = self.output_layer(memory_bank)
         output = self.softmax(output)
         denominator = torch.tensor(output.size(0) + 1e-6)
