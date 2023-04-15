@@ -22,7 +22,7 @@ class MultiHeadedAttention(nn.Module):
                 [nn.Linear(hidden_size, self.inner_hidden_size, bias=has_bias) for _ in range(3)]
             )
         
-        self.dropout = nn.Dropout(dropout)
+        #self.dropout = nn.Dropout(dropout)
         self.final_linear = nn.Linear(self.inner_hidden_size, hidden_size, bias=has_bias)
 
     def forward(self, key, value, query, mask, position_bias=None, has_residual_attention=False, prev_attn=None, freqs_cis=None):
@@ -72,7 +72,7 @@ class MultiHeadedAttention(nn.Module):
                 scores += prev_attn
             prev_attn_out = scores
         probs = nn.Softmax(dim=-1)(scores)
-        probs = self.dropout(probs)
+        #probs = self.dropout(probs)
         output = unshape(torch.matmul(probs, value))
         output = self.final_linear(output)
         return output, prev_attn_out

@@ -27,7 +27,7 @@ class TransformerLayer(nn.Module):
         self.self_attn = MultiHeadedAttention(
             args.hidden_size, args.heads_num, attention_head_size, args.dropout, has_bias=has_bias, with_scale = with_scale
         )
-        self.dropout_1 = nn.Dropout(args.dropout)
+        #self.dropout_1 = nn.Dropout(args.dropout)
 
         # Feed forward layer.
         if args.feed_forward == "gated":
@@ -38,7 +38,7 @@ class TransformerLayer(nn.Module):
             self.feed_forward = PositionwiseFeedForward(
                 args.hidden_size, args.feedforward_size, args.hidden_act, has_bias
             )
-        self.dropout_2 = nn.Dropout(args.dropout)
+        #self.dropout_2 = nn.Dropout(args.dropout)
 
         if args.layernorm == "t5":
             self.layer_norm_1 = T5LayerNorm(args.hidden_size)
@@ -62,17 +62,17 @@ class TransformerLayer(nn.Module):
 
         if self.layernorm_positioning == "post":
             inter, prev_attn_out = self.self_attn(hidden, hidden, hidden, mask, position_bias, has_residual_attention, prev_attn, freqs_cis)
-            inter = self.dropout_1(inter)
+            #inter = self.dropout_1(inter)
             inter = self.layer_norm_1(inter + hidden)
-            output = self.dropout_2(self.feed_forward(inter))
+            output = self.feed_forward(inter)
             output = self.layer_norm_2(output + inter)
         else:
             inter = self.layer_norm_1(hidden)
             inter, prev_attn_out = self.self_attn(inter, inter, inter, mask, position_bias, has_residual_attention, prev_attn, freqs_cis)
-            inter = self.dropout_1(inter)
+            #inter = self.dropout_1(inter)
             hidden = hidden + inter
             output = self.layer_norm_2(hidden)
-            output = self.dropout_2(self.feed_forward(output)) + hidden
+            output = self.feed_forward(output) + hidden
         return output, prev_attn_out
 
 
