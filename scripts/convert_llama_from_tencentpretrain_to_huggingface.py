@@ -72,7 +72,7 @@ for i in range(layers_num):
 filename = f"pytorch_model-{layers_num + 1}-of-{layers_num + 1}.bin"
 state_dict = collections.OrderedDict()
 state_dict["model.embed_tokens.weight"] = input_model["embedding.word.embedding.weight"]
-state_dict["model.norm.weight"] = input_model[["encoder.layer_norm.weight"]]
+state_dict["model.norm.weight"] = input_model["encoder.layer_norm.weight"]
 state_dict["lm_head.weight"] = input_model["target.lm.output_layer.weight"]
 torch.save(state_dict, os.path.join(args.output_model_path, filename))
 
