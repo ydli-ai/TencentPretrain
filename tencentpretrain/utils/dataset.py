@@ -987,11 +987,12 @@ class AlpacaDataset(Dataset):
                 pos += 1
                 data = json.loads(line)
 
+                print(pos, start)
+
                 instruction = data["instruction"].replace('\\n', '\n')
                 input = data["input"].replace('\\n', '\n')
                 output = data["output"].replace('\\n', '\n')
                 line_text = instruction + input + output
-                print(line_text)
                 document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line_text))
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
 
