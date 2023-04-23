@@ -993,7 +993,7 @@ class AlpacaDataset(Dataset):
                 #line_text = instruction + input + output
                 document_input = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(instruction + input))
                 document_output = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(output))
-                document = [self.vocab.get(CLS_TOKEN)] + document_input + [self.vocab.get(MASK_TOKEN)] + document_output + [self.vocab.get(SEP_TOKEN)]
+                document = [self.vocab.get(CLS_TOKEN)] + document_input + [self.vocab.get(CLS_TOKEN)] + document_output + [self.vocab.get(SEP_TOKEN)]
 
                 instances_num = len(document) // (self.seq_length + 1)
                 for i in range(instances_num):
