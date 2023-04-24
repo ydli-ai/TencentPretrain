@@ -66,6 +66,10 @@ state_dict = collections.OrderedDict()
 state_dict["embedding.word.embedding.weight"] = input_model["embedding.word.embedding.weight"]
 state_dict["encoder.layer_norm.weight"] = input_model["encoder.layer_norm.weight"]
 state_dict["target.lm.output_layer.weight"] = input_model["target.lm.output_layer.weight"]
+
+for k, v in state_dict.items():
+    index_dict["weight_map"][k] = filename
+    param_count += v.numel()
 torch.save(state_dict, os.path.join(args.output_model_path, filename))
 
 index_dict["metadata"] = {"total_size": param_count * 2}
