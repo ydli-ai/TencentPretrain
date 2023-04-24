@@ -1,6 +1,6 @@
 import argparse
 import torch
-import tencentpretrain.trainer as trainer
+import tencentpretrain.trainer_tmp as trainer
 from tencentpretrain.utils.config import load_hyperparam
 from tencentpretrain.opts import *
 
