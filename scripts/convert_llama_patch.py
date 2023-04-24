@@ -25,12 +25,15 @@ for k, v in input_model.items():
     index_dict["weight_map"][k] = filename
     param_count += v.numel()
     file_count += v.numel()
-    if file_count > 10000000000:
+    if file_count > 5000000000:
         torch.save(state_dict, os.path.join(args.output_model_path, filename))
         state_dict = collections.OrderedDict()
         filename_count += 1
         filename = f"pytorch_model-"+str(filename_count)+".bin"
         file_count = 0
+
+if len(state_dict) > 0:
+    torch.save(state_dict, os.path.join(args.output_model_path, filename))
 
 index_dict["metadata"] = {"total_size": param_count * 2}
 with open(os.path.join(args.output_model_path, "pytorch_model.bin.index.json"), "w") as f:
