@@ -62,10 +62,8 @@ class LoRALayer():
         self.r = r
         self.lora_alpha = lora_alpha
         # Optional dropout
-        if lora_dropout > 0.:
-            self.lora_dropout = nn.Dropout(p=lora_dropout)
-        else:
-            self.lora_dropout = lambda x: x
+        self.lora_dropout = nn.Dropout(p=lora_dropout)
+
         # Mark the weight as unmerged
         self.merged = False
         self.merge_weights = merge_weights
