@@ -8,11 +8,19 @@ import json
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--input_model_path", type=str, default="models/llama-7b/",
                     help=".")
-parser.add_argument("--output_model_path", type=str, default="models/llama_7b.bin",
+parser.add_argument("--output_model_path", type=str, default="models/llama-7b.bin",
                     help=".")
-parser.add_argument("--layers_num", type=int, default=28)
+parser.add_argument("--type", choices=["7B", "13B", "33B", "65B"], default="7B")
 
 args = parser.parse_args()
+
+model_config = {"7B" : [32, 4096, 32],
+              "13B": [40, 5120, 40],
+              "33B": [60, 6656, 52],
+              "65B": [80, 8192, 64]
+              }
+
+layers_num, dim, n_heads = model_config[args.type]
 
 files = os.listdir(args.input_model_path)
 model_files = [f for f in files if f[-4:] == ".bin"]
@@ -28,14 +36,12 @@ output_model = collections.OrderedDict()
 def get_weight_from_name(layer_name):
     return input_models[weight_map[layer_name]][layer_name]
 
+def unpermute(w):
+    return w.reshape(n_heads, 2, dim // n_heads // 2, dim).transpose(2, 1).reshape(dim, dim)
+
 output_model["embedding.word.embedding.weight"] = get_weight_from_name("model.embed_tokens.weight")
 
-dim = output_model["embedding.word.embedding.weight"].size(1)
-
-def unpermute(w):
-    return w.transpose(2, 1).view(dim, dim)
-
-for i in range(args.layers_num):
+for i in range(layers_num):
 
     output_model["encoder.transformer." + str(i) + ".self_attn.linear_layers.0.weight"] = \
         unpermute(get_weight_from_name("model.layers." + str(i) + ".self_attn.q_proj.weight"))
