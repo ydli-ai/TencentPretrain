@@ -30,10 +30,11 @@ assert input_model["embedding.word.embedding.weight"].size(0) == len(vocab_old)
 
 hidden_size = input_model["embedding.word.embedding.weight"].size(1)
 
-embedding_ext = torch.zeros(len(vocab_new) - len(vocab_old), hidden_size)
+embedding_ext = torch.rand(len(vocab_new) - len(vocab_old), hidden_size)
 input_model["embedding.word.embedding.weight"] = torch.cat((input_model["embedding.word.embedding.weight"], embedding_ext), 0)
 input_model["target.lm.output_layer.weight"] = torch.cat((input_model["target.lm.output_layer.weight"], embedding_ext), 0)
 
+"""
 for i in range(len(sp_model_old), len(sp_model_new)):
     w = vocab_new[i]
     tokens = sp_model_old.tokenize(w)
@@ -48,6 +49,6 @@ for i in range(len(sp_model_old), len(sp_model_new)):
     input_model["embedding.word.embedding.weight"][i] = torch.mean(input_tensor, dim=0)
     output_tensor = torch.cat(emb_output, dim=0)
     input_model["target.lm.output_layer.weight"][i] = torch.mean(output_tensor, dim=0)
-
+"""
 
 torch.save(input_model, args.output_model_path)
