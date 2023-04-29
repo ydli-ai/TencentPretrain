@@ -51,5 +51,4 @@ for i in range(len(sp_model_old), len(sp_model_new)):
     input_model["target.lm.output_layer.weight"][i] = torch.mean(output_tensor, dim=1)
 
 
-
 torch.save(input_model, args.output_model_path)
