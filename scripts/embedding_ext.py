@@ -33,6 +33,8 @@ hidden_size = input_model["embedding.word.embedding.weight"].size(1)
 embedding_ext = torch.zeros(len(vocab_new) - len(vocab_old), hidden_size)
 input_model["embedding.word.embedding.weight"] = torch.cat((input_model["embedding.word.embedding.weight"], embedding_ext), 0)
 tgt_ext = torch.zeros(hidden_size, len(vocab_new) - len(vocab_old))
+print(input_model["embedding.word.embedding.weight"].size())
+print(input_model["target.lm.output_layer.weight"].size())
 input_model["target.lm.output_layer.weight"] = torch.cat((input_model["target.lm.output_layer.weight"], tgt_ext), 1)
 
 for i in range(len(sp_model_old), len(sp_model_new)):
