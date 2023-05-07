@@ -970,9 +970,8 @@ class BeitDataset(FileDataset):
 class DalleDataset(FileWithTextDataset):
     pass
 
-
+"""
 class AlpacaDataset(Dataset):
-    """For self-instruct in json files (Stanford Alpaca)"""
     def worker(self, proc_id, start, end):
         print("Worker %d is building dataset ... " % proc_id)
         set_seed(self.seed)
@@ -1007,6 +1006,50 @@ class AlpacaDataset(Dataset):
                     pad_num = self.seq_length + 1 - len(src)
                     src = (src, pad_num)
                     pickle.dump((src, seg_pos), dataset_writer)
+                if pos >= end:
+                    break
+
+        dataset_writer.close()
+"""
+
+class AlpacaDataset(Dataset):
+    """For self-instruct in json files (Stanford Alpaca)"""
+    def worker(self, proc_id, start, end):
+        print("Worker %d is building dataset ... " % proc_id)
+        set_seed(self.seed)
+        dataset_writer = open("dataset-tmp-" + str(proc_id) + ".pt", "wb")
+        pos = 0
+        with open(self.corpus_path, mode="r", encoding="utf-8") as f:
+            while pos < start:
+                f.readline()
+                pos += 1
+            while True:
+                line = f.readline()
+                pos += 1
+                data = json.loads(line)
+
+                instruction = data.get("instruction", "").replace('\\n', '\n')
+                input = data.get("input", "").replace('\\n', '\n')
+                output = data.get("output", "").replace('\\n', '\n')
+                #line_text = instruction + input + output
+                document_input = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(instruction + input))
+                document_output = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(output))
+
+                src = [self.vocab.get(CLS_TOKEN)] + document_input
+                seg_pos = [len(src)]
+                src.extend(document_output)
+                src.append(self.vocab.get(SEP_TOKEN))
+                seg_pos.append(len(src))
+
+                pad_num = 0
+                if len(src) <= self.seq_length:
+                    pad_num = self.seq_length - len(src)
+                else:
+                    src = src[:self.seq_length]
+                src = (src, pad_num)
+
+
+                pickle.dump((src, seg_pos), dataset_writer)
                 if pos >= end:
                     break
 
