@@ -31,9 +31,9 @@ class LmTarget(nn.Module):
         tgt_lm = tgt_lm.contiguous().view(-1)
         seg = seg.contiguous().view(-1)
         memory_bank = memory_bank.contiguous().view(-1, self.hidden_size)
-        memory_bank = memory_bank[seg > 1, :]
+        memory_bank = memory_bank[seg > 0, :]
         #print("memory_bank", memory_bank.size())
-        tgt_lm = tgt_lm[seg > 1]
+        tgt_lm = tgt_lm[seg > 0]
         #print("tgt_lm", tgt_lm.size())
         #print(seg)
         output = self.output_layer(memory_bank)
