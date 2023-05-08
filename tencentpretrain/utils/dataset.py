@@ -1040,6 +1040,8 @@ class AlpacaDataset(Dataset):
                 seg_pos = [len(src)]
 
                 pad_num = self.seq_length - len(src)
+                print(len(src), pad_num)
+
                 src = (src, pad_num)
 
 
