@@ -1035,6 +1035,7 @@ class AlpacaDataset(Dataset):
                 document_input = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(instruction + input))
                 document_output = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(output))
 
+                """
                 src = [self.vocab.get(CLS_TOKEN)] + document_input + document_output + [self.vocab.get(SEP_TOKEN)]
                 src = src[ :self.seq_length]
                 seg_pos = [len(src)]
@@ -1056,7 +1057,7 @@ class AlpacaDataset(Dataset):
                 else:
                     src = src[:self.seq_length]
                 src = (src, pad_num)
-                """
+
 
 
                 pickle.dump(((src, pad_num), seg_pos), dataset_writer)
