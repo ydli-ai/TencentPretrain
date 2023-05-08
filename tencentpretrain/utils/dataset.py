@@ -1036,10 +1036,10 @@ class AlpacaDataset(Dataset):
                 document_output = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(output))
 
                 src = [self.vocab.get(CLS_TOKEN)] + document_input + document_output + [self.vocab.get(SEP_TOKEN)]
-                src = src[ :self.seq_length + 1]
+                src = src[ :self.seq_length]
                 seg_pos = [len(src)]
 
-                pad_num = self.seq_length + 1 - len(src)
+                pad_num = self.seq_length - len(src)
                 src = (src, pad_num)
 
 
