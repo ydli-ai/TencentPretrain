@@ -1040,10 +1040,6 @@ class AlpacaDataset(Dataset):
                 seg_pos = [len(src)]
 
                 pad_num = self.seq_length - len(src)
-                print(len(src), pad_num)
-
-                src = (src, pad_num)
-
 
                 """
                 src = [self.vocab.get(CLS_TOKEN)] + document_input
@@ -1063,7 +1059,7 @@ class AlpacaDataset(Dataset):
                 """
 
 
-                pickle.dump((src, seg_pos), dataset_writer)
+                pickle.dump(((src, pad_num), seg_pos), dataset_writer)
                 if pos >= end:
                     break
 
