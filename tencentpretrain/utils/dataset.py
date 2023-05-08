@@ -1056,7 +1056,7 @@ class AlpacaDataset(Dataset):
                     pad_num = self.seq_length - len(src)
                 else:
                     src = src[:self.seq_length]
-                src = (src, pad_num)
+                #src = (src, pad_num)
 
 
 
