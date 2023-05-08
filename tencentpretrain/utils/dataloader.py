@@ -183,7 +183,6 @@ class LmDataloader(Dataloader):
                 src.append(src_single[:-1])
                 tgt.append(src_single[1:])
                 seg.append([1] * (ins[1][0] - 1) + [2] * (ins[1][1] - ins[1][0]) + [0] * pad_num)
-                print(ins[1][0], ins[1][1], pad_num )
                 #seg.append([1] * ins[1][0] + [0] * (len(src_single) - 1 - ins[1][0]))
 
             yield torch.LongTensor(src), \
