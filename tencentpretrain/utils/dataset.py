@@ -1049,13 +1049,13 @@ class AlpacaDataset(Dataset):
                     continue
                 src.extend(document_output)
                 src.append(self.vocab.get(SEP_TOKEN))
+                src = src[:self.seq_length]
                 seg_pos.append(len(src))
 
                 pad_num = 0
                 if len(src) <= self.seq_length:
                     pad_num = self.seq_length - len(src)
-                else:
-                    src = src[:self.seq_length]
+
                 #src = (src, pad_num)
 
 
