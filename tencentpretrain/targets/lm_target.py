@@ -21,6 +21,11 @@ class LmTarget(nn.Module):
             self.ignore_index = args.tokenizer.vocab.get(PAD_TOKEN)
         else:
             self.ignore_index = None
+
+        self.loss_prefix = 0
+        if args.prefix_lm_loss:
+            self.loss_prefix = 1
+
         self.output_layer = nn.Linear(self.hidden_size, self.vocab_size, bias=args.has_lmtarget_bias)
         self.softmax = nn.LogSoftmax(dim=-1)
         self.criterion = nn.NLLLoss()
@@ -31,9 +36,9 @@ class LmTarget(nn.Module):
         tgt_lm = tgt_lm.contiguous().view(-1)
         seg = seg.contiguous().view(-1)
         memory_bank = memory_bank.contiguous().view(-1, self.hidden_size)
-        memory_bank = memory_bank[seg > 1, :]
+        memory_bank = memory_bank[seg > self.loss_prefix, :]
         #print("memory_bank", memory_bank.size())
-        tgt_lm = tgt_lm[seg > 1]
+        tgt_lm = tgt_lm[seg > self.loss_prefix]
         #print("tgt_lm", tgt_lm.size())
         #print(seg)
         output = self.output_layer(memory_bank)
