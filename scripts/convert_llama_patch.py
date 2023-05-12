@@ -6,12 +6,14 @@ import json
 
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--input_model_path", type=str, default="models/llama-7b.bin",
-                    help=".")
-parser.add_argument("--output_model_path", type=str, default="models/llama-7b/",
-                    help=".")
+parser.add_argument("--input_model_path", type=str,
+                    help="Input file path")
+parser.add_argument("--output_model_path", type=str,
+                    help="Output folder path")
 
 args = parser.parse_args()
+
+os.system('mkdir ' + args.output_model_path)
 
 input_model = torch.load(args.input_model_path)
 
@@ -25,7 +27,7 @@ for k, v in input_model.items():
     index_dict["weight_map"][k] = filename
     param_count += v.numel()
     file_count += v.numel()
-    if file_count > 5000000000:
+    if file_count > 2500000000:
         torch.save(state_dict, os.path.join(args.output_model_path, filename))
         state_dict = collections.OrderedDict()
         filename_count += 1
