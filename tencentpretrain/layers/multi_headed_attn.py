@@ -84,7 +84,7 @@ class MultiHeadedAttention(nn.Module):
                 scores += prev_attn
             prev_attn_out = scores
         probs = nn.Softmax(dim=-1)(scores)
-        probs = self.dropout(probs)
+        #probs = self.dropout(probs)
         output = unshape(torch.matmul(probs, value))
         output = self.final_linear(output)
         return output, prev_attn_out

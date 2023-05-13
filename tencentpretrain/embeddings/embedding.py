@@ -7,7 +7,7 @@ class Embedding(nn.Module):
     def __init__(self, args):
         super(Embedding, self).__init__()
         self.embedding_name_list = []
-        self.dropout = nn.Dropout(args.dropout)
+        #self.dropout = nn.Dropout(args.dropout)
         self.remove_embedding_layernorm = args.remove_embedding_layernorm
         if not self.remove_embedding_layernorm and "dual" not in args.embedding:
             self.layer_norm = LayerNorm(args.emb_size)
@@ -30,5 +30,5 @@ class Embedding(nn.Module):
 
         if not self.remove_embedding_layernorm:
             emb = self.layer_norm(emb)
-        emb = self.dropout(emb)
+        #emb = self.dropout(emb)
         return emb

@@ -450,7 +450,10 @@ class LmDataset(Dataset):
             while True:
                 line = f.readline().strip()
                 if self.json_format_corpus:
-                    line = json.loads(line)["text"]
+                    try:
+                        line = json.loads(line)["text"]
+                    except:
+                        continue
 
                 pos += 1
 
