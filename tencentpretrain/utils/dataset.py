@@ -999,6 +999,8 @@ class AlpacaDataset(Dataset):
         print("Worker %d is building dataset ... " % proc_id)
         set_seed(self.seed)
         dataset_writer = open("dataset-tmp-" + str(proc_id) + ".pt", "wb")
+
+        print(start, end)
         pos = 0
         with open(self.corpus_path, mode="r", encoding="utf-8") as f:
             while pos < start:
@@ -1006,7 +1008,6 @@ class AlpacaDataset(Dataset):
                 pos += 1
             while True:
                 line = f.readline()
-                print(line)
                 pos += 1
                 data = json.loads(line)
 
@@ -1019,7 +1020,6 @@ class AlpacaDataset(Dataset):
 
                 src = [self.vocab.get(CLS_TOKEN)] + document_input
                 seg_pos = [len(src)]
-                print(len(document_input), len(document_output))
                 if len(src) > self.seq_length:
                     continue
                 src.extend(document_output)
