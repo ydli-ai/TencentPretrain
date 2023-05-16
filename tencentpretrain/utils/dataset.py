@@ -1006,6 +1006,7 @@ class AlpacaDataset(Dataset):
                 f.readline()
                 pos += 1
             while True:
+                print("proc_id: ",proc_id, pos,end)
                 line = f.readline()
                 pos += 1
                 data = json.loads(line)
