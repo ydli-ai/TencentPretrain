@@ -1000,13 +1000,13 @@ class AlpacaDataset(Dataset):
         set_seed(self.seed)
         dataset_writer = open("dataset-tmp-" + str(proc_id) + ".pt", "wb")
 
-        print(start, end)
         pos = 0
         with open(self.corpus_path, mode="r", encoding="utf-8") as f:
             while pos < start:
                 f.readline()
                 pos += 1
             while True:
+                print("proc_id: ",proc_id, pos,end)
                 line = f.readline()
                 pos += 1
                 data = json.loads(line)
