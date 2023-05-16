@@ -1018,6 +1018,7 @@ class AlpacaDataset(Dataset):
 
                 src = [self.vocab.get(CLS_TOKEN)] + document_input
                 seg_pos = [len(src)]
+                print(len(document_input), len(document_output))
                 if len(src) > self.seq_length:
                     continue
                 src.extend(document_output)
