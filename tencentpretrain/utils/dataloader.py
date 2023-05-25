@@ -28,10 +28,10 @@ class Dataloader(object):
         self.span_masking = args.span_masking
         self.span_geo_prob = args.span_geo_prob
         self.span_max_length = args.span_max_length
-        self.skil_data_num = args.skil_data_num
+        self.skip_data_num = args.skip_data_num
 
-        if self.skil_data_num > 0:
-            for _ in range(self.skil_data_num):
+        if self.skip_data_num > 0:
+            for _ in range(self.skip_data_num):
                 instance = pickle.load(self.dataset_reader)
 
 
