@@ -18,7 +18,7 @@ from tencentpretrain.utils.constants import *
 from tencentpretrain.utils import *
 from tencentpretrain.utils.config import load_hyperparam
 from tencentpretrain.model_loader import *
-from tencentpretrain.opts import infer_opts, tokenizer_opts
+from tencentpretrain.opts import model_opts, tokenizer_opts
 
 
 class GenerateLm(torch.nn.Module):
@@ -42,11 +42,12 @@ class GenerateLm(torch.nn.Module):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    infer_opts(parser)
+    model_opts(parser)
 
-    parser.add_argument("--top_k", type=int, default=70)
-    parser.add_argument("--top_p", type=float, default=0)
-    parser.add_argument("--temperature", type=float, default=1.0)
+    parser.add_argument("--load_model_path", default=None, type=str,
+                        help="Path of the input model.")
+    parser.add_argument("--config_path", type=str, required=True,
+                        help="Path of the config file.")
     parser.add_argument("--output_model_path", type=str)
 
     tokenizer_opts(parser)
