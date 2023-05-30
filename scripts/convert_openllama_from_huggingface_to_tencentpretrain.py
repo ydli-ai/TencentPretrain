@@ -33,7 +33,7 @@ output_model = collections.OrderedDict()
 def unpermute(w):
     return w.reshape(n_heads, 2, dim // n_heads // 2, dim).transpose(2, 1).reshape(dim, dim)
 
-#output_model["embedding.word.embedding.weight"] = input_model["model.embed_tokens.weight")
+output_model["embedding.word.embedding.weight"] = torch.rand(66242, 3200)
 
 for i in range(layers_num):
 
@@ -61,6 +61,6 @@ for i in range(layers_num):
         input_model["model.layers." + str(i) + ".post_attention_layernorm.weight"]
 
 output_model["encoder.layer_norm.weight"] = input_model["model.norm.weight"]
-#output_model["target.lm.output_layer.weight"] = input_model["lm_head.weight"]
+output_model["target.lm.output_layer.weight"] = torch.rand(66242, 3200)
 
 torch.save(output_model, args.output_model_path)
