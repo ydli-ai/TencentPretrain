@@ -452,16 +452,17 @@ class LmDataset(Dataset):
                 if self.json_format_corpus:
                     try:
                         data = json.loads(line)
-                        text = data.get("text", "")
-                        instruction = data.get("instruction", "").replace('\\n', '\n')
-                        input = data.get("input", "").replace('\\n', '\n')
-                        output = data.get("output", "").replace('\\n', '\n')
-                        line = text + instruction + input + output
-                        if len(line) < 10:
-                            continue
-
                     except:
                         continue
+                    text = data.get("text", "")
+                    instruction = data.get("instruction", "").replace('\\n', '\n')
+                    input = data.get("input", "").replace('\\n', '\n')
+                    output = data.get("output", "").replace('\\n', '\n')
+                    line = text + instruction + input + output
+                    if len(line) < 10:
+                        continue
+
+
 
                 pos += 1
 
