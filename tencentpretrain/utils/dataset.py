@@ -451,7 +451,15 @@ class LmDataset(Dataset):
                 line = f.readline().strip()
                 if self.json_format_corpus:
                     try:
-                        line = json.loads(line)["text"]
+                        data = json.loads(line)
+                        text = data.get("text", "")
+                        instruction = data.get("instruction", "").replace('\\n', '\n')
+                        input = data.get("input", "").replace('\\n', '\n')
+                        output = data.get("output", "").replace('\\n', '\n')
+                        line = text + instruction + input + output
+                        if len(line) < 10:
+                            continue
+
                     except:
                         continue
 
