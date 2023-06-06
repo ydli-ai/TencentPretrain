@@ -11,6 +11,8 @@ def main():
     # Path options.
     parser.add_argument("--dataset_path", type=str, default="dataset.pt",
                         help="Path of the preprocessed dataset.")
+    parser.add_argument("--pretrain_dataset_path", type=str, default="dataset.pt",
+                        help="Path of the preprocessed dataset.")
     parser.add_argument("--pretrained_model_path", type=str, default=None,
                         help="Path of the pretrained model.")
     parser.add_argument("--output_model_path", type=str, required=True,
