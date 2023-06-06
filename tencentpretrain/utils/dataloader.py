@@ -972,7 +972,7 @@ class AlpacaDataloader(Dataloader):
         try:
             self.buffer = []
             while True:
-                if random.random() < 0.5:
+                if random.random() < 0.9:
                     instance = pickle.load(self.dataset_reader)
                     type = 0
                 else:
@@ -1015,7 +1015,7 @@ class AlpacaDataloader(Dataloader):
             seg = []
 
             for ins, type in instances:
-                if type == 1:
+                if type == 0:
                     src_single, pad_num = ins[0]
                     for _ in range(pad_num):
                         src_single.append(self.vocab.get(PAD_TOKEN))
