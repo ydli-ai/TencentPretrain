@@ -940,65 +940,6 @@ class DalleDataloader(VisionDataloader):
 
 
 class AlpacaDataloader(Dataloader):
-    def __init__(self, args, dataset_path, batch_size, rank, world_size, gpu_id, shuffle=False, model_for_dataloader=None):
-        self.tokenizer = args.tokenizer
-        self.batch_size = batch_size
-        self.instances_buffer_size = args.instances_buffer_size
-        self.rank = rank
-        self.world_size = world_size
-        self.gpu_id = gpu_id
-        self.shuffle = shuffle
-        self.model_for_dataloader = model_for_dataloader
-        self.dataset_reader = open(dataset_path, "rb")
-        self.read_count = 0
-        self.start = 0
-        self.end = 0
-        self.buffer = []
-        self.vocab = args.vocab
-        self.whole_word_masking = args.whole_word_masking
-        self.span_masking = args.span_masking
-        self.span_geo_prob = args.span_geo_prob
-        self.span_max_length = args.span_max_length
-        self.skip_data_num = args.skip_data_num
-
-        self.pretrain_dataset_reader = open(args.pretrain_dataset_path, "rb")
-
-        if self.skip_data_num > 0:
-            for _ in range(self.skip_data_num):
-                instance = pickle.load(self.dataset_reader)
-
-
-    def _fill_buf(self):
-        try:
-            self.buffer = []
-            while True:
-                if random.random() < 0.9:
-                    instance = pickle.load(self.dataset_reader)
-                    type = 0
-                else:
-                    instance = pickle.load(self.pretrain_dataset_reader)
-                    type = 1
-                self.read_count += 1
-                if (self.read_count - 1) % self.world_size == self.rank:
-                    self.buffer.append((instance, type))
-                    if len(self.buffer) >= self.instances_buffer_size:
-                        break
-        except EOFError:
-            # Reach file end.
-            self.dataset_reader.seek(0)
-
-        if self.shuffle:
-            random.shuffle(self.buffer)
-        self.start = 0
-        self.end = len(self.buffer)
-
-    def _empty(self):
-        return self.start >= self.end
-
-    def __del__(self):
-        self.dataset_reader.close()
-
-
     def __iter__(self):
         while True:
             while self._empty():
@@ -1014,24 +955,16 @@ class AlpacaDataloader(Dataloader):
             tgt = []
             seg = []
 
-            for ins, type in instances:
-                if type == 0:
-                    src_single, pad_num = ins[0]
-                    for _ in range(pad_num):
-                        src_single.append(self.vocab.get(PAD_TOKEN))
-                    src.append(src_single[:-1])
-                    tgt.append(src_single[1:])
-                    if ins[1][0] > 0:
-                        seg.append([1] * (ins[1][0] - 1) + [2] * (ins[1][1] - ins[1][0]) + [0] * pad_num)
-                    else:
-                        seg.append([2] * (ins[1][1] - 1) + [0] * pad_num)
+            for ins in instances:
+                src_single, pad_num = ins[0]
+                for _ in range(pad_num):
+                    src_single.append(self.vocab.get(PAD_TOKEN))
+                src.append(src_single[:-1])
+                tgt.append(src_single[1:])
+                if ins[1][0] > 0:
+                    seg.append([1] * (ins[1][0] - 1) + [2] * (ins[1][1] - ins[1][0]) + [0] * pad_num)
                 else:
-                    src_single, pad_num = ins[0]
-                    for _ in range(pad_num):
-                        src_single.append(self.vocab.get(PAD_TOKEN))
-                    src.append(src_single[:-1])
-                    tgt.append(src_single[1:])
-                    seg.append([2] * ins[1][0] + [0] * (len(src_single) - 1 - ins[1][0]))
+                    seg.append([2] * (ins[1][1] - 1) + [0] * pad_num)
 
             yield torch.LongTensor(src), \
                   torch.LongTensor(tgt), \
