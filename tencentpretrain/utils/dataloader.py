@@ -959,6 +959,9 @@ class AlpacaDataloader(Dataloader):
                 src_single, pad_num = ins[0]
                 for _ in range(pad_num):
                     src_single.append(self.vocab.get(PAD_TOKEN))
+                if len(src_single) > 2048:
+                    src_single = src_single[:2048]
+
                 src.append(src_single[:-1])
                 tgt.append(src_single[1:])
                 if ins[1][0] > 0:
