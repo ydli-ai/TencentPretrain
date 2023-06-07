@@ -623,6 +623,7 @@ class ClipTokenizer(Tokenizer):
         import json
         with open(self.vocab_file, encoding="utf-8") as vocab_handle:
             self.encoder = json.load(vocab_handle)
+        self.vocab = self.encoder
         self.decoder = {v: k for k, v in self.encoder.items()}
         self.byte_encoder = bytes_to_unicode()
         self.byte_decoder = {v: k for k, v in self.byte_encoder.items()}
@@ -694,13 +695,13 @@ class ClipTokenizer(Tokenizer):
             bpe_tokens.extend(bpe_token for bpe_token in self.bpe(token).split(" "))
         return bpe_tokens
 
-    def _convert_token_to_id(self, token):
+    def convert_tokens_to_ids(self, tokens):
         """Converts a token (str) in an id using the vocab."""
-        return self.encoder.get(token, self.encoder.get(self.unk_token))
+        return [self.encoder.get(token, self.encoder.get(self.unk_token)) for token in tokens]
 
-    def _convert_id_to_token(self, index):
+    def convert_ids_to_tokens(self, ids):
         """Converts an index (integer) in a token (str) using the vocab."""
-        return self.decoder.get(index)
+        return [self.decoder.get(index) for index in ids]
 
     def convert_tokens_to_string(self, tokens):
         """Converts a sequence of tokens (string) in a single string."""
