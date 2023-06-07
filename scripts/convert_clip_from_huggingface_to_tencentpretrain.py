@@ -23,7 +23,7 @@ def convert_clip_transformer(input_model, output_model, layers_num):
 
         output_model["encoder.encoder_0.transformer." + str(i) + ".self_attn.final_linear.weight"] = \
             input_model["text_model.encoder.layers." + str(i) + ".self_attn.out_proj.weight"]
-        output_model["encoder.encoder_0.transformer." + str(i) + ".self_attn.final_linear.weight"] = \
+        output_model["encoder.encoder_0.transformer." + str(i) + ".self_attn.final_linear.bias"] = \
             input_model["text_model.encoder.layers." + str(i) + ".self_attn.out_proj.bias"]
 
         output_model["encoder.encoder_0.transformer." + str(i) + ".layer_norm_1.gamma"] = \
@@ -63,7 +63,7 @@ def convert_clip_transformer(input_model, output_model, layers_num):
 
         output_model["encoder.encoder_1.transformer." + str(i) + ".self_attn.final_linear.weight"] = \
             input_model["vision_model.encoder.layers." + str(i) + ".self_attn.out_proj.weight"]
-        output_model["encoder.encoder_1.transformer." + str(i) + ".self_attn.final_linear.weight"] = \
+        output_model["encoder.encoder_1.transformer." + str(i) + ".self_attn.final_linear.bias"] = \
             input_model["vision_model.encoder.layers." + str(i) + ".self_attn.out_proj.bias"]
 
         output_model["encoder.encoder_1.transformer." + str(i) + ".layer_norm_1.gamma"] = \
