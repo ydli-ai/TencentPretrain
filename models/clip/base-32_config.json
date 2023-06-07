@@ -6,7 +6,7 @@
     "hidden_act": "gelu",
     "heads_num": 8,
     "layers_num": 12,
-    "max_seq_length": 512,
+    "max_seq_length": 77,
     "embedding": ["word", "pos"],
     "encoder": "transformer",
     "mask": "fully_visible",
