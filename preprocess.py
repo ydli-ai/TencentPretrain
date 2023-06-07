@@ -62,6 +62,9 @@ def main():
 
     # Build tokenizer.
     tokenizer = str2tokenizer[args.tokenizer](args)
+    print("tokenize: ")
+    print(tokenizer.tokenize("today is a day"))
+    
     if args.data_processor == "mt":
         args.tgt_tokenizer = str2tokenizer[args.tgt_tokenizer](args, False)
 
