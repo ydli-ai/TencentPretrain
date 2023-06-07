@@ -704,17 +704,20 @@ class ClipDataloader(VisionDataloader):
             src_image = []
             seg_text = []
             seg_image = []
-            for ins in instances:
-                src_text_single, pad_num = ins[0]
-                for _ in range(pad_num):
-                    src_text_single.append(self.vocab.get(PAD_TOKEN))
+            try:
+                for ins in instances:
+                    src_text_single, pad_num = ins[0]
+                    for _ in range(pad_num):
+                        src_text_single.append(self.vocab.get(PAD_TOKEN))
 
-                src_text.append(src_text_single)
-                seg_text.append([1] * ins[1][0] + [0] * pad_num)
-                image = read_image(ins[2], ImageReadMode.RGB)
-                image = image.cuda(self.gpu_id)
-                src_image.append(self.transform(image))
-                seg_image.append([1] * ((self.image_height // self.patch_size) * (self.image_width // self.patch_size) + 1))
+                    src_text.append(src_text_single)
+                    seg_text.append([1] * ins[1][0] + [0] * pad_num)
+                    image = read_image(ins[2], ImageReadMode.RGB)
+                    image = image.cuda(self.gpu_id)
+                    src_image.append(self.transform(image))
+                    seg_image.append([1] * ((self.image_height // self.patch_size) * (self.image_width // self.patch_size) + 1))
+            except:
+                continue
 
             yield  torch.LongTensor(src_text), \
                    torch.stack(src_image, 0), \
