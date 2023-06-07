@@ -610,9 +610,10 @@ class TextImageTokenizer(BertTokenizer):
 
 class ClipTokenizer(Tokenizer):
     """Construct a CLIP tokenizer. Based on byte-level Byte-Pair-Encoding."""
-    def __init__(self, args, is_src=True):
+    def __init__(self, args, is_src=True, unk_token="<|endoftext|>"):
         self.vocab_file = args.vocab_path
         self.merges_file = args.merges_path
+        self.unk_token = unk_token
 
         try:
             import ftfy
