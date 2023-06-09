@@ -1,6 +1,7 @@
 import math
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from tencentpretrain.utils.rope import apply_rotary_emb
 from tencentpretrain.utils.lora import LoraLinear
 
@@ -91,7 +92,9 @@ class MultiHeadedAttention(nn.Module):
             if prev_attn is not None:
                 scores += prev_attn
             prev_attn_out = scores
-        probs = nn.Softmax(dim=-1, dtype=query.dtype)(scores)
+
+        probs = F.softmax(scores, dim=-1, dtype=query.dtype)
+        #probs = nn.Softmax(dim=-1, dtype=query.dtype)(scores)
         #probs = self.dropout(probs)
         output = unshape(torch.matmul(probs, value))
         output = self.final_linear(output)
