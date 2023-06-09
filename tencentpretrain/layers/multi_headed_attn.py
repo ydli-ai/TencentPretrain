@@ -78,12 +78,20 @@ class MultiHeadedAttention(nn.Module):
         if self.with_scale:
             scores = scores / math.sqrt(float(per_head_size))
         scores = scores + mask.type_as(scores)
+
+        # cast attention scores to fp32, compute scaled softmax and cast back to initial dtype - [batch_size, num_heads, q_length, kv_length]
+        input_dtype = scores.dtype
+        # `float16` has a minimum value of -65504.0, whereas `bfloat16` and `float32` have a minimum value of `-3.4e+38`
+        if input_dtype == torch.float16 or input_dtype == torch.bfloat16:
+            scores = scores.to(torch.float32)
+
+
         prev_attn_out = None
         if has_residual_attention:
             if prev_attn is not None:
                 scores += prev_attn
             prev_attn_out = scores
-        probs = nn.Softmax(dim=-1)(scores)
+        probs = nn.Softmax(dim=-1, dtype=query.dtype)(scores)
         #probs = self.dropout(probs)
         output = unshape(torch.matmul(probs, value))
         output = self.final_linear(output)
