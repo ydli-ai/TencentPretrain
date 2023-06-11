@@ -37,3 +37,15 @@ for i, index in enumerate(range(65024, 90046)):
 input_model["target.lm.output_layer.weight"] = torch.cat([input_model["target.lm.output_layer.weight"], output_padding], dim=0)
 
 torch.save(input_model, "models/falcon-7b-ext.bin")
+
+
+
+import torch
+input_model = torch.load("models/llama_zh/7b_v4/7b_fp16.bin", map_location="cpu")
+
+input_model["embedding.word.embedding.weight"] = torch.cat([input_model["embedding.word.embedding.weight"], torch.rand(24360, 4096)], dim=0)
+input_model["target.lm.output_layer.weight"] = torch.cat([input_model["target.lm.output_layer.weight"], torch.rand(24360, 4096)], dim=0)
+
+torch.save(input_model, "models/linly-7b-ext.bin")
+
+24360
