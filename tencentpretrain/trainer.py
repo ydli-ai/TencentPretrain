@@ -596,7 +596,7 @@ def worker(proc_id, gpu_ranks, args, model_for_training, model_for_dataloader=No
     if args.train_embedding_only:
         optimizer_grouped_parameters = [
             {"params": [p for n, p in param_optimizer if 'embedding' in n or "output_layer" in n], "lr": args.learning_rate},
-            {"params": [p for n, p in param_optimizer if 'embedding' not in n or "output_layer" not in n], "lr": 0}
+            {"params": [p for n, p in param_optimizer if 'embedding' not in n and "output_layer" not in n], "lr": 0}
         ]
         print(optimizer_grouped_parameters)
         #for n, p in list(model_for_training.named_parameters()):
