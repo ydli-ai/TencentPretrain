@@ -36,6 +36,9 @@ def main():
     parser.add_argument("--dropout", type=float, default=0.1, help="Dropout value.")
     parser.add_argument("--seed", type=int, default=7, help="Random seed.")
 
+    parser.add_argument("--train_embedding_only", action="store_true",
+                        help="Use relative position embedding.")
+
     # Preprocess options.
     tokenizer_opts(parser)
     tgt_tokenizer_opts(parser)
