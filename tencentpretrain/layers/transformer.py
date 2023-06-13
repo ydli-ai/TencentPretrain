@@ -69,6 +69,7 @@ class TransformerLayer(nn.Module):
             output = self.dropout_2(self.feed_forward(output)) + hidden
         else: # parallel_attn: Flash Attention
             print("1-transformer_input(norm_input):", hidden[0][0][65020:65028])
+            print(hidden)
             inter = self.layer_norm_1(hidden)
             print("2-attention_input(norm_output):", inter[0][0][65020:65028])
             attn_output, prev_attn_out = self.self_attn(inter, inter, inter, mask, position_bias, has_residual_attention, prev_attn, freqs_cis)
