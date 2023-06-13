@@ -34,10 +34,12 @@ class GenerateLm(torch.nn.Module):
 
     def forward(self, src, seg):
         emb = self.embedding(src, seg)
-        print(torch.mean(emb))
+        print("Embedding:",emb[0][0][0:8])
         output = self.encoder(emb, seg)
         print("lm_logits_input:, ", output[0][0][0:8])
         output = self.target.lm.output_layer(output)
+        print("logits_output 422:430, ", output[0][0][422:430])
+        print("logits_output 48675:48685, ", output[0][0][48675:48685])
         print("max_lm_logits_output:, ", torch.argmax(output[0][-1]))
         return output
 
