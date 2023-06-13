@@ -38,6 +38,7 @@ class GenerateLm(torch.nn.Module):
         output = self.encoder(emb, seg)
         print("lm_logits_input:, ", output[0][0][-8:])
         output = self.target.lm.output_layer(output)
+        print("******logits_weight  ", self.target.lm.output_layer.weight)
         print("******logits_output  ", output[0][-1])
         print("******logits_output   [65020:65028]  ", output[0][-1][65020:65028])
         print("max_lm_logits_output:, ", torch.argmax(output[0][-1]))
