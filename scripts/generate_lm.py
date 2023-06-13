@@ -113,14 +113,11 @@ if __name__ == '__main__':
 
         f.write(line + "\n")
         tokens = [token_id.item() for token_id in src_tensor[0]]
-        print(args.tokenizer_type)
         if args.tokenizer_type in ["hfpretrained"]:
-            print(1)
             generated_sentence = args.tokenizer.decode(tokens)
-        if args.tokenizer.sp_model is not None:
+        elif args.tokenizer.sp_model is not None:
             generated_sentence = args.tokenizer.sp_model.decode(tokens)
         else:
-            print(2)
             generated_sentence = "".join(args.tokenizer.convert_ids_to_tokens(tokens))
 
         f.write(generated_sentence)
