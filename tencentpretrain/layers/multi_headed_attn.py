@@ -213,7 +213,6 @@ class FlashAttention(nn.Module):
                     scores += prev_attn
                 prev_attn_out = scores
             probs = nn.Softmax(dim=-1)(scores)
-
             attn_output = probs @ value_layer_
 
         else:

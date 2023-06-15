@@ -15,22 +15,48 @@ parser.add_argument("--layers_num", type=int, default=32,
 
 args = parser.parse_args()
 
-input_model = torch.load(args.input_model_path)
-output_model = collections.OrderedDict()
 
-output_model["transformer.word_embeddings.weight"] = input_model["embedding.word.embedding.weight"]
+import torch, json, collections
 
-for i in range(args.layers_num):
+input_model = torch.load('TencentPretrain/models/falcon_7b_embedding/7b-fp16-v1.bin')
 
-    output_model["transformer.h." + str(i) + ".input_layernorm.weight"] = input_model["encoder.transformer." + str(i) + ".layer_norm_1.weight"]
-    output_model["transformer.h." + str(i) + ".input_layernorm.bias"] = input_model["encoder.transformer." + str(i) + ".layer_norm_1.bias"]
-    output_model["transformer.h." + str(i) + ".self_attention.query_key_value.weight"] = input_model["encoder.transformer." + str(i) + ".self_attn.query_key_value.weight"]
-    output_model["transformer.h." + str(i) + ".self_attention.dense.weight"] = input_model["encoder.transformer." + str(i) + ".self_attn.dense.weight"]
-    output_model["transformer.h." + str(i) + ".mlp.dense_h_to_4h.weight"] = input_model["encoder.transformer." + str(i) + ".feed_forward.linear_1.weight"]
-    output_model["transformer.h." + str(i) + ".mlp.dense_4h_to_h.weight"] = input_model["encoder.transformer." + str(i) + ".feed_forward.linear_2.weight"]
+with open("falcon-7b/pytorch_model.bin.index.json") as f:
+    model_index = json.load(f)
+    weight_map = model_index["weight_map"]
 
-output_model["transformer.ln_f.weight"] = input_model["encoder.layer_norm.weight"]
-output_model["transformer.ln_f.bias"] = input_model["encoder.layer_norm.bias"]
-output_model["lm_head.weight"] = input_model["target.lm.output_layer.weight"]
 
-torch.save(output_model, args.output_model_path)
+output_model1 = collections.OrderedDict()
+output_model2 = collections.OrderedDict()
+
+
+output_model1["transformer.word_embeddings.weight"] = input_model["embedding.word.embedding.weight"]
+
+for i in range(32):
+
+    if i < 23:
+        output_model1["transformer.h." + str(i) + ".input_layernorm.weight"] = input_model["encoder.transformer." + str(i) + ".layer_norm_1.weight"]
+        output_model1["transformer.h." + str(i) + ".input_layernorm.bias"] = input_model["encoder.transformer." + str(i) + ".layer_norm_1.bias"]
+        output_model1["transformer.h." + str(i) + ".self_attention.query_key_value.weight"] = input_model["encoder.transformer." + str(i) + ".self_attn.query_key_value.weight"]
+        output_model1["transformer.h." + str(i) + ".self_attention.dense.weight"] = input_model["encoder.transformer." + str(i) + ".self_attn.dense.weight"]
+        output_model1["transformer.h." + str(i) + ".mlp.dense_h_to_4h.weight"] = input_model["encoder.transformer." + str(i) + ".feed_forward.linear_1.weight"]
+        output_model1["transformer.h." + str(i) + ".mlp.dense_4h_to_h.weight"] = input_model["encoder.transformer." + str(i) + ".feed_forward.linear_2.weight"]
+    else:
+        output_model2["transformer.h." + str(i) + ".input_layernorm.weight"] = input_model["encoder.transformer." + str(i) + ".layer_norm_1.weight"]
+        output_model2["transformer.h." + str(i) + ".input_layernorm.bias"] = input_model["encoder.transformer." + str(i) + ".layer_norm_1.bias"]
+        output_model2["transformer.h." + str(i) + ".self_attention.query_key_value.weight"] = input_model["encoder.transformer." + str(i) + ".self_attn.query_key_value.weight"]
+        output_model2["transformer.h." + str(i) + ".self_attention.dense.weight"] = input_model["encoder.transformer." + str(i) + ".self_attn.dense.weight"]
+        output_model2["transformer.h." + str(i) + ".mlp.dense_h_to_4h.weight"] = input_model["encoder.transformer." + str(i) + ".feed_forward.linear_1.weight"]
+        output_model2["transformer.h." + str(i) + ".mlp.dense_4h_to_h.weight"] = input_model["encoder.transformer." + str(i) + ".feed_forward.linear_2.weight"]
+
+output_model2["transformer.ln_f.weight"] = input_model["encoder.layer_norm.weight"]
+output_model2["transformer.ln_f.bias"] = input_model["encoder.layer_norm.bias"]
+output_model2["lm_head.weight"] = input_model["target.lm.output_layer.weight"]
+
+model_index["weight_map"]["transformer.h.22.mlp.dense_4h_to_h.weight"] = "pytorch_model-00001-of-00002.bin"
+
+with open("falcon-7b-zh/pytorch_model.bin.index.json", 'w') as f:
+    f.write(json.dumps(model_index))
+
+torch.save(output_model1, "falcon-7b-zh/pytorch_model-00001-of-00002.bin")
+torch.save(output_model2, "falcon-7b-zh/pytorch_model-00002-of-00002.bin")
+
