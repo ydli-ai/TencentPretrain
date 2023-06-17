@@ -1045,3 +1045,68 @@ class AlpacaDataset(Dataset):
                     break
 
         dataset_writer.close()
+
+class ChatflowDataset(Dataset):
+    def __init__(self, args, vocab, tokenizer):
+        super(ChatflowDataset, self).__init__(args, vocab, tokenizer)
+
+    def worker(self, proc_id, start, end):
+        print("Worker %d is building dataset ... " % proc_id)
+        set_seed(self.seed)
+        dataset_writer = open("dataset-tmp-" + str(proc_id) + ".pt", "wb")
+        pos = 0
+        buffer = []
+        PREFIX_TOKEN = ">>PREFIX<<"
+        ANS_TOKEN = ">>ANSWER<<"
+        QUESTION_TOKEN = ">>QUESTION<<"
+        with open(self.corpus_path, mode="r", encoding="utf-8") as f:
+            while pos < start:
+                f.readline()
+                pos += 1
+            while True:
+                line = f.readline().strip()
+
+                try:
+                    data = json.loads(line)
+                except:
+                    continue
+
+                if data.get("title", None) is not None:
+                    line = data["title"] + '\n'+ data["text"]
+                    document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
+                elif data.get("text", None) is not None:
+                    line = data["text"]
+                    document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
+                else:
+                    instruction = data.get("instruction", "").replace('\\n', '\n')
+                    input = data.get("input", "").replace('\\n', '\n')
+                    output = data.get("output", "").replace('\\n', '\n')
+
+                    input = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(instruction + input))
+                    output = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(output))
+
+                    if data.get("sft", None) is not None:
+                        document = [self.vocab.get(PREFIX_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
+                    else:
+                        document = [self.vocab.get(QUESTION_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
+
+                if len(line) < 30:
+                    continue
+
+                pos += 1
+
+                document = document + [self.vocab.get(SEP_TOKEN)]
+
+                buffer.extend(document)
+                instances_num = len(buffer) // (self.seq_length + 1)
+                for i in range(instances_num):
+                    src = buffer[i * (self.seq_length + 1): (i + 1) * (self.seq_length + 1)]
+                    seg_pos = [self.seq_length]
+                    src = (src, 0)
+                    pickle.dump((src, seg_pos), dataset_writer)
+                buffer = buffer[instances_num * (self.seq_length + 1): ]
+
+                if pos >= end:
+                    break
+
+        dataset_writer.close()
