@@ -1060,12 +1060,16 @@ class ChatflowDataset(Dataset):
         ANS_TOKEN = ">>ANSWER<<"
         QUESTION_TOKEN = ">>QUESTION<<"
         print(start, end)
+        from tqdm import tqdm
+        pbar = tqdm(total=5000000)
         with open(self.corpus_path, mode="r", encoding="utf-8") as f:
             while pos < start:
                 f.readline()
                 pos += 1
             while True:
+
                 line = f.readline().strip()
+                pbar.update(1)
 
                 try:
                     data = json.loads(line)
