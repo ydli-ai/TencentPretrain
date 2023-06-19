@@ -1051,6 +1051,8 @@ class ChatflowDataset(Dataset):
         super(ChatflowDataset, self).__init__(args, vocab, tokenizer)
 
     def worker(self, proc_id, start, end):
+        import traceback
+
         print("Worker %d is building dataset ... " % proc_id)
         set_seed(self.seed)
         dataset_writer = open("dataset-tmp-" + str(proc_id) + ".pt", "wb")
@@ -1087,7 +1089,9 @@ class ChatflowDataset(Dataset):
                             document = [self.vocab.get(PREFIX_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
                         else:
                             document = [self.vocab.get(QUESTION_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
-                except:
+
+                except Exception as e:
+                    print(e)
                     continue
 
 
