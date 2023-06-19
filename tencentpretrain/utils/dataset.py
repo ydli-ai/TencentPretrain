@@ -1070,6 +1070,7 @@ class ChatflowDataset(Dataset):
                 try:
                     data = json.loads(line)
                 except:
+                    print(line)
                     continue
 
                 if data.get("title", None) is not None:
