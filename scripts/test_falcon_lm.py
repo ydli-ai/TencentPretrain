@@ -104,7 +104,7 @@ if __name__ == '__main__':
                  ]
 
     for que in questions:
-        src = [args.tokenizer.vocab.get(QUESTION_TOKEN)] + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + [self.vocab.get(ANS_TOKEN)]
+        src = [args.tokenizer.vocab.get(QUESTION_TOKEN)] + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + [args.tokenizer.vocab.get(ANS_TOKEN)]
         seg = [1] * len(src)
         beginning_length = len(src)
         if len(src) > args.seq_length:
@@ -132,7 +132,7 @@ if __name__ == '__main__':
 
 
     for que in questions:
-        src = [args.tokenizer.vocab.get(PREFIX_TOKEN)] + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + [self.vocab.get(ANS_TOKEN)]
+        src = [args.tokenizer.vocab.get(PREFIX_TOKEN)] + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + [args.tokenizer.vocab.get(ANS_TOKEN)]
         seg = [1] * len(src)
         beginning_length = len(src)
         if len(src) > args.seq_length:
