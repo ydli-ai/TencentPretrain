@@ -1059,22 +1059,16 @@ class ChatflowDataset(Dataset):
         PREFIX_TOKEN = ">>PREFIX<<"
         ANS_TOKEN = ">>ANSWER<<"
         QUESTION_TOKEN = ">>QUESTION<<"
-        print(start, end)
-        from tqdm import tqdm
-        pbar = tqdm(total=5000000)
+
         with open(self.corpus_path, mode="r", encoding="utf-8") as f:
             while pos < start:
                 f.readline()
                 pos += 1
             while True:
 
-                line = f.readline().strip()
-                pbar.update(1)
-
-
-                data = json.loads(line)
-
                 try:
+                    data = json.loads(line)
+
                     if data.get("title", None) is not None:
                         line = data["title"] + '\n'+ data["text"]
                         document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
@@ -1094,10 +1088,10 @@ class ChatflowDataset(Dataset):
                         else:
                             document = [self.vocab.get(QUESTION_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
                 except:
-                    print(data)
+                    continue
 
 
-                if len(line) < 30:
+                if len(line) < 20:
                     continue
 
                 pos += 1
