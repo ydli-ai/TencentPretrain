@@ -113,7 +113,6 @@ if __name__ == '__main__':
         src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
         for i in range(args.seq_length - beginning_length):
-            print(src_tensor)
             output = model(src_tensor, seg_tensor)
             next_token_logits = output[0][-1] / args.temperature
             filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
@@ -141,7 +140,6 @@ if __name__ == '__main__':
         src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
         for i in range(args.seq_length - beginning_length):
-            print(src_tensor)
             output = model(src_tensor, seg_tensor)
             next_token_logits = output[0][-1] / args.temperature
             filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
