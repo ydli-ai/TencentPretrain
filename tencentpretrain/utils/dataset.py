@@ -1071,11 +1071,9 @@ class ChatflowDataset(Dataset):
                 line = f.readline().strip()
                 pbar.update(1)
 
-                try:
-                    data = json.loads(line)
-                except:
-                    print(line)
-                    continue
+
+                data = json.loads(line)
+
 
                 if data.get("title", None) is not None:
                     line = data["title"] + '\n'+ data["text"]
