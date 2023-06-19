@@ -1059,6 +1059,7 @@ class ChatflowDataset(Dataset):
         PREFIX_TOKEN = ">>PREFIX<<"
         ANS_TOKEN = ">>ANSWER<<"
         QUESTION_TOKEN = ">>QUESTION<<"
+        print(start, end)
         with open(self.corpus_path, mode="r", encoding="utf-8") as f:
             while pos < start:
                 f.readline()
