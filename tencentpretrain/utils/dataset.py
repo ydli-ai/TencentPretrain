@@ -1068,6 +1068,8 @@ class ChatflowDataset(Dataset):
                 pos += 1
             while True:
 
+                line = f.readline().strip()
+
                 try:
                     data = json.loads(line)
 
