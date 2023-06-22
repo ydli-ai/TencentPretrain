@@ -148,24 +148,30 @@ class FlashAttention(nn.Module):
             value: [batch_size, seq_length, num_heads, head_dim]
         """
 
-        batch, seq_len, _ = fused_qkv.shape
-        qkv = fused_qkv.view(batch, seq_len, -1, self.heads_num // self.num_kv + 2, 64)
-        q = qkv[:, :, :, :-2]
-        k = qkv[:, :, :, [-2]]
-        v = qkv[:, :, :, [-1]]
-        k = torch.broadcast_to(k, q.shape)
-        v = torch.broadcast_to(v, q.shape)
+        if self.num_kv == 1:
+            batch_size, seq_length, three_times_hidden_size = fused_qkv.shape
+            fused_qkv = fused_qkv.view(batch_size, seq_length, self.heads_num + 2, self.per_head_size)
+            return fused_qkv[..., :-2, :], fused_qkv[..., [-2], :], fused_qkv[..., [-1], :]
 
-        q, k, v = [
-            self.rearrange(
-                x,
-                "batch seq_len group num_heads head_dim ->\
-                batch seq_len (group num_heads) head_dim",
-                head_dim=self.per_head_size,
-            )
-            for x in [q, k, v]
-        ]
-        return q, k, v
+        else:
+            batch, seq_len, _ = fused_qkv.shape
+            qkv = fused_qkv.view(batch, seq_len, -1, self.heads_num // self.num_kv + 2, 64)
+            q = qkv[:, :, :, :-2]
+            k = qkv[:, :, :, [-2]]
+            v = qkv[:, :, :, [-1]]
+            k = torch.broadcast_to(k, q.shape)
+            v = torch.broadcast_to(v, q.shape)
+
+            q, k, v = [
+                self.rearrange(
+                    x,
+                    "batch seq_len group num_heads head_dim ->\
+                    batch seq_len (group num_heads) head_dim",
+                    head_dim=self.per_head_size,
+                )
+                for x in [q, k, v]
+            ]
+            return q, k, v
 
     def _merge_heads(self, x: torch.Tensor):
         """
@@ -211,12 +217,21 @@ class FlashAttention(nn.Module):
 
         query_layer = query_layer.transpose(1, 2).reshape(batch_size * self.heads_num, q_length, self.per_head_size)
 
-        key_layer = key_layer.transpose(1, 2).reshape(
-            batch_size * self.num_kv,
-            q_length,
-            self.per_head_size,
-            )
-        value_layer = value_layer.transpose(1, 2).reshape(batch_size * self.num_kv, q_length, self.per_head_size)
+        if self.num_kv == 1:
+            key_layer = key_layer.transpose(1, 2).reshape(
+                batch_size * self.num_kv,
+                q_length,
+                self.per_head_size,
+                )
+            value_layer = value_layer.transpose(1, 2).reshape(batch_size * self.num_kv, q_length, self.per_head_size)
+        else:
+            key_layer = key_layer.transpose(1, 2).reshape(
+                batch_size * self.heads_num,
+                q_length,
+                self.per_head_size,
+                )
+            value_layer = value_layer.transpose(1, 2).reshape(batch_size * self.heads_num, q_length, self.per_head_size)
+
 
         query_layer, key_layer = self.rotary(query_layer, key_layer)
 
