@@ -101,12 +101,30 @@ class FlashAttention(nn.Module):
     def __init__(self, hidden_size, heads_num, attention_head_size, dropout, has_bias=True, with_scale=True,
                  lora_params=None):
         super(FlashAttention, self).__init__()
+        from einops import rearrange
+        self.rearrange = rearrange
+
         self.heads_num = heads_num
         self.hidden_size = hidden_size
         self.per_head_size = attention_head_size
         self.with_scale = with_scale
         self.inner_hidden_size = heads_num * attention_head_size
-        self.multi_query = True
+
+        if self.hidden_size == 4544: # 7b
+            self.query_key_value = nn.Linear(
+                self.hidden_size,
+                self.hidden_size + 2 * self.per_head_size,
+                bias=has_bias
+            )
+            self.num_kv = 1
+
+        else: # 40b
+            self.num_kv = 8
+            self.query_key_value = nn.Linear(
+                self.hidden_size,
+                (self.num_kv * 2 + self.heads_num) * self.per_head_size,
+                bias=has_bias,
+                )
         
 
         self.rotary = RotaryEmbedding(self.per_head_size)
@@ -114,15 +132,10 @@ class FlashAttention(nn.Module):
         self.inv_norm_factor = 1.0 / math.sqrt(self.per_head_size)
         self.beta = self.inv_norm_factor
 
-        self.query_key_value = nn.Linear(
-            self.hidden_size,
-            3 * self.hidden_size if not self.multi_query else (self.hidden_size + 2 * self.per_head_size),
-            bias=has_bias
-        )
+
 
         self.dense = nn.Linear(self.hidden_size, self.hidden_size, bias=has_bias)
         self.attention_dropout = nn.Dropout(dropout)
-        self.num_kv = self.heads_num if not self.multi_query else 1
 
     def _split_heads(self, fused_qkv: torch.Tensor):
         """
@@ -134,14 +147,25 @@ class FlashAttention(nn.Module):
             query: [batch_size, seq_length, num_heads, head_dim] key: [batch_size, seq_length, num_heads, head_dim]
             value: [batch_size, seq_length, num_heads, head_dim]
         """
-        if not self.multi_query:
-            batch_size, seq_length, three_times_hidden_size = fused_qkv.shape
-            fused_qkv = fused_qkv.view(batch_size, seq_length, self.heads_num, 3, self.per_head_size)
-            return fused_qkv[..., 0, :], fused_qkv[..., 1, :], fused_qkv[..., 2, :]
-        else:
-            batch_size, seq_length, three_times_hidden_size = fused_qkv.shape
-            fused_qkv = fused_qkv.view(batch_size, seq_length, self.heads_num + 2, self.per_head_size)
-            return fused_qkv[..., :-2, :], fused_qkv[..., [-2], :], fused_qkv[..., [-1], :]
+
+        batch, seq_len, _ = fused_qkv.shape
+        qkv = fused_qkv.view(batch, seq_len, -1, self.heads_num // self.num_kv + 2, 64)
+        q = qkv[:, :, :, :-2]
+        k = qkv[:, :, :, [-2]]
+        v = qkv[:, :, :, [-1]]
+        k = torch.broadcast_to(k, q.shape)
+        v = torch.broadcast_to(v, q.shape)
+
+        q, k, v = [
+            self.rearrange(
+                x,
+                "batch seq_len group num_heads head_dim ->\
+                batch seq_len (group num_heads) head_dim",
+                head_dim=self.per_head_size,
+            )
+            for x in [q, k, v]
+        ]
+        return q, k, v
 
     def _merge_heads(self, x: torch.Tensor):
         """
