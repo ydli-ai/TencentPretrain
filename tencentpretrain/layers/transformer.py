@@ -40,7 +40,9 @@ class TransformerLayer(nn.Module):
         self.dropout_2 = nn.Dropout(args.dropout)
 
         self.layer_norm_1 = str2layernorm[args.layernorm](args.hidden_size, eps=args.layernorm_eps)
-        if self.layernorm_positioning != "parallel_attn":
+        self.double_norm = False
+        if self.layernorm_positioning != "parallel_attn" or args.hidden_size == 8192:
+            self.double_norm = True
             self.layer_norm_2 = str2layernorm[args.layernorm](args.hidden_size, eps=args.layernorm_eps)
 
 
@@ -67,17 +69,26 @@ class TransformerLayer(nn.Module):
             hidden = hidden + inter
             output = self.layer_norm_2(hidden)
             output = self.dropout_2(self.feed_forward(output)) + hidden
-        else: # parallel_attn: Flash Attention
-            #print("1-transformer_input(norm_input):", hidden[0][0][65020:65028])
-            #print(hidden)
-            inter = self.layer_norm_1(hidden)
-            #print("2-attention_input(norm_output):", inter[0][0][65020:65028])
-            attn_output, prev_attn_out = self.self_attn(inter, inter, inter, mask, position_bias, has_residual_attention, prev_attn, freqs_cis)
-            #print("3-attention_output:", attn_output[0][0][65020:65028])
-            mlp_output = self.feed_forward(inter)
-            #print("4-mlp_output:", mlp_output[0][0][65020:65028])
-            inter = self.dropout_1(mlp_output + attn_output)
-            output = inter + hidden
+        else:
+            if self.double_norm:
+                inter_attn = self.layer_norm_1(hidden)
+                inter_mlp = self.layer_norm_2(hidden)
+                #print("2-attention_input(norm_output):", inter[0][0][65020:65028])
+                attn_output, prev_attn_out = self.self_attn(inter_attn, inter_attn, inter_attn, mask, position_bias, has_residual_attention, prev_attn, freqs_cis)
+                #print("3-attention_output:", attn_output[0][0][65020:65028])
+                mlp_output = self.feed_forward(inter_mlp)
+                #print("4-mlp_output:", mlp_output[0][0][65020:65028])
+                inter = self.dropout_1(mlp_output + attn_output)
+                output = inter + hidden
+            else:
+                inter = self.layer_norm_1(hidden)
+                #print("2-attention_input(norm_output):", inter[0][0][65020:65028])
+                attn_output, prev_attn_out = self.self_attn(inter, inter, inter, mask, position_bias, has_residual_attention, prev_attn, freqs_cis)
+                #print("3-attention_output:", attn_output[0][0][65020:65028])
+                mlp_output = self.feed_forward(inter)
+                #print("4-mlp_output:", mlp_output[0][0][65020:65028])
+                inter = self.dropout_1(mlp_output + attn_output)
+                output = inter + hidden
 
         return output, prev_attn_out
 
