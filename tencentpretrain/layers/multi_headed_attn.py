@@ -224,6 +224,15 @@ class FlashAttention(nn.Module):
                 self.per_head_size,
                 )
             value_layer = value_layer.transpose(1, 2).reshape(batch_size * self.num_kv, q_length, self.per_head_size)
+
+            query_layer, key_layer = self.rotary(query_layer, key_layer)
+
+            _, kv_length, _ = key_layer.shape
+
+            query_layer_ = query_layer.reshape(batch_size, self.heads_num, -1, self.per_head_size)
+            key_layer_ = key_layer.reshape(batch_size, self.num_kv, -1, self.per_head_size)
+            value_layer_ = value_layer.reshape(batch_size, self.num_kv, -1, self.per_head_size)
+
         else:
             key_layer = key_layer.transpose(1, 2).reshape(
                 batch_size * self.heads_num,
@@ -232,14 +241,13 @@ class FlashAttention(nn.Module):
                 )
             value_layer = value_layer.transpose(1, 2).reshape(batch_size * self.heads_num, q_length, self.per_head_size)
 
+            query_layer, key_layer = self.rotary(query_layer, key_layer)
 
-        query_layer, key_layer = self.rotary(query_layer, key_layer)
+            _, kv_length, _ = key_layer.shape
 
-        _, kv_length, _ = key_layer.shape
-
-        query_layer_ = query_layer.reshape(batch_size, self.heads_num, -1, self.per_head_size)
-        key_layer_ = key_layer.reshape(batch_size, self.num_kv, -1, self.per_head_size)
-        value_layer_ = value_layer.reshape(batch_size, self.num_kv, -1, self.per_head_size)
+            query_layer_ = query_layer.reshape(batch_size, self.heads_num, -1, self.per_head_size)
+            key_layer_ = key_layer.reshape(batch_size, self.heads_num, -1, self.per_head_size)
+            value_layer_ = value_layer.reshape(batch_size, self.heads_num, -1, self.per_head_size)
 
         if torch.__version__ < "2.0.0":
             scores = torch.matmul(query_layer_, key_layer_.transpose(-2, -1))
