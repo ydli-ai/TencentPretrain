@@ -38,6 +38,8 @@ def main():
 
     parser.add_argument("--train_embedding_only", action="store_true",
                         help="Use relative position embedding.")
+    parser.add_argument("--skip_data_num", type=int, default=0,
+                        help="The buffer size of instances in memory.")
 
     # Preprocess options.
     tokenizer_opts(parser)
