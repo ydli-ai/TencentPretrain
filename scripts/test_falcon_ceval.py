@@ -97,27 +97,25 @@ if __name__ == '__main__':
     id2char = {2: 'A', 3: 'B', 4: 'C', 5: 'D', 6: 'E', 7: 'F', 8: 'G', 9: 'H'}
     questions = []
 
+    import pandas as pd
+
     for file in os.listdir('../ceval/val'):
-        with open('../ceval/val/'+file) as f:
-            lines = f.readlines()
-        for l in lines:
-            try:
-                data = l.strip().split(',')
-                choice_num = len(data) - 3
+        df = pd.read_csv('../ceval/val/'+file)
 
-                prompt = data[1]
-                gold = data[-1]
+        for index, row in df.iterrows():
 
-                prompt = prompt + '\n选项：\n'
+            prompt = row['question']
+            answer = row['answer']
+            answer_text = row[row['answer']]
 
-                for i in range(2, choice_num + 2):
-                    prompt = prompt + id2char[i] + "." + data[i] + '\n'
+            prompt = prompt + '\n选项：\n'
 
-                questions.append((prompt, gold))
-            except:
-                continue
+            prompt = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] + '\n' + "D." + row['D'] + '\n'
 
-    for que, gold in questions:
+            questions.append((prompt, answer, answer_text))
+
+
+    for que, answer, answer_text in questions:
         src = [args.tokenizer.vocab.get(QUESTION_TOKEN)] + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + [args.tokenizer.vocab.get(ANS_TOKEN)]
         seg = [1] * len(src)
         beginning_length = len(src)
@@ -139,7 +137,10 @@ if __name__ == '__main__':
         print(que + "\n")
         tokens = [token_id.item() for token_id in src_tensor[0]]
 
-        generated_sentence = args.tokenizer.decode(tokens).split('<|endoftext|>')[0].split('>>ANSWER<<')[1]
+        try:
+            generated_sentence = args.tokenizer.decode(tokens).split('<|endoftext|>')[0].split('>>ANSWER<<')[1]
 
-        print(generated_sentence)
+            print(generated_sentence, answer)
+        except:
+            continue
 
