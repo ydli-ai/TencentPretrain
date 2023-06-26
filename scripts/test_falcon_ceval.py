@@ -101,19 +101,21 @@ if __name__ == '__main__':
         with open('../ceval/val/'+file) as f:
             lines = f.readlines()
         for l in lines:
-            data = l.strip().split(',')
-            choice_num = len(data) - 3
+            try:
+                data = l.strip().split(',')
+                choice_num = len(data) - 3
 
-            prompt = data[1]
-            gold = data[-1]
+                prompt = data[1]
+                gold = data[-1]
 
-            prompt = prompt + '\n选项：\n'
+                prompt = prompt + '\n选项：\n'
 
-            for i in range(2, choice_num + 2):
-                prompt = prompt + id2char[i] + "." + data[i] + '\n'
+                for i in range(2, choice_num + 2):
+                    prompt = prompt + id2char[i] + "." + data[i] + '\n'
 
-            questions.append((prompt, gold))
-
+                questions.append((prompt, gold))
+            except:
+                continue
 
     for que in questions:
         src = [args.tokenizer.vocab.get(QUESTION_TOKEN)] + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + [args.tokenizer.vocab.get(ANS_TOKEN)]
