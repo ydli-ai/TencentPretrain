@@ -1117,13 +1117,13 @@ class ChatflowDataset(Dataset):
                     txt, rest_leng = src
                     if rest_leng - len(document) >= 0:
                         queue[i] = ((txt + document, rest_leng - len(document)), [len(txt + document)])
-                        print("Modify:", rest_leng - len(document))
+                        #print("Modify:", rest_leng - len(document))
                         flag = True
                         break
 
                 if not flag:
                     queue.append(((document, self.seq_length + 1 - len(document)), [len(document)]))
-                    print("Append:" ,self.seq_length + 1 - len(document))
+                    #print("Append:" ,self.seq_length + 1 - len(document))
 
                 buff_size = 1000
                 pop_size = 100
