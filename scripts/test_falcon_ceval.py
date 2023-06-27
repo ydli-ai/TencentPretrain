@@ -96,9 +96,6 @@ def choose_from_lcs(pred, candidates, answer):
         return False
 
 
-
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
@@ -124,7 +121,7 @@ if __name__ == '__main__':
     model = load_model(model, args.load_model_path)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = model.to(device)
+    model = model.bfloat16()
 
     model.eval()
 
