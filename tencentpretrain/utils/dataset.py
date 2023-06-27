@@ -1066,9 +1066,13 @@ class ChatflowDataset(Dataset):
             while pos < start:
                 f.readline()
                 pos += 1
+
+            loaded_buffer, queue = [], []
             while True:
 
                 line = f.readline().strip()
+
+                pos += 1
 
                 try:
                     data = json.loads(line)
@@ -1093,27 +1097,45 @@ class ChatflowDataset(Dataset):
                             document = [self.vocab.get(QUESTION_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
 
                 except Exception as e:
-                    print(e)
+                    if pos > end:
+                        break
+                    else:
+                        continue
+
+
+                if len(line) < 15:
                     continue
-
-
-                if len(line) < 20:
-                    continue
-
-                pos += 1
 
                 document = document + [self.vocab.get(SEP_TOKEN)]
 
-                buffer.extend(document)
-                instances_num = len(buffer) // (self.seq_length + 1)
-                for i in range(instances_num):
-                    src = buffer[i * (self.seq_length + 1): (i + 1) * (self.seq_length + 1)]
+                instances_num = len(document) // (self.seq_length + 1)
+                for i in document(instances_num):
+                    src = document[i * (self.seq_length + 1): (i + 1) * (self.seq_length + 1)]
                     seg_pos = [self.seq_length]
                     src = (src, 0)
-                    pickle.dump((src, seg_pos), dataset_writer)
-                buffer = buffer[instances_num * (self.seq_length + 1): ]
 
-                if pos >= end:
-                    break
+                    loaded_buffer.append((src, seg_pos))
+
+                document = document[instances_num * (self.seq_length + 1): ]
+
+                flag = False
+                for i, (txt, rest_leng) in enumerate(queue):
+                    if rest_leng - len(document) >= 0:
+                        queue[i] = (txt + document, rest_leng - len(document))
+                        flag = True
+                        break
+
+                if not flag:
+                    queue.append((document, self.seq_length + 1 - len(document)))
+
+                if len(queue) > 100000:
+                    queue.sort(key= lambda x:x[1], reverse=True)
+                    loaded_buffer.extend(queue[:1000])
+                    queue=queue[1000:]
+                    random.shuffle(queue)
+                    random.shuffle(loaded_buffer)
+                    for i in loaded_buffer:
+                        pickle.dump(i, dataset_writer)
+                    loaded_buffer = []
 
         dataset_writer.close()
