@@ -1068,7 +1068,6 @@ class ChatflowDataset(Dataset):
             while True:
 
                 line = f.readline().strip()
-
                 pos += 1
 
                 try:
@@ -1138,5 +1137,8 @@ class ChatflowDataset(Dataset):
                     for i in loaded_buffer:
                         pickle.dump(i, dataset_writer)
                     loaded_buffer = []
+
+                if pos > end:
+                    break
 
         dataset_writer.close()
