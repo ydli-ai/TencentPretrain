@@ -1071,6 +1071,7 @@ class ChatflowDataset(Dataset):
             while True:
 
                 line = f.readline().strip()
+                print(line)
 
                 pos += 1
 
@@ -1091,7 +1092,7 @@ class ChatflowDataset(Dataset):
                 else:
                     instruction = data.get("instruction", "").replace('\\n', '\n')
                     input = data.get("input", "").replace('\\n', '\n')
-                    output = data.get("output", "").replace('\\n', '\n')
+                    output = data["output"].replace('\\n', '\n')
 
                     input = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(instruction + input))
                     output = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(output))
