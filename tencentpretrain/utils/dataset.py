@@ -1068,7 +1068,6 @@ class ChatflowDataset(Dataset):
             while True:
 
                 line = f.readline().strip()
-                print(pos, end, line)
 
                 pos += 1
 
