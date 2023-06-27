@@ -1114,7 +1114,6 @@ class ChatflowDataset(Dataset):
                 document = document[instances_num * (self.seq_length + 1): ]
 
                 flag = False
-                print(queue)
                 for i, (src, seg_pos) in enumerate(queue):
                     txt, rest_leng = src
                     if rest_leng - len(document) >= 0:
@@ -1123,7 +1122,7 @@ class ChatflowDataset(Dataset):
                         break
 
                 if not flag:
-                    queue.append((document, self.seq_length + 1 - len(document), [len(document)]))
+                    queue.append((document, self.seq_length + 1 - len(document)), [len(document)])
 
                 if len(queue) > 100000:
                     queue.sort(key= lambda x:x[0][1])
