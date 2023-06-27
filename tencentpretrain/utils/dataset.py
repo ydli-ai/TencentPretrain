@@ -1078,12 +1078,15 @@ class ChatflowDataset(Dataset):
                 try:
                     data = json.loads(line)
                 except:
+                    print(data)
                     if pos > end:
                         print(pos, end)
                         break
                     else:
                         continue
 
+
+                print(1)
                 if data.get("title", None) is not None:
                     line = data["title"] + '\n'+ data["text"]
                     document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
