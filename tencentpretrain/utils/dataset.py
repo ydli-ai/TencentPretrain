@@ -1125,7 +1125,7 @@ class ChatflowDataset(Dataset):
                     queue.append(((document, self.seq_length + 1 - len(document)), [len(document)]))
                     #print("Append:" ,self.seq_length + 1 - len(document))
 
-                buff_size = 1000
+                buff_size = 5000
                 pop_size = 100
 
                 if len(queue) > buff_size:
