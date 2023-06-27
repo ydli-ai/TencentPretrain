@@ -1114,6 +1114,7 @@ class ChatflowDataset(Dataset):
                 document = document[instances_num * (self.seq_length + 1): ]
 
                 flag = False
+                print(queue)
                 for i, (src, seg_pos) in enumerate(queue):
                     txt, rest_leng = src
                     if rest_leng - len(document) >= 0:
