@@ -1134,7 +1134,8 @@ class ChatflowDataset(Dataset):
 
                     log = []
                     for i, (src, seg_pos) in enumerate(queue):
-                        log.append(src[1])
+                        if i < 1000:
+                            log.append(src[1])
                     print(log)
 
                     queue=queue[pop_size:]
