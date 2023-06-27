@@ -1079,6 +1079,7 @@ class ChatflowDataset(Dataset):
                     data = json.loads(line)
                 except:
                     if pos > end:
+                        print(pos, end)
                         break
                     else:
                         continue
@@ -1121,6 +1122,8 @@ class ChatflowDataset(Dataset):
                         queue[i] = (txt + document, rest_leng - len(document))
                         flag = True
                         break
+
+                print(queue)
 
                 if not flag:
                     queue.append((document, self.seq_length + 1 - len(document)))
