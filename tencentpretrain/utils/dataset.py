@@ -1071,7 +1071,7 @@ class ChatflowDataset(Dataset):
             while True:
 
                 line = f.readline().strip()
-                print(line)
+                print(pos, end, line)
 
                 pos += 1
 
@@ -1101,7 +1101,6 @@ class ChatflowDataset(Dataset):
                         document = [self.vocab.get(PREFIX_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
                     else:
                         document = [self.vocab.get(QUESTION_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
-
 
 
                 document = document + [self.vocab.get(SEP_TOKEN)]
