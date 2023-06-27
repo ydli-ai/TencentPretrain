@@ -1125,15 +1125,17 @@ class ChatflowDataset(Dataset):
                     queue.append(((document, self.seq_length + 1 - len(document)), [len(document)]))
                     print("Append:" ,self.seq_length + 1 - len(document))
 
-                buff_size = 5000
+                buff_size = 1000
                 pop_size = 100
 
                 if len(queue) > buff_size:
                     queue.sort(key= lambda x:x[0][1])
                     loaded_buffer.extend(queue[:pop_size])
+
+                    log = []
                     for i, (src, seg_pos) in enumerate(queue):
-                        if i < 500:
-                            print(src[1])
+                        log.append(src[1])
+                    print(log)
 
                     queue=queue[pop_size:]
                     random.shuffle(queue)
