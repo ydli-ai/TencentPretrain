@@ -1132,12 +1132,6 @@ class ChatflowDataset(Dataset):
                     queue.sort(key= lambda x:x[0][1])
                     loaded_buffer.extend(queue[:pop_size])
 
-                    log = []
-                    for i, (src, seg_pos) in enumerate(queue):
-                        if i < 1000:
-                            log.append(src[1])
-                    print(log)
-
                     queue=queue[pop_size:]
                     random.shuffle(queue)
                     random.shuffle(loaded_buffer)
