@@ -1112,12 +1112,13 @@ class ChatflowDataset(Dataset):
                 instances_num = len(document) // (self.seq_length + 1)
                 print('instances_num', instances_num)
 
-                for i in document(instances_num):
+                for i in range(instances_num):
                     src = document[i * (self.seq_length + 1): (i + 1) * (self.seq_length + 1)]
                     seg_pos = [self.seq_length]
                     src = (src, 0)
                     loaded_buffer.append((src, seg_pos))
 
+                print('L1121 instances_num', instances_num)
                 document = document[instances_num * (self.seq_length + 1): ]
                 print(document)
 
