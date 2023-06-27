@@ -1051,13 +1051,10 @@ class ChatflowDataset(Dataset):
         super(ChatflowDataset, self).__init__(args, vocab, tokenizer)
 
     def worker(self, proc_id, start, end):
-        import traceback
-
         print("Worker %d is building dataset ... " % proc_id)
         set_seed(self.seed)
         dataset_writer = open("dataset-tmp-" + str(proc_id) + ".pt", "wb")
         pos = 0
-        buffer = []
         PREFIX_TOKEN = ">>PREFIX<<"
         ANS_TOKEN = ">>ANSWER<<"
         QUESTION_TOKEN = ">>QUESTION<<"
@@ -1085,8 +1082,6 @@ class ChatflowDataset(Dataset):
                     else:
                         continue
 
-
-                print(1)
                 if data.get("title", None) is not None:
                     line = data["title"] + '\n'+ data["text"]
                     document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
@@ -1110,34 +1105,28 @@ class ChatflowDataset(Dataset):
                 document = document + [self.vocab.get(SEP_TOKEN)]
 
                 instances_num = len(document) // (self.seq_length + 1)
-                print('instances_num', instances_num)
 
                 for i in range(instances_num):
                     src = document[i * (self.seq_length + 1): (i + 1) * (self.seq_length + 1)]
                     seg_pos = [self.seq_length]
-                    src = (src, 0)
-                    loaded_buffer.append((src, seg_pos))
+                    loaded_buffer.append(((src, 0), seg_pos))
 
-                print('L1121 instances_num', instances_num)
                 document = document[instances_num * (self.seq_length + 1): ]
-                print(document)
 
                 flag = False
-                for i, (txt, rest_leng) in enumerate(queue):
+                for i, ((txt, rest_leng), seg_pos) in enumerate(queue):
                     if rest_leng - len(document) >= 0:
-                        queue[i] = (txt + document, rest_leng - len(document))
+                        queue[i] = ((txt + document, rest_leng - len(document)), [len(txt + document)])
                         flag = True
-                        print('break')
                         break
-
-                print(2)
 
                 if not flag:
                     queue.append((document, self.seq_length + 1 - len(document)))
 
                 if len(queue) > 100000:
-                    queue.sort(key= lambda x:x[1], reverse=True)
+                    queue.sort(key= lambda x:x[0][1])
                     loaded_buffer.extend(queue[:1000])
+                    print(loaded_buffer[-1])
                     queue=queue[1000:]
                     random.shuffle(queue)
                     random.shuffle(loaded_buffer)
