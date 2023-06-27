@@ -1121,7 +1121,7 @@ class ChatflowDataset(Dataset):
                         break
 
                 if not flag:
-                    queue.append((document, self.seq_length + 1 - len(document)))
+                    queue.append((document, self.seq_length + 1 - len(document), [len(document)]))
 
                 if len(queue) > 100000:
                     queue.sort(key= lambda x:x[0][1])
