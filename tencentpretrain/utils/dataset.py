@@ -1076,35 +1076,32 @@ class ChatflowDataset(Dataset):
 
                 try:
                     data = json.loads(line)
-
-                    if data.get("title", None) is not None:
-                        line = data["title"] + '\n'+ data["text"]
-                        document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
-                    elif data.get("text", None) is not None:
-                        line = data["text"]
-                        document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
-                    else:
-                        instruction = data.get("instruction", "").replace('\\n', '\n')
-                        input = data.get("input", "").replace('\\n', '\n')
-                        output = data.get("output", "").replace('\\n', '\n')
-
-                        input = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(instruction + input))
-                        output = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(output))
-
-                        if data.get("sft", None) is not None:
-                            document = [self.vocab.get(PREFIX_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
-                        else:
-                            document = [self.vocab.get(QUESTION_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
-
-                except Exception as e:
+                except:
                     if pos > end:
                         break
                     else:
                         continue
 
+                if data.get("title", None) is not None:
+                    line = data["title"] + '\n'+ data["text"]
+                    document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
+                elif data.get("text", None) is not None:
+                    line = data["text"]
+                    document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
+                else:
+                    instruction = data.get("instruction", "").replace('\\n', '\n')
+                    input = data.get("input", "").replace('\\n', '\n')
+                    output = data.get("output", "").replace('\\n', '\n')
 
-                if len(line) < 15:
-                    continue
+                    input = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(instruction + input))
+                    output = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(output))
+
+                    if data.get("sft", None) is not None:
+                        document = [self.vocab.get(PREFIX_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
+                    else:
+                        document = [self.vocab.get(QUESTION_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
+
+
 
                 document = document + [self.vocab.get(SEP_TOKEN)]
 
