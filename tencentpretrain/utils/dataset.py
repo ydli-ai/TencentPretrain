@@ -1092,7 +1092,6 @@ class ChatflowDataset(Dataset):
                     document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
                 elif data.get("text", None) is not None:
                     line = data["text"]
-                    print(line)
                     document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
                 else:
                     instruction = data.get("instruction", "").replace('\\n', '\n')
@@ -1109,7 +1108,6 @@ class ChatflowDataset(Dataset):
 
 
                 document = document + [self.vocab.get(SEP_TOKEN)]
-                print(document)
 
                 instances_num = len(document) // (self.seq_length + 1)
                 for i in document(instances_num):
@@ -1120,6 +1118,7 @@ class ChatflowDataset(Dataset):
                     loaded_buffer.append((src, seg_pos))
 
                 document = document[instances_num * (self.seq_length + 1): ]
+                print(document)
 
                 flag = False
                 for i, (txt, rest_leng) in enumerate(queue):
