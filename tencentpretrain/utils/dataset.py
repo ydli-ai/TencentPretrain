@@ -1121,9 +1121,10 @@ class ChatflowDataset(Dataset):
                     if rest_leng - len(document) >= 0:
                         queue[i] = (txt + document, rest_leng - len(document))
                         flag = True
+                        print('break')
                         break
 
-                print(queue)
+                print(2)
 
                 if not flag:
                     queue.append((document, self.seq_length + 1 - len(document)))
