@@ -122,3 +122,13 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+import torch
+
+input_model = torch.load('models/clip-hf.bin', map_location="cpu")
+hf_input_model = torch.load('../clip-vit-base-patch32/pytorch_model.bin-bc', map_location="cpu")
+
+input_model['text_model.embeddings.position_ids'] = hf_input_model['text_model.embeddings.position_ids']
+input_model['vision_model.embeddings.position_ids'] = hf_input_model['vision_model.embeddings.position_ids']
+
+torch.save(input_model, '../clip-vit-base-patch32/pytorch_model.bin')
