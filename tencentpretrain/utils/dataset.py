@@ -1064,7 +1064,8 @@ class ChatflowDataset(Dataset):
                 try:
                     pos += 1
                     f.readline()
-                except:
+                except Exception as e:
+                    print(e)
                     continue
 
             loaded_buffer, queue = [], []
@@ -1128,6 +1129,8 @@ class ChatflowDataset(Dataset):
                 buff_size = 80000
                 pop_size = 200
 
+
+                print(len(queue))
                 if len(queue) > buff_size:
                     queue.sort(key= lambda x:x[0][1])
                     loaded_buffer.extend(queue[:pop_size])
