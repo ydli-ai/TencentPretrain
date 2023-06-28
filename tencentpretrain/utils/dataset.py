@@ -1075,7 +1075,6 @@ class ChatflowDataset(Dataset):
                     line = f.readline().strip()
                     data = json.loads(line)
                 except:
-                    print(data)
                     if pos > end:
                         print(pos, end)
                         break
@@ -1126,11 +1125,9 @@ class ChatflowDataset(Dataset):
                     queue.append(((document, self.seq_length + 1 - len(document)), [len(document) - 1]))
                     #print("Append:" ,self.seq_length + 1 - len(document))
 
-                buff_size = 80000
+                buff_size = 8000
                 pop_size = 200
 
-
-                print(len(queue))
                 if len(queue) > buff_size:
                     queue.sort(key= lambda x:x[0][1])
                     loaded_buffer.extend(queue[:pop_size])
