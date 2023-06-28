@@ -1124,8 +1124,8 @@ class ChatflowDataset(Dataset):
                     queue.append(((document, self.seq_length + 1 - len(document)), [len(document) - 1]))
                     #print("Append:" ,self.seq_length + 1 - len(document))
 
-                buff_size = 5000
-                pop_size = 100
+                buff_size = 80000
+                pop_size = 200
 
                 if len(queue) > buff_size:
                     queue.sort(key= lambda x:x[0][1])
