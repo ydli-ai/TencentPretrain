@@ -1087,7 +1087,7 @@ class ChatflowDataset(Dataset):
                 elif data.get("text", None) is not None:
                     line = data["text"]
                     document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
-                else:
+                elif data.get("output", None) is not None:
                     instruction = data.get("instruction", "").replace('\\n', '\n')
                     input = data.get("input", "").replace('\\n', '\n')
                     output = data["output"].replace('\\n', '\n')
@@ -1099,6 +1099,8 @@ class ChatflowDataset(Dataset):
                         document = [self.vocab.get(PREFIX_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
                     else:
                         document = [self.vocab.get(QUESTION_TOKEN)] + input + [self.vocab.get(ANS_TOKEN)] + output
+                else:
+                    continue
 
 
                 document = document + [self.vocab.get(SEP_TOKEN)]
