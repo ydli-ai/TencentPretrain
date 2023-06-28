@@ -1061,16 +1061,17 @@ class ChatflowDataset(Dataset):
 
         with open(self.corpus_path, mode="r", encoding="utf-8") as f:
             while pos < start:
-                f.readline()
-                pos += 1
+                try:
+                    pos += 1
+                    f.readline()
+                except:
+                    continue
 
             loaded_buffer, queue = [], []
             while True:
-
-                line = f.readline().strip()
-                pos += 1
-
                 try:
+                    pos += 1
+                    line = f.readline().strip()
                     data = json.loads(line)
                 except:
                     print(data)
