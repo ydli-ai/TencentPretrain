@@ -617,7 +617,7 @@ def worker(proc_id, gpu_ranks, args, model_for_training, model_for_dataloader=No
         ]
 
     if args.optimizer in ["adamw"]:
-        if args.deepspeed and deepspeed.__version__ > "0.5.8":
+        if args.deepspeed:
             custom_optimizer = deepspeed.ops.adam.DeepSpeedCPUAdam(optimizer_grouped_parameters, lr=args.learning_rate, bias_correction=False)
             #custom_optimizer = deepspeed.ops.adam.DeepSpeedCPUAdam(optimizer_grouped_parameters, bias_correction=False)
             #custom_optimizer = str2optimizer[args.optimizer](optimizer_grouped_parameters, correct_bias=False)
