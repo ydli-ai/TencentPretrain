@@ -21,14 +21,11 @@
   },
   "zero_optimization": {
       "stage": 3,
-
       "zero_quantized_weights": true,
       "zero_hpz_partition_size": 16,
       "zero_quantized_gradients": true,
-
       "contiguous_gradients": true,
       "overlap_comm": true,
-
       "offload_param": {
           "device": "cpu",
           "pin_memory": true
