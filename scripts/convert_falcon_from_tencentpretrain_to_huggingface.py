@@ -60,3 +60,9 @@ with open("falcon-7b-zh/pytorch_model.bin.index.json", 'w') as f:
 torch.save(output_model1, "falcon-7b-zh/pytorch_model-00001-of-00002.bin")
 torch.save(output_model2, "falcon-7b-zh/pytorch_model-00002-of-00002.bin")
 
+
+
+
+input_model = torch.load('7b.bin')
+input_model["target.lm.output_layer.weight"] = input_model["embedding.word.embedding.weight"]
+torch.save(input_model, "7b_target.bin")
