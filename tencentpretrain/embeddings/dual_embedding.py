@@ -15,20 +15,22 @@ class DualEmbedding(nn.Module):
         stream_0_args = copy.deepcopy(vars(args))
         stream_0_args.update(args.stream_0)
         stream_0_args = Namespace(**stream_0_args)
+        self.stream_0_remove_embedding_layernorm = stream_0_args.remove_embedding_layernorm
+        stream_0_args.remove_embedding_layernorm = True # Only add layer_norm on dual embedding layer
         self.embedding_0 = Embedding(stream_0_args)
         for embedding_name in stream_0_args.embedding:
             self.embedding_0.update(str2embedding[embedding_name](stream_0_args, vocab_size), embedding_name)
-        self.stream_0_remove_embedding_layernorm = stream_0_args.remove_embedding_layernorm
         if not self.stream_0_remove_embedding_layernorm:
             self.stream_0_layer_norm = LayerNorm(stream_0_args.emb_size)
 
         stream_1_args = copy.deepcopy(vars(args))
         stream_1_args.update(args.stream_1)
         stream_1_args = Namespace(**stream_1_args)
+        self.stream_1_remove_embedding_layernorm = stream_1_args.remove_embedding_layernorm
+        stream_1_args.remove_embedding_layernorm = True # Only add layer_norm on dual embedding layer
         self.embedding_1 = Embedding(stream_1_args)
         for embedding_name in stream_1_args.embedding:
             self.embedding_1.update(str2embedding[embedding_name](stream_1_args, vocab_size), embedding_name)
-        self.stream_1_remove_embedding_layernorm = stream_1_args.remove_embedding_layernorm
         if not self.stream_1_remove_embedding_layernorm:
             self.stream_1_layer_norm = LayerNorm(stream_1_args.emb_size)
         self.dropout = nn.Dropout(args.dropout)
