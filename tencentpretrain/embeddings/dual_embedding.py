@@ -27,6 +27,7 @@ class DualEmbedding(nn.Module):
         stream_1_args.update(args.stream_1)
         stream_1_args = Namespace(**stream_1_args)
         self.stream_1_remove_embedding_layernorm = stream_1_args.remove_embedding_layernorm
+        print('stream_1_remove_embedding_layernorm', stream_1_args.remove_embedding_layernorm)
         stream_1_args.remove_embedding_layernorm = True # Only add layer_norm on dual embedding layer
         self.embedding_1 = Embedding(stream_1_args)
         for embedding_name in stream_1_args.embedding:
