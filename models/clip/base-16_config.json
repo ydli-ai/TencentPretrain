@@ -26,8 +26,8 @@
     "embedding": ["patch", "pos"],
     "encoder": "transformer",
     "mask": "fully_visible",
-    "remove_embedding_layernorm": true,
-    "layernorm_positioning": "false",
+    "remove_embedding_layernorm": false,
+    "layernorm_positioning": "pre",
     "pooling": "first"
   },
 
