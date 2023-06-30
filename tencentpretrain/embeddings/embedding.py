@@ -9,7 +9,7 @@ class Embedding(nn.Module):
         self.embedding_name_list = []
         self.dropout = nn.Dropout(args.dropout)
         self.remove_embedding_layernorm = args.remove_embedding_layernorm
-        if not self.remove_embedding_layernorm:
+        if not self.remove_embedding_layernorm and "dual" not in args.embedding:
             self.layer_norm = LayerNorm(args.emb_size)
 
     def update(self, embedding, embedding_name):
