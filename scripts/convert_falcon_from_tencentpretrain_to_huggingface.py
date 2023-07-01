@@ -62,7 +62,11 @@ torch.save(output_model2, "falcon-7b-zh/pytorch_model-00002-of-00002.bin")
 
 
 
+import torch
 
 input_model = torch.load('7b.bin')
 input_model["target.lm.output_layer.weight"] = input_model["embedding.word.embedding.weight"]
+
+for key in input_model.keys():
+    input_model[key] = input_model[key].bfloat16()
 torch.save(input_model, "7b_target.bin")
