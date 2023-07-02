@@ -251,23 +251,23 @@ class FlashAttention(nn.Module):
 
 
         #if torch.__version__ < "2.0.0":
-        scores = torch.matmul(query_layer_, key_layer_.transpose(-2, -1))
-        if self.with_scale:
-            scores = scores / math.sqrt(float(self.per_head_size))
-        scores = scores + mask.type_as(scores)
-        prev_attn_out = None
-        if has_residual_attention:
-            if prev_attn is not None:
-                scores += prev_attn
-            prev_attn_out = scores
-        probs = nn.Softmax(dim=-1)(scores)
-        attn_output = probs @ value_layer_
+        #scores = torch.matmul(query_layer_, key_layer_.transpose(-2, -1))
+        #if self.with_scale:
+        #    scores = scores / math.sqrt(float(self.per_head_size))
+        #scores = scores + mask.type_as(scores)
+        #prev_attn_out = None
+        #if has_residual_attention:
+        #    if prev_attn is not None:
+        #        scores += prev_attn
+        #    prev_attn_out = scores
+        #probs = nn.Softmax(dim=-1)(scores)
+        #attn_output = probs @ value_layer_
 
         #else:
-        #    prev_attn_out = None
-        #    attn_output = F.scaled_dot_product_attention(
-        #        query_layer_, key_layer_, value_layer_, None, 0.0, is_causal=True
-        #    )
+        prev_attn_out = None
+        attn_output = F.scaled_dot_product_attention(
+            query_layer_, key_layer_, value_layer_, None, 0.0, is_causal=True
+        )
 
         x = attn_output.view(batch_size, self.heads_num, q_length, self.per_head_size)
         x = x.permute(0, 2, 1, 3)
