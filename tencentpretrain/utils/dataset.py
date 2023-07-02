@@ -453,16 +453,17 @@ class LmDataset(Dataset):
                     try:
                         data = json.loads(line)
                     except:
+                        pos += 1
                         continue
+                    title = data.get("title", "")
                     text = data.get("text", "")
                     instruction = data.get("instruction", "").replace('\\n', '\n')
                     input = data.get("input", "").replace('\\n', '\n')
                     output = data.get("output", "").replace('\\n', '\n')
-                    line = text + instruction + input + output
-                    if len(line) < 10:
-                        continue
-
-
+                    if len(title + text) > 0:
+                        line = title + text
+                    else:
+                        line = "### Instruction:" +instruction + input + "### Response:" + output
 
                 pos += 1
 
