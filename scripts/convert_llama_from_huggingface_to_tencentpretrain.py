@@ -27,10 +27,14 @@ files = os.listdir(args.input_model_path)
 model_files = [f for f in files if f[-4:] == ".bin"]
 input_models = {f: torch.load(os.path.join(args.input_model_path, f), map_location="cpu") for f in model_files}
 
-with open(os.path.join(args.input_model_path, "pytorch_model.bin.index.json")) as f:
-    model_index = json.load(f)
-    weight_map = model_index["weight_map"]
-
+if len(model_files) > 1:
+    with open(os.path.join(args.input_model_path, "pytorch_model.bin.index.json")) as f:
+        model_index = json.load(f)
+        weight_map = model_index["weight_map"]
+else:
+    weight_map = {}
+    for key in input_models['pytorch_model.bin'].keys():
+        weight_map[key] = 'pytorch_model.bin'
 
 output_model = collections.OrderedDict()
 
