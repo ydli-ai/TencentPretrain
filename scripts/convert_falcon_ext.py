@@ -38,6 +38,34 @@ input_model["target.lm.output_layer.weight"] = torch.cat([input_model["target.lm
 
 torch.save(input_model, "models/falcon-40b-ext.bin")
 
+## 7b -char
+
+import torch
+
+input_model = torch.load("models/falcon-7b.bin", map_location="cpu")
+
+with open('../falcon-7b/convert_dict.pt', 'rb') as f:
+    convert_dict = pickle.load(f)
+
+input_padding = torch.rand(8738, 4544)
+
+for i, index in enumerate(range(65024, 73762)):
+    tokens = convert_dict[index]
+    input_padding[i] = torch.mean(torch.cat([input_model["embedding.word.embedding.weight"][t] for t in tokens], dim=0), dim=0)
+
+input_model["embedding.word.embedding.weight"] = torch.cat([input_model["embedding.word.embedding.weight"], input_padding], dim=0)
+
+
+output_padding = torch.rand(8738, 4544)
+
+for i, index in enumerate(range(65024, 73762)):
+    tokens = convert_dict[index]
+    output_padding[i] = torch.mean(torch.cat([input_model["target.lm.output_layer.weight"][t] for t in tokens], dim=0), dim=0)
+
+input_model["target.lm.output_layer.weight"] = torch.cat([input_model["target.lm.output_layer.weight"], output_padding], dim=0)
+
+torch.save(input_model, "models/falcon-7b-ext-char.bin")
+
 
 """
 import torch
