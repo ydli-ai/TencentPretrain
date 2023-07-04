@@ -3,7 +3,7 @@ import collections
 import torch
 
 
-def convert_clip_transformer(input_model, output_model, layers_num):
+def convert_clip_transformer(input_model, output_model):
 
     for i in range(12):
         output_model["encoder.encoder_0.transformer." + str(i) + ".self_attn.linear_layers.0.weight"] = \
@@ -107,7 +107,7 @@ def main():
     output_model["embedding.dual.stream_1_layer_norm.gamma"] = input_model["vision_model.pre_layrnorm.weight"]
     output_model["embedding.dual.stream_1_layer_norm.beta"] = input_model["vision_model.pre_layrnorm.bias"]
 
-    convert_clip_transformer(input_model, output_model, args.layers_num)
+    convert_clip_transformer(input_model, output_model)
 
     output_model["encoder.encoder_0.layer_norm.gamma"] = input_model["text_model.final_layer_norm.weight"]
     output_model["encoder.encoder_0.layer_norm.beta"] = input_model["text_model.final_layer_norm.bias"]
