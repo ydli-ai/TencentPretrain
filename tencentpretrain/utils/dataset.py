@@ -449,23 +449,28 @@ class LmDataset(Dataset):
                 pos += 1
             while True:
                 line = f.readline().strip()
+                pos += 1
                 if self.json_format_corpus:
                     try:
                         data = json.loads(line)
-                    except:
-                        pos += 1
-                        continue
-                    title = data.get("title", "")
-                    text = data.get("text", "")
-                    instruction = data.get("instruction", "").replace('\\n', '\n')
-                    input = data.get("input", "").replace('\\n', '\n')
-                    output = data.get("output", "").replace('\\n', '\n')
-                    if len(title + text) > 0:
-                        line = title + text
-                    else:
-                        line = "### Instruction:" +instruction + input + "### Response:" + output
 
-                pos += 1
+                        text = data.get("text", "")
+                        instruction = data.get("instruction", "").replace('\\n', '\n')
+                        input = data.get("input", "").replace('\\n', '\n')
+                        output = data.get("output", "").replace('\\n', '\n')
+                    except:
+                        continue
+                    if len(text) > 0:
+                        line = text
+                    elif len(instruction + input + output) > 0:
+                        line = "### Instruction:" +instruction + input + "### Response:" + output
+                    else:
+                        continue
+
+                if len(line) < 10:
+                    continue
+
+
 
                 document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
@@ -499,6 +504,90 @@ class LmDataset(Dataset):
 
         dataset_writer.close()
 
+
+class ChatflowDataset(Dataset):
+    def __init__(self, args, vocab, tokenizer):
+        super(ChatflowDataset, self).__init__(args, vocab, tokenizer)
+
+    def worker(self, proc_id, start, end):
+        print("Worker %d is building dataset ... " % proc_id)
+        set_seed(self.seed)
+        dataset_writer = open("dataset-tmp-" + str(proc_id) + ".pt", "wb")
+        pos = 0
+
+        with open(self.corpus_path, mode="r", encoding="utf-8") as f:
+            while pos < start:
+                try:
+                    pos += 1
+                    f.readline()
+                except Exception as e:
+                    print(e)
+                    continue
+
+            loaded_buffer, queue = [], []
+            while True:
+                try:
+                    pos += 1
+                    line = f.readline().strip()
+                    data = json.loads(line)
+
+                    if data.get("text", None) is not None:
+                        line = data["text"]
+                        document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
+                    else:
+                        instruction = data.get("instruction", "").replace('\\n', '\n')
+                        input = data.get("input", "").replace('\\n', '\n')
+                        output = data["output"].replace('\\n', '\n')
+
+                        line = "### Instruction:" +instruction + input + "### Response:" + output
+
+                        document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
+
+                except:
+                    continue
+
+                document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
+
+                instances_num = len(document) // (self.seq_length + 1)
+
+                for i in range(instances_num):
+                    src = document[i * (self.seq_length + 1): (i + 1) * (self.seq_length + 1)]
+                    seg_pos = [self.seq_length]
+                    loaded_buffer.append(((src, 0), seg_pos))
+
+                document = document[instances_num * (self.seq_length + 1): ]
+
+                flag = False
+                for i, (src, seg_pos) in enumerate(queue):
+                    txt, rest_leng = src
+                    if rest_leng - len(document) >= 0:
+                        queue[i] = ((txt + document, rest_leng - len(document)), [len(txt + document) - 1])
+                        #print("Modify:", rest_leng - len(document))
+                        flag = True
+                        break
+
+                if not flag:
+                    queue.append(((document, self.seq_length + 1 - len(document)), [len(document) - 1]))
+                    #print("Append:" ,self.seq_length + 1 - len(document))
+
+                buff_size = 8000
+                pop_size = 200
+
+                if len(queue) > buff_size:
+                    queue.sort(key= lambda x:x[0][1])
+                    loaded_buffer.extend(queue[:pop_size])
+
+                    queue=queue[pop_size:]
+                    random.shuffle(queue)
+                    random.shuffle(loaded_buffer)
+                    for i in loaded_buffer:
+                        pickle.dump(i, dataset_writer)
+                    loaded_buffer = []
+
+                if pos > end:
+                    break
+
+        dataset_writer.close()
 
 class BilmDataset(Dataset):
     def worker(self, proc_id, start, end):
