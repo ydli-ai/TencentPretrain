@@ -158,7 +158,7 @@ if __name__ == '__main__':
             for que, answer, answer_texts in questions[1:]:
                 instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
                 response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
-                src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(questions[0][0])) + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
+                src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
                 seg = [1] * len(src)
                 beginning_length = len(src)
                 if len(src) > args.seq_length:
@@ -178,8 +178,8 @@ if __name__ == '__main__':
                 print('******************')
                 tokens = [token_id.item() for token_id in src_tensor[0]]
                 #tokens = tokens[len(src):]
-                print(tokens)
-                print(args.tokenizer.decode(tokens))
+                #print(tokens)
+                print(args.tokenizer.decode(tokens), answer)
 
                 try:
                     pred = args.tokenizer.decode(tokens)
