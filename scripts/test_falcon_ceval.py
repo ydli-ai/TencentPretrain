@@ -125,9 +125,7 @@ if __name__ == '__main__':
 
     model.eval()
 
-    PREFIX_TOKEN = ">>PREFIX<<"
-    ANS_TOKEN = ">>ANSWER<<"
-    QUESTION_TOKEN = ">>QUESTION<<"
+
 
     t_right, t_wrong, t_no_answer = 0, 0, 0
     right, wrong, no_answer = 0, 0, 0
@@ -157,8 +155,10 @@ if __name__ == '__main__':
             t_no_answer += no_answer
 
             right, wrong, no_answer = 0, 0, 0
-            for que, answer, answer_texts in questions:
-                src = [args.tokenizer.vocab.get(QUESTION_TOKEN)] + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + [args.tokenizer.vocab.get(ANS_TOKEN)]
+            for que, answer, answer_texts in questions[1:]:
+                instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
+                response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
+                src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(questions[0][0])) + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
                 seg = [1] * len(src)
                 beginning_length = len(src)
                 if len(src) > args.seq_length:
@@ -176,11 +176,12 @@ if __name__ == '__main__':
                     seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
 
                 print('******************')
-                print(que + "\n")
+                print(que + "\n" + args.tokenizer.decode(tokens) + answer)
                 tokens = [token_id.item() for token_id in src_tensor[0]]
+                tokens = tokens[len(src):]
 
                 try:
-                    pred = args.tokenizer.decode(tokens).split('<|endoftext|>')[0].split('>>ANSWER<<')[1]
+                    pred = args.tokenizer.decode(tokens)
                 except:
                     no_answer += 1
                     continue
