@@ -176,9 +176,9 @@ if __name__ == '__main__':
                     seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
 
                 print('******************')
-                print(que + "\n" + args.tokenizer.decode(tokens) + answer)
                 tokens = [token_id.item() for token_id in src_tensor[0]]
                 tokens = tokens[len(src):]
+                print(que + "\n" + args.tokenizer.decode(tokens) + answer)
 
                 try:
                     pred = args.tokenizer.decode(tokens)
