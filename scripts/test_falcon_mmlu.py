@@ -125,10 +125,6 @@ if __name__ == '__main__':
 
     model.eval()
 
-    PREFIX_TOKEN = ">>PREFIX<<"
-    ANS_TOKEN = ">>ANSWER<<"
-    QUESTION_TOKEN = ">>QUESTION<<"
-
     t_right, t_wrong, t_no_answer = 0, 0, 0
     right, wrong, no_answer = 0, 0, 0
 
@@ -158,7 +154,9 @@ if __name__ == '__main__':
 
             right, wrong, no_answer = 0, 0, 0
             for que, answer, answer_texts in questions:
-                src = [args.tokenizer.vocab.get(QUESTION_TOKEN)] + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + [args.tokenizer.vocab.get(ANS_TOKEN)]
+                instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
+                response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
+                src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
                 seg = [1] * len(src)
                 beginning_length = len(src)
                 if len(src) > args.seq_length:
@@ -178,9 +176,9 @@ if __name__ == '__main__':
                 #print('******************')
                 #print(que + "\n")
                 tokens = [token_id.item() for token_id in src_tensor[0]]
-
+                tokens = tokens[len(src):]
                 try:
-                    pred = args.tokenizer.decode(tokens).split('<|endoftext|>')[0].split('>>ANSWER<<')[1]
+                    pred = args.tokenizer.decode(tokens).split('<|endoftext|>')[0]
                 except:
                     no_answer += 1
                     continue
