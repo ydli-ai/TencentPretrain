@@ -178,6 +178,7 @@ if __name__ == '__main__':
                 print('******************')
                 tokens = [token_id.item() for token_id in src_tensor[0]]
                 #tokens = tokens[len(src):]
+                print(tokens)
                 print(args.tokenizer.decode(tokens))
 
                 try:
