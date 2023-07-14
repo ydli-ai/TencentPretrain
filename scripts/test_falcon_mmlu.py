@@ -140,11 +140,11 @@ if __name__ == '__main__':
 
                 prompt = row['question']
                 answer = row['answer']
-                answer_texts = ["A." + row['A'], "B." + row['B'], "C." + row['C'], "D." + row['D']]
+                answer_texts = ["A." + str(row['A']), "B." + str(row['B']), "C." + str(row['C']), "D." + str(row['D'])]
 
                 prompt = prompt + '\nOptions:\n'
 
-                prompt = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] + '\n' + "D." + row['D'] + '\n'
+                prompt = prompt + "A." + str(row['A']) + '\n' + "B." + str(row['B']) + '\n' + "C." + str(row['C']) + '\n' + "D." + str(row['D']) + '\n'
 
                 questions.append((prompt, answer, answer_texts))
 
