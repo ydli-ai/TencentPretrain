@@ -193,7 +193,7 @@ if __name__ == '__main__':
                     if next_token.item() == 11:
                         break
 
-                #print('******************')
+                print('******************')
                 #print(que + "\n")
                 tokens = [token_id.item() for token_id in src_tensor[0]]
                 #tokens = tokens[len(src):]
