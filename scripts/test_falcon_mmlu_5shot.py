@@ -141,10 +141,10 @@ if __name__ == '__main__':
             for index, row in df.iterrows():
                 question = "Question: " + row['question']
 
-                prompt = question + '\nOptions:\n'
+                prompt = question + '\n'
 
-                prefix = prompt + "A." + str(row['A']) + '\n' + "B." + str(row['B']) + '\n' + "C." + str(row['C']) + \
-                         '\n' + "D." + str(row['D']) + '\n' + 'Answer: ' + row['answer'] + '\n\n'
+                prefix = prompt + "A. " + str(row['A']) + '\n' + "B. " + str(row['B']) + '\n' + "C. " + str(row['C']) + \
+                         '\n' + "D. " + str(row['D']) + '\n' + 'Answer: ' + row['answer'] + '\n\n'
 
                 prefix_list.append(prefix)
 
@@ -153,12 +153,12 @@ if __name__ == '__main__':
 
                 question = "Question: " + row['question']
                 answer = row['answer']
-                answer_texts = ["A." + str(row['A']), "B." + str(row['B']), "C." + str(row['C']), "D." + str(row['D'])]
+                answer_texts = ["A. " + str(row['A']), "B. " + str(row['B']), "C. " + str(row['C']), "D. " + str(row['D'])]
 
-                prompt = question + '\nOptions:\n'
+                prompt = question + '\n'
 
-                prompt = prompt + "A." + str(row['A']) + '\n' + "B." + str(row['B']) + '\n' + "C." + str(row['C']) +\
-                         '\n' + "D." + str(row['D']) + '\n' + 'Answer: '
+                prompt = prompt + "A. " + str(row['A']) + '\n' + "B. " + str(row['B']) + '\n' + "C. " + str(row['C']) +\
+                         '\n' + "D. " + str(row['D']) + '\n' + 'Answer: '
 
                 questions.append((prompt, answer, answer_texts))
 
@@ -173,7 +173,7 @@ if __name__ == '__main__':
                 #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
                 prompt = "The following are multiple choice questions (with answers) about " + " ".join(file.split('_')[:-1]) + '\n'
 
-                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list,3))))
+                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list,5))))
                 src = prefix1 + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
                 seg = [1] * len(src)
                 beginning_length = len(src)
@@ -183,7 +183,7 @@ if __name__ == '__main__':
                 src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
                 #for i in range(args.seq_length - beginning_length):
-                for i in range(10):
+                for i in range(3):
                     output = model(src_tensor, seg_tensor)
                     next_token_logits = output[0][-1] / args.temperature
                     filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
@@ -198,7 +198,7 @@ if __name__ == '__main__':
                 print('******************')
                 #print(que + "\n")
                 tokens = [token_id.item() for token_id in src_tensor[0]]
-                #tokens = tokens[len(src):]
+                tokens = tokens[len(src):]
 
                 print(args.tokenizer.decode(tokens).split('<|endoftext|>')[0], answer)
 
