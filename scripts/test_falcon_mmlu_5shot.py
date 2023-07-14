@@ -144,7 +144,7 @@ if __name__ == '__main__':
                 prompt = question + '\nOptions:\n'
 
                 prefix = prompt + "A." + str(row['A']) + '\n' + "B." + str(row['B']) + '\n' + "C." + str(row['C']) + \
-                         '\n' + "D." + str(row['D']) + '\n' + 'Answer: ' + row['answer'] + '\n'
+                         '\n' + "D." + str(row['D']) + '\n' + 'Answer: ' + row['answer'] + '\n\n'
 
                 prefix_list.append(prefix)
 
@@ -171,8 +171,10 @@ if __name__ == '__main__':
                 #instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
                 #response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
                 #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
-                prefix = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(''.join(random.sample(prefix_list,3))))
-                src = prefix + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
+                prompt = "The following are multiple choice questions (with answers) about " + " ".join(file.split('_')[:-1]) + '\n'
+
+                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list,3))))
+                src = prefix1 + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
                 seg = [1] * len(src)
                 beginning_length = len(src)
                 if len(src) > args.seq_length:
@@ -196,7 +198,7 @@ if __name__ == '__main__':
                 print('******************')
                 #print(que + "\n")
                 tokens = [token_id.item() for token_id in src_tensor[0]]
-                #tokens = tokens[len(src):]
+                tokens = tokens[len(src):]
 
                 print(args.tokenizer.decode(tokens).split('<|endoftext|>')[0], answer)
 
