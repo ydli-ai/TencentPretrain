@@ -180,7 +180,8 @@ if __name__ == '__main__':
                     seg = seg[:args.seq_length]
                 src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
-                for i in range(args.seq_length - beginning_length):
+                #for i in range(args.seq_length - beginning_length):
+                for i in range(10):
                     output = model(src_tensor, seg_tensor)
                     next_token_logits = output[0][-1] / args.temperature
                     filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
