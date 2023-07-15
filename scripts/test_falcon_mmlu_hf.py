@@ -189,6 +189,7 @@ if __name__ == '__main__':
 
                 print('******************')
                 #print(que + "\n")
+                print(src_tensor)
                 tokens = [token_id.item() for token_id in src_tensor[0]]
                 #tokens = tokens[len(src):]
 
