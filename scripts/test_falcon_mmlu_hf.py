@@ -180,7 +180,7 @@ if __name__ == '__main__':
                     next_token_logits = output['logits'][0][-1] / args.temperature
                     filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
                     next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
-                    print(next_token)
+                    #print(next_token)
 
                     src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
 
@@ -189,8 +189,9 @@ if __name__ == '__main__':
 
                 print('******************')
                 #print(que + "\n")
-                print(src_tensor)
+                #print(src_tensor)
                 tokens = [token_id.item() for token_id in src_tensor[0]]
+                print(tokens)
                 #tokens = tokens[len(src):]
 
                 #print(args.tokenizer.decode(tokens).split('<|endoftext|>')[0], answer)
