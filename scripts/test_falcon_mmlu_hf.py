@@ -191,13 +191,13 @@ if __name__ == '__main__':
                 #print(que + "\n")
                 #print(src_tensor)
                 tokens = [token_id.item() for token_id in src_tensor[0]]
-                print(tokens)
+                #print(tokens)
                 #tokens = tokens[len(src):]
 
-                #print(args.tokenizer.decode(tokens).split('<|endoftext|>')[0], answer)
+                print(tokenizer.decode(tokens), answer)
 
                 try:
-                    pred = args.tokenizer.decode(tokens).split('<|endoftext|>')[0]
+                    pred = tokenizer.decode(tokens).split('<|endoftext|>')[0]
                 except:
                     no_answer += 1
                     continue
