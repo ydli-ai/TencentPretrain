@@ -105,7 +105,7 @@ if __name__ == '__main__':
     parser.add_argument("--top_k", type=int, default=10)
     parser.add_argument("--top_p", type=float, default=0)
     parser.add_argument("--temperature", type=float, default=0.2)
-    parser.add_argument("--world_size", type=ing, default=1)
+    parser.add_argument("--world_size", type=int, default=1)
 
 
     tokenizer_opts(parser)
