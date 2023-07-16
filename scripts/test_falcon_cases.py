@@ -104,6 +104,8 @@ if __name__ == '__main__':
     parser.add_argument("--top_k", type=int, default=10)
     parser.add_argument("--top_p", type=float, default=0)
     parser.add_argument("--temperature", type=float, default=0.2)
+    parser.add_argument("--world_size", type=int, default=1)
+
 
     tokenizer_opts(parser)
 
@@ -119,9 +121,14 @@ if __name__ == '__main__':
 
     model = GenerateLm(args)
     model = load_model(model, args.load_model_path)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = model.to(device)
     model = model.bfloat16()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if args.world_size > 1:
+        import tensor_parallel as tp
+        gpus = ["cuda:" + str(i) for i in range(args.world_size)]
+        model = tp.tensor_parallel(model, gpus)
+    else:
+        model = model.to(device)
 
     model.eval()
 
