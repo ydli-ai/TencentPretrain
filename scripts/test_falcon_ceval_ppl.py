@@ -172,7 +172,8 @@ if __name__ == '__main__':
                     tgt_tensor = torch.LongTensor([tgt]).to(device)
 
                     print(ans)
-                    loss, correct, denominator = model(src_tensor, seg_tensor, tgt_tensor)
+                    with torch.no_grad():
+                        loss, correct, denominator = model(src_tensor, seg_tensor, tgt_tensor)
 
                     pred.append(loss/denominator)
                     print(loss)
