@@ -37,7 +37,7 @@ class GenerateLm(torch.nn.Module):
         emb = self.embedding(src, seg)
         output = self.encoder(emb, seg)
         loss, correct, denominator = self.target.lm(output, tgt, seg)
-        return loss
+        return loss, correct, denominator
 
 
 def top_k_top_p_filtering(logits, top_k, top_p):
@@ -187,10 +187,11 @@ if __name__ == '__main__':
                     src_tensor, seg_tensor = torch.LongTensor([ans_src]).to(device), torch.LongTensor([seg]).to(device)
                     tgt_tensor = torch.LongTensor([tgt]).to(device)
 
-                    loss = model(src_tensor, seg_tensor, tgt_tensor)
+                    print(ans)
+                    loss, correct, denominator = model(src_tensor, seg_tensor, tgt_tensor)
 
-                    pred.append(loss/len(src))
-                    print(pred)
+                    pred.append(loss/denominator)
+                    print(loss, correct, denominator)
 
                 min_ans = 100
                 choice = -1
