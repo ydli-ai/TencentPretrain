@@ -176,7 +176,7 @@ if __name__ == '__main__':
                         src_single = src_single[:-1]
                         seg = [1] * len(src_single)
 
-                        src_tensor, seg_tensor = torch.LongTensor([ans_src]).to(device), torch.LongTensor([seg]).to(device)
+                        src_tensor, seg_tensor = torch.LongTensor([src_single]).to(device), torch.LongTensor([seg]).to(device)
                         tgt_tensor = torch.LongTensor([tgt]).to(device)
 
                         with torch.no_grad():
