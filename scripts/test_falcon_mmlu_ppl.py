@@ -206,7 +206,7 @@ if __name__ == '__main__':
                 else:
                     wrong += 1
 
-                print(ans, correct, wrong)
+                print(answer, right, wrong)
                 print('******************')
                 #print(que + "\n")
 
