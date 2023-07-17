@@ -173,7 +173,7 @@ if __name__ == '__main__':
                 #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
                 prompt = "The following are multiple choice questions (with answers) about " + " ".join(file.split('_')[:-1]) + '\n'
 
-                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list,5))))
+                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list,3))))
                 src = prefix1 + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
 
                 beginning_length = len(src)
@@ -191,7 +191,7 @@ if __name__ == '__main__':
                     loss, correct, denominator = model(src_tensor, seg_tensor, tgt_tensor)
 
                     pred.append(loss/denominator)
-                    print(loss, correct, denominator)
+                    print(loss)
 
                 min_ans = 100
                 choice = -1
@@ -206,30 +206,10 @@ if __name__ == '__main__':
                 else:
                     wrong += 1
 
-
+                print(ans, correct, wrong)
                 print('******************')
                 #print(que + "\n")
-                tokens = [token_id.item() for token_id in src_tensor[0]]
-                tokens = tokens[len(src):]
 
-                #print(args.tokenizer.decode(tokens).split('<|endoftext|>')[0], answer)
-
-                try:
-                    pred = args.tokenizer.decode(tokens).split('<|endoftext|>')[0]
-                except:
-                    no_answer += 1
-                    continue
-
-                if pred.strip() in ["A", "B", "C", "D"]:
-                    if pred.strip() == answer:
-                        right += 1
-                    else:
-                        wrong += 1
-                else:
-                    if choose_from_lcs(pred, answer_texts, answer):
-                        right += 1
-                    else:
-                        wrong += 1
             fw.write(str(right)+'\t'+str(wrong)+'\t' +str(no_answer)+'\n')
             fw.flush()
         fw.write("total: " + str(t_right)+'\t'+str(t_wrong)+'\t' +str(t_no_answer)+'\n')
