@@ -178,19 +178,32 @@ if __name__ == '__main__':
 
                 beginning_length = len(src)
 
-
+                pred = []
                 #for i in range(args.seq_length - beginning_length):
                 for ans in answer_texts:
                     ans_src = src + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(ans))
-                    seg = [1] * len(src)
-                    tgt = src[1:] + [11]
+                    seg = [1] * len(ans_src)
+                    tgt = ans_src[1:] + [11]
                     src_tensor, seg_tensor = torch.LongTensor([ans_src]).to(device), torch.LongTensor([seg]).to(device)
                     tgt_tensor = torch.LongTensor([tgt]).to(device)
 
                     loss = model(src_tensor, seg_tensor, tgt_tensor)
 
-                    print(loss/len(src))
+                    pred.append(loss/len(src))
+                    print(pred)
 
+                min_ans = 100
+                choice = -1
+                for i, loss in enumerate(pred):
+                    if loss < min_ans:
+                        min_ans = loss
+                        choice = i
+
+                char2id = {0:'A', 1:'B', 2:'C', 3:'D'}
+                if char2id[choice] == answer:
+                    right += 1
+                else:
+                    wrong += 1
 
 
                 print('******************')
