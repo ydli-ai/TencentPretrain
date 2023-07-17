@@ -181,18 +181,23 @@ if __name__ == '__main__':
                 pred = []
                 #for i in range(args.seq_length - beginning_length):
                 for ans in answer_texts:
-                    ans_src = src + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(ans))
-                    seg = [1] * len(ans_src)
-                    tgt = ans_src[1:] + [11]
-                    src_tensor, seg_tensor = torch.LongTensor([ans_src]).to(device), torch.LongTensor([seg]).to(device)
-                    tgt_tensor = torch.LongTensor([tgt]).to(device)
+                    ans_src = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(ans))
 
-                    print(ans)
-                    with torch.no_grad():
-                        loss, correct, denominator = model(src_tensor, seg_tensor, tgt_tensor)
+                    nlls = []
+                    for i in range(1, len(ans_src)):
+                        src_single = src + ans_src[:i]
+                        tgt = src_single[1:]
+                        src_single = src_single[:-1]
+                        seg = [1] * len(src_single)
 
-                    pred.append(loss)
-                    print(loss)
+                        src_tensor, seg_tensor = torch.LongTensor([ans_src]).to(device), torch.LongTensor([seg]).to(device)
+                        tgt_tensor = torch.LongTensor([tgt]).to(device)
+
+                        with torch.no_grad():
+                            loss, correct, denominator = model(src_tensor, seg_tensor, tgt_tensor)
+                        nlls.append(loss)
+
+                    pred.append(torch.exp(torch.stack(nlls).mean()))
 
                 min_ans = 100
                 choice = -1
