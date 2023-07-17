@@ -147,7 +147,8 @@ if __name__ == '__main__':
 
                 prompt = prompt + '\n选项：\n'
 
-                prompt = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] + '\n' + "D." + row['D'] + '\n'
+                prompt = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] +\
+                         '\n' + "D." + row['D'] + '\n' + '答案： '
 
                 questions.append((prompt, answer, answer_texts))
 
@@ -156,7 +157,7 @@ if __name__ == '__main__':
             t_no_answer += no_answer
 
             right, wrong, no_answer = 0, 0, 0
-            pred = []
+
             for que, answer, answer_texts in questions[1:]:
                 #instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
                 #response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
@@ -164,6 +165,7 @@ if __name__ == '__main__':
 
                 src =  args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
 
+                pred = []
                 for ans in answer_texts:
                     ans_src = src + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(ans))
                     seg = [1] * len(ans_src)
