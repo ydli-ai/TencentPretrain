@@ -191,7 +191,7 @@ if __name__ == '__main__':
                     with torch.no_grad():
                         loss, correct, denominator = model(src_tensor, seg_tensor, tgt_tensor)
 
-                    pred.append(loss/denominator)
+                    pred.append(loss)
                     print(loss)
 
                 min_ans = 100
