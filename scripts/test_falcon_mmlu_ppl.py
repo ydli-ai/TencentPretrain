@@ -174,7 +174,7 @@ if __name__ == '__main__':
                 prompt = "The following are multiple choice questions (with answers) about " + " ".join(file.split('_')[:-1]) + '\n'
 
                 prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list, 2))))
-                src = prefix1 + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
+                src = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
 
                 beginning_length = len(src)
 
@@ -188,7 +188,8 @@ if __name__ == '__main__':
                     tgt_tensor = torch.LongTensor([tgt]).to(device)
 
                     print(ans)
-                    loss, correct, denominator = model(src_tensor, seg_tensor, tgt_tensor)
+                    with torch.no_grad():
+                        loss, correct, denominator = model(src_tensor, seg_tensor, tgt_tensor)
 
                     pred.append(loss/denominator)
                     print(loss)
