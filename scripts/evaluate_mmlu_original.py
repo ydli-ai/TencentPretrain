@@ -167,10 +167,6 @@ if __name__ == '__main__':
             t_wrong += wrong
             t_no_answer += no_answer
 
-            print(args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize('A')))
-            print(args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize('B')))
-            print(args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize('C')))
-            print(args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize('D')))
 
             right, wrong, no_answer = 0, 0, 0
             for que, answer, answer_texts in questions:
@@ -188,14 +184,22 @@ if __name__ == '__main__':
 
                 output = model(src_tensor, seg_tensor)
 
-                next_token_logits = output[0][-1]
+                next_token_logits = F.softmax(output[0][-1])
 
+                a_prob = next_token_logits[319]
+                b_prob = next_token_logits[350]
+                c_prob = next_token_logits[315]
+                d_prob = next_token_logits[360]
 
-                min_ans = 100
+                pred = [a_prob, b_prob, c_prob, d_prob]
+
+                print(pred)
+
+                min_p = 0
                 choice = -1
-                for i, loss in enumerate(pred):
-                    if loss < min_ans:
-                        min_ans = loss
+                for i, p in enumerate(pred):
+                    if p > min_ans:
+                        min_p = p
                         choice = i
 
                 char2id = {0:'A', 1:'B', 2:'C', 3:'D'}
