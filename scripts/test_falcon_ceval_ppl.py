@@ -171,6 +171,17 @@ if __name__ == '__main__':
                 for ans in answer_texts:
                     ans_src = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(ans))
 
+                    src_single = src + ans_src
+                    tgt = src_single[1:]
+                    src_single = src_single[:-1]
+                    seg = [1] * (len(src) - 1) + [2] * len(ans_src)
+                    src_tensor, seg_tensor = torch.LongTensor([src_single]).to(device), torch.LongTensor([seg]).to(device)
+                    tgt_tensor = torch.LongTensor([tgt]).to(device)
+                    with torch.no_grad():
+                        loss, correct, denominator = model(src_tensor, seg_tensor, tgt_tensor)
+                    pred.append(torch.exp(loss))
+
+                    """
                     nlls = []
                     for i in range(1, len(ans_src)):
                         src_single = src + ans_src[:i]
@@ -186,6 +197,7 @@ if __name__ == '__main__':
                         nlls.append(loss)
 
                     pred.append(torch.exp(torch.stack(nlls).mean()))
+                    """
 
 
                 min_ans = 10000
