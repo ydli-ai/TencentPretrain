@@ -198,7 +198,7 @@ if __name__ == '__main__':
                 min_p = 0
                 choice = -1
                 for i, p in enumerate(pred):
-                    if p > min_ans:
+                    if p > min_p:
                         min_p = p
                         choice = i
 
