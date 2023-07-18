@@ -191,6 +191,7 @@ if __name__ == '__main__':
                 min_ans = 100
                 choice = -1
                 for i, loss in enumerate(pred):
+                    print(i, loss)
                     if loss < min_ans:
                         min_ans = loss
                         choice = i
