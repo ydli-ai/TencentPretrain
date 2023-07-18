@@ -109,7 +109,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+
     args.target = "lm"
+    args.prefix_lm_loss = True
     args.batch_size = 1
 
     args = load_hyperparam(args)
@@ -174,7 +176,7 @@ if __name__ == '__main__':
                         src_single = src + ans_src[:i]
                         tgt = src_single[1:]
                         src_single = src_single[:-1]
-                        seg = [1] * len(src_single)
+                        seg = [1] * (len(src) - 1) + [2] * i
 
                         src_tensor, seg_tensor = torch.LongTensor([src_single]).to(device), torch.LongTensor([seg]).to(device)
                         tgt_tensor = torch.LongTensor([tgt]).to(device)
