@@ -145,7 +145,7 @@ if __name__ == '__main__':
                 prompt = question + '\n' + "Choices: "
 
                 prefix = prompt + "A. " + str(row['A']) + '\n' + "B. " + str(row['B']) + '\n' + "C. " + str(row['C']) + \
-                         '\n' + "D. " + str(row['D']) + '\n' + 'Answer: ' + row['answer']  + '. ' + row[row['answer']] + '\n\n'
+                         '\n' + "D. " + str(row['D']) + '\n' + 'Answer: ' + row['answer'] + '\n\n'
 
                 prefix_list.append(prefix)
 
@@ -175,7 +175,7 @@ if __name__ == '__main__':
                 #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
                 prompt = "The following are multiple choice questions (with answers) about " + " ".join(file.split('_')[:-1]) + '\n'
 
-                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list, 3))))
+                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list, 5))))
                 src = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
                 seg = [1] * len(src)
                 beginning_length = len(src)
