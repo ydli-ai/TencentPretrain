@@ -32,11 +32,11 @@ class GenerateLm(torch.nn.Module):
         self.target = Target()
         self.target.update(LmTarget(args, len(args.tokenizer.vocab)), "lm")
 
-    def forward(self, src, seg, tgt):
+    def forward(self, src, seg):
         emb = self.embedding(src, seg)
         output = self.encoder(emb, seg)
-        loss, correct, denominator = self.target.lm(output, tgt, seg)
-        return loss, correct, denominator
+        output = self.target.lm.output_layer(output)
+        return output
 
 
 def top_k_top_p_filtering(logits, top_k, top_p):
