@@ -3,7 +3,7 @@
   Given the beginning of a text, language model generates the rest.
 """
 import sys
-import os
+import os, random
 import argparse
 import torch
 import torch.nn.functional as F
@@ -135,12 +135,26 @@ if __name__ == '__main__':
     import pandas as pd
 
     with open(args.prediction_path, 'w') as fw:
-        for file in os.listdir('../ceval/val'):
+        for file in os.listdir('../../falcon/ceval/val'):
             fw.write(file + '\t')
             questions = []
-            test_file = "_".join(file.split('_')[:-1]) + '_test.csv'
-            df = pd.read_csv('../ceval/val/'+file)
+            dev_file = "_".join(file.split('_')[:-1]) + '_dev.csv'
 
+            df = pd.read_csv('../../falcon/ceval/dev/'+dev_file)
+            prefix_list = []
+            for index, row in df.iterrows():
+
+                prompt = row['question']
+
+                prompt = prompt + '\n选项：\n'
+
+                prefix = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] + \
+                         '\n' + "D." + row['D'] + '\n' + '答案： '+ row['answer']  + '. ' + row[row['answer']] + '\n\n'
+
+                prefix_list.append(prefix)
+
+
+            df = pd.read_csv('../../falcon/ceval/val/'+file)
             for index, row in df.iterrows():
 
                 prompt = row['question']
@@ -164,8 +178,9 @@ if __name__ == '__main__':
                 #instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
                 #response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
                 #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
+                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list, 3))))
 
-                src =  args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
+                src =  prefix1 + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
 
                 pred = []
                 for ans in answer_texts:
