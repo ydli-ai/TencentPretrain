@@ -148,7 +148,7 @@ if __name__ == '__main__':
 
                 prefix_list.append(prefix)
 
-            df = pd.read_csv('../mmlu/data/test/'+test_file, names=["question", "A", "B", "C", "D", "answer"], header=None)
+            df = pd.read_csv('../../falcon/mmlu/data/test/'+test_file, names=["question", "A", "B", "C", "D", "answer"], header=None)
             for index, row in df.iterrows():
 
                 question = "Question: " + row['question']
