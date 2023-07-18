@@ -188,10 +188,10 @@ if __name__ == '__main__':
                     pred.append(torch.exp(torch.stack(nlls).mean()))
 
 
-                min_ans = 100
+                min_ans = 10000
                 choice = -1
                 for i, loss in enumerate(pred):
-                    print(i, loss)
+                    print(answer_texts[i], loss)
                     if loss < min_ans:
                         min_ans = loss
                         choice = i
