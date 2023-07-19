@@ -73,29 +73,35 @@ class MultiHeadedAttention(nn.Module):
                             ]
         if freqs_cis is not None:
             query, key = apply_rotary_emb(query.transpose(1,2), key.transpose(1,2), freqs_cis=freqs_cis)
-        scores = torch.matmul(query, key.transpose(-2, -1))
-        if position_bias is not None:
-            scores = scores + position_bias
-        if self.with_scale:
-            scores = scores / math.sqrt(float(per_head_size))
-        scores = scores + mask.type_as(scores)
 
-        # cast attention scores to fp32, compute scaled softmax and cast back to initial dtype - [batch_size, num_heads, q_length, kv_length]
-        input_dtype = scores.dtype
-        # `float16` has a minimum value of -65504.0, whereas `bfloat16` and `float32` have a minimum value of `-3.4e+38`
-        if input_dtype == torch.float16 or input_dtype == torch.bfloat16:
-            scores = scores.to(torch.float32)
+        if torch.__version__ < "2.0.0":
+            scores = torch.matmul(query, key.transpose(-2, -1))
+            if position_bias is not None:
+                scores = scores + position_bias
+            if self.with_scale:
+                scores = scores / math.sqrt(float(per_head_size))
+            scores = scores + mask.type_as(scores)
 
+            # cast attention scores to fp32, compute scaled softmax and cast back to initial dtype - [batch_size, num_heads, q_length, kv_length]
+            input_dtype = scores.dtype
+            # `float16` has a minimum value of -65504.0, whereas `bfloat16` and `float32` have a minimum value of `-3.4e+38`
+            if input_dtype == torch.float16 or input_dtype == torch.bfloat16:
+                scores = scores.to(torch.float32)
 
-        prev_attn_out = None
-        if has_residual_attention:
-            if prev_attn is not None:
-                scores += prev_attn
-            prev_attn_out = scores
+            prev_attn_out = None
+            if has_residual_attention:
+                if prev_attn is not None:
+                    scores += prev_attn
+                prev_attn_out = scores
 
-        probs = F.softmax(scores, dim=-1, dtype=query.dtype)
+            probs = F.softmax(scores, dim=-1, dtype=query.dtype)
+            output = unshape(torch.matmul(probs, value))
+        else:
+            prev_attn_out = None
+            output = F.scaled_dot_product_attention(
+                query, key, value, None, 0.0, is_causal=True
+            )
         #probs = nn.Softmax(dim=-1, dtype=query.dtype)(scores)
         #probs = self.dropout(probs)
-        output = unshape(torch.matmul(probs, value))
         output = self.final_linear(output)
         return output, prev_attn_out
