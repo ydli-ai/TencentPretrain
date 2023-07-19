@@ -178,7 +178,7 @@ if __name__ == '__main__':
                 response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
                 #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
 
-                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(''.join(random.sample(prefix_list, 2))))
+                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(''.join(random.sample(prefix_list, 1))))
                 src = prefix1 + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
                 src = instruction + src + response
                 seg = [1] * len(src)

@@ -175,7 +175,7 @@ if __name__ == '__main__':
                 #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
                 prompt = "The following are multiple choice questions (with answers) about " + " ".join(file.split('_')[:-1]) + '\n'
 
-                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list, 5))))
+                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list, 1))))
                 src = prefix1 + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
                 src = instruction + src + response
                 seg = [1] * len(src)
