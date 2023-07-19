@@ -156,7 +156,7 @@ if __name__ == '__main__':
                 src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
                 seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
 
-                if next_token.item() == 11:
+                if next_token.item() == args.tokenizer.vocab.get(SEP_TOKEN):
                     break
 
             print('******************')
