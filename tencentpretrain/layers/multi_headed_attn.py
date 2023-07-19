@@ -97,12 +97,11 @@ class MultiHeadedAttention(nn.Module):
             probs = F.softmax(scores, dim=-1, dtype=query.dtype)
             output = unshape(torch.matmul(probs, value))
         else:
-            print(query.size(), key.size(), value.size())
             prev_attn_out = None
             output = F.scaled_dot_product_attention(
                 query, key, value, None, 0.0, is_causal=True
             )
-            print(output.size())
+            output = unshape(output)
         #probs = nn.Softmax(dim=-1, dtype=query.dtype)(scores)
         #probs = self.dropout(probs)
         output = self.final_linear(output)
