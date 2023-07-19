@@ -215,5 +215,6 @@ if __name__ == '__main__':
             fw.write(str(right)+'\t'+str(wrong)+'\t' +str(no_answer)+'\n')
             fw.flush()
         fw.write("total: " + str(t_right)+'\t'+str(t_wrong)+'\t' +str(t_no_answer)+'\n')
+        fw.write("acc: " + str(t_right/(t_right+t_wrong)) +'\n')
 
 
