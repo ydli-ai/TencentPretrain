@@ -176,7 +176,7 @@ if __name__ == '__main__':
                 prompt = "The following are multiple choice questions (with answers) about " + " ".join(file.split('_')[:-1]) + '\n'
 
                 prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list, 5))))
-                src = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
+                src = prefix1 + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
                 seg = [1] * len(src)
                 beginning_length = len(src)
 

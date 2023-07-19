@@ -3,9 +3,8 @@
   Given the beginning of a text, language model generates the rest.
 """
 import sys
-import os
+import os, random
 import argparse
-import random
 import torch
 import torch.nn.functional as F
 
@@ -38,7 +37,6 @@ class GenerateLm(torch.nn.Module):
         output = self.encoder(emb, seg)
         output = self.target.lm.output_layer(output)
         return output
-
 
 
 def top_k_top_p_filtering(logits, top_k, top_p):
@@ -111,7 +109,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+
     args.target = "lm"
+    args.prefix_lm_loss = True
     args.batch_size = 1
 
     args = load_hyperparam(args)
@@ -127,39 +127,44 @@ if __name__ == '__main__':
 
     model.eval()
 
+
+
     t_right, t_wrong, t_no_answer = 0, 0, 0
     right, wrong, no_answer = 0, 0, 0
 
     import pandas as pd
 
     with open(args.prediction_path, 'w') as fw:
-        for file in os.listdir('../../falcon/mmlu/data/val'):
+        for file in os.listdir('../../falcon/ceval/val'):
             fw.write(file + '\t')
             questions = []
-            test_file = "_".join(file.split('_')[:-1]) + '_test.csv'
-            df = pd.read_csv('../../falcon/mmlu/data/val/'+file, names=["question", "A", "B", "C", "D", "answer"], header=None)
+            dev_file = "_".join(file.split('_')[:-1]) + '_dev.csv'
+
+            df = pd.read_csv('../../falcon/ceval/dev/'+dev_file)
             prefix_list = []
             for index, row in df.iterrows():
-                question = "Question: " + row['question']
 
-                prompt = question + '\n' + "Choices: "
+                prompt = row['question']
 
-                prefix = prompt + "A. " + str(row['A']) + '\n' + "B. " + str(row['B']) + '\n' + "C. " + str(row['C']) + \
-                         '\n' + "D. " + str(row['D']) + '\n' + 'Answer: ' + row['answer'] + '\n\n'
+                prompt = prompt + '\n选项：\n'
+
+                prefix = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] + \
+                         '\n' + "D." + row['D'] + '\n' + '答案： '+ row['answer'] + '\n\n'
 
                 prefix_list.append(prefix)
 
-            df = pd.read_csv('../../falcon/mmlu/data/test/'+test_file, names=["question", "A", "B", "C", "D", "answer"], header=None)
+
+            df = pd.read_csv('../../falcon/ceval/val/'+file)
             for index, row in df.iterrows():
 
-                question = "Question: " + row['question']
+                prompt = row['question']
                 answer = row['answer']
-                answer_texts = ["A. " + str(row['A']), "B. " + str(row['B']), "C. " + str(row['C']), "D. " + str(row['D'])]
+                answer_texts = ["A." + row['A'], "B." + row['B'], "C." + row['C'], "D." + row['D']]
 
-                prompt = question + '\n' + "Choices: "
+                prompt = prompt + '\n选项：\n'
 
-                prompt = prompt + "A. " + str(row['A']) + '\n' + "B. " + str(row['B']) + '\n' + "C. " + str(row['C']) + \
-                         '\n' + "D. " + str(row['D']) + '\n' + 'Answer: '
+                prompt = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] + \
+                         '\n' + "D." + row['D'] + '\n' + '答案： '
 
                 questions.append((prompt, answer, answer_texts))
 
@@ -167,15 +172,13 @@ if __name__ == '__main__':
             t_wrong += wrong
             t_no_answer += no_answer
 
-
             right, wrong, no_answer = 0, 0, 0
             for que, answer, answer_texts in questions:
                 instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
                 response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
                 #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
-                prompt = "The following are multiple choice questions (with answers) about " + " ".join(file.split('_')[:-1]) + '\n'
 
-                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(prompt + ''.join(random.sample(prefix_list, 5))))
+                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(''.join(random.sample(prefix_list, 5))))
                 src = prefix1 + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
                 src = instruction + src + response
                 seg = [1] * len(src)
@@ -217,5 +220,4 @@ if __name__ == '__main__':
             fw.flush()
         fw.write("total: " + str(t_right)+'\t'+str(t_wrong)+'\t' +str(t_no_answer)+'\n')
         fw.write("acc: " + str(t_right/(t_right+t_wrong)) +'\n')
-
 
