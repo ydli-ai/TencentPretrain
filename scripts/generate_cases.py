@@ -166,5 +166,9 @@ if __name__ == '__main__':
             #print(tokens)
             print(args.tokenizer.sp_model.decode(tokens))
 
+            fw.write('******************' + '\n')
+            fw.write(l + '\n')
+            fw.write(args.tokenizer.sp_model.decode(tokens) + '\n')
+
 
 
