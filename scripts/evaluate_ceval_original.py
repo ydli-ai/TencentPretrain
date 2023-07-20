@@ -104,6 +104,9 @@ if __name__ == '__main__':
     parser.add_argument("--top_k", type=int, default=10)
     parser.add_argument("--top_p", type=float, default=0)
     parser.add_argument("--temperature", type=float, default=0.2)
+    parser.add_argument("--world_size", type=int, default=1)
+    parser.add_argument("--shots", type=int, default=1)
+    parser.add_argument("--sft", action="store_true")
 
     tokenizer_opts(parser)
 
@@ -121,9 +124,14 @@ if __name__ == '__main__':
 
     model = GenerateLm(args)
     model = load_model(model, args.load_model_path)
+    model = model.half()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = model.to(device)
-    model = model.bfloat16()
+    if args.world_size > 1:
+        import tensor_parallel as tp
+        gpus = ["cuda:" + str(i) for i in range(args.world_size)]
+        model = tp.tensor_parallel(model, gpus)
+    else:
+        model = model.to(device)
 
     model.eval()
 
@@ -174,12 +182,17 @@ if __name__ == '__main__':
 
             right, wrong, no_answer = 0, 0, 0
             for que, answer, answer_texts in questions:
-                #instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
-                #response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
+                instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
+                response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
                 #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
 
-                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(''.join(random.sample(prefix_list, 1))))
-                src = prefix1 + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
+                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(''.join(random.sample(prefix_list, args.shots))))
+
+                src = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
+                if args.shots > 0:
+                    src = prefix1 + src
+                if args.sft:
+                    src = instruction + src + response
                 seg = [1] * len(src)
                 beginning_length = len(src)
 
