@@ -192,7 +192,10 @@ if __name__ == '__main__':
 
                 src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
-                output = model(src_tensor, seg_tensor)
+                try:
+                    output = model(src_tensor, seg_tensor)
+                except:
+                    continue
 
                 next_token_logits = F.softmax(output[0][-1])
 
