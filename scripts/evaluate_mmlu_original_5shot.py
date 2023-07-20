@@ -1,7 +1,4 @@
- """
-  This script provides an exmaple to wrap TencentPretrain for generation.
-  Given the beginning of a text, language model generates the rest.
-"""
+
 import sys
 import os
 import argparse
