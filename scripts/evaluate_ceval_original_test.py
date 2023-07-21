@@ -142,7 +142,7 @@ if __name__ == '__main__':
 
     import pandas as pd
 
-    output = {}
+    output_dict = {}
 
     with open(args.prediction_path, 'w') as fw:
         for file in os.listdir('../../falcon/ceval/test'):
@@ -151,7 +151,7 @@ if __name__ == '__main__':
             dev_file = "_".join(file.split('_')[:-1]) + '_dev.csv'
 
             q_type = "_".join(file.split('_')[:-1])
-            output[q_type] = {}
+            output_dict[q_type] = {}
 
             df = pd.read_csv('../../falcon/ceval/dev/'+dev_file)
             prefix_list = []
@@ -227,7 +227,7 @@ if __name__ == '__main__':
                         choice = i
 
                 char2id = {0:'A', 1:'B', 2:'C', 3:'D'}
-                output[q_type][q_id] = char2id[choice]
+                output_dict[q_type][q_id] = char2id[choice]
 
 
         import json
