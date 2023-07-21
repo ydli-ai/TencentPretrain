@@ -145,7 +145,7 @@ if __name__ == '__main__':
     output = {}
 
     with open(args.prediction_path, 'w') as fw:
-        for file in os.listdir('../../falcon/ceval/val'):
+        for file in os.listdir('../../falcon/ceval/test'):
             fw.write(file + '\t')
             questions = []
             dev_file = "_".join(file.split('_')[:-1]) + '_dev.csv'
