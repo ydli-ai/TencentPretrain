@@ -139,10 +139,10 @@ if __name__ == '__main__':
             lines = f.readlines()
 
         for l in lines:
-            #instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
-            #response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
-            instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("问题："))
-            response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("回答："))
+            instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
+            response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
+            #instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("问题："))
+            #response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("回答："))
             src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(l)) + response
             seg = [1] * len(src)
             beginning_length = len(src)
