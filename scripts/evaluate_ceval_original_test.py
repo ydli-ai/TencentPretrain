@@ -231,5 +231,5 @@ if __name__ == '__main__':
 
 
         import json
-        fw.write(json.dumps(output, indent=4))
+        fw.write(json.dumps(output_dict, indent=4))
 
