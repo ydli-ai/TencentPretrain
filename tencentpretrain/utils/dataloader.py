@@ -47,6 +47,7 @@ class Dataloader(object):
                         break
         except EOFError:
             # Reach file end.
+            print("Epoch finish.")
             self.dataset_reader.seek(0)
 
         if self.shuffle:
