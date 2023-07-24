@@ -41,6 +41,8 @@ def model_opts(parser):
                         help="The training target of the pretraining model.")
     parser.add_argument("--tie_weights", action="store_true",
                         help="Tie the word embedding and softmax weights.")
+    parser.add_argument("--dynamic_rope", action="store_true",
+                        help="Tie the word embedding and softmax weights.")
     parser.add_argument("--pooling", choices=["mean", "max", "first", "last"], default="first",
                         help="Pooling type.")
     parser.add_argument("--prefix_lm_loss", action="store_true",

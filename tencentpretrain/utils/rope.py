@@ -28,3 +28,32 @@ def apply_rotary_emb(
     xq_out = torch.view_as_real(xq_ * freqs_cis).flatten(3)
     xk_out = torch.view_as_real(xk_ * freqs_cis).flatten(3)
     return xq_out.type_as(xq).transpose(1,2), xk_out.type_as(xk).transpose(1,2)
+
+
+def apply_rotary_emb_dynamic(
+        xq: torch.Tensor,
+        xk: torch.Tensor,
+        freqs_cis: torch.Tensor,
+        seg
+) -> Tuple[torch.Tensor, torch.Tensor]:
+    bs, seq_length, heads_num, head_size = xq.size()
+    xq_ = torch.view_as_complex(xq.float().reshape(*xq.shape[:-1], -1, 2))
+    xk_ = torch.view_as_complex(xk.float().reshape(*xk.shape[:-1], -1, 2))
+    #freqs_cis = reshape_for_broadcast(freqs_cis, xq_)
+    total_frecs = []
+    for i in bs:
+        seq_i = []
+        counter = 0
+        for j in seq_length:
+            counter += 1
+            if seg[i][j] == 2:
+                seq_i.append(freqs_cis[:counter])
+                counter = 0
+        seq_i.append(freqs_cis[:counter])
+        frec_i = torch.cat(seq_i, dim=0)
+        total_frecs.append(frec_i.view(*[1, seq_length, 1, head_size]))
+    freqs_cis = torch.cat(total_frecs, dim=0)
+
+    xq_out = torch.view_as_real(xq_ * freqs_cis).flatten(3)
+    xk_out = torch.view_as_real(xk_ * freqs_cis).flatten(3)
+    return xq_out.type_as(xq).transpose(1,2), xk_out.type_as(xk).transpose(1,2)

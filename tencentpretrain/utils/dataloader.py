@@ -189,7 +189,11 @@ class LmDataloader(Dataloader):
                     src_single.append(self.vocab.get(PAD_TOKEN))
                 src.append(src_single[:-1])
                 tgt.append(src_single[1:])
-                seg.append([1] * ins[1][0] + [0] * (len(src_single) - 1 - ins[1][0]))
+                #seg.append([1] * ins[1][0] + [0] * (len(src_single) - 1 - ins[1][0]))
+                seg_single = [1] * ins[1][0] + [0] * (len(src_single) - 1 - ins[1][0])
+                for i, token in enumerate(src_single):
+                    if token == self.vocab.get(SEP_TOKEN):
+                        seg_single[i] = 2
 
             yield torch.LongTensor(src), \
                 torch.LongTensor(tgt), \

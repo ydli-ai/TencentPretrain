@@ -474,7 +474,6 @@ class LmDataset(Dataset):
                     continue
 
 
-
                 document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
                 if self.full_sentences:

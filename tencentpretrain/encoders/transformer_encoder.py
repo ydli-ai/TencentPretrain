@@ -44,6 +44,8 @@ class TransformerEncoder(nn.Module):
             else:
                 self.layer_norm = LayerNorm(args.hidden_size)
 
+        self.dynamic_rope = args.dynamic_rope
+
         if self.relative_position_embedding:
             self.relative_pos_emb = RelativePositionEmbedding(bidirectional=True, heads_num=args.heads_num,
                                                               num_buckets=args.relative_attention_buckets_num)
@@ -103,6 +105,8 @@ class TransformerEncoder(nn.Module):
             position_bias = None
 
         if self.rotary_position_embedding:
+            if self.dynamic_rope:
+                position_bias = seg
             freqs_cis = self.freqs_cis[:seq_length].to(hidden.device)
         else:
             freqs_cis = None

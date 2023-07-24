@@ -2,7 +2,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from tencentpretrain.utils.rope import apply_rotary_emb
+from tencentpretrain.utils.rope import apply_rotary_emb, apply_rotary_emb_dynamic
 from tencentpretrain.utils.lora import LoraLinear
 
 class MultiHeadedAttention(nn.Module):
@@ -72,7 +72,10 @@ class MultiHeadedAttention(nn.Module):
                              for l, x in zip(self.linear_layers, (query, key, value))
                             ]
         if freqs_cis is not None:
-            query, key = apply_rotary_emb(query.transpose(1,2), key.transpose(1,2), freqs_cis=freqs_cis)
+            if position_bias is not None:
+                query, key = apply_rotary_emb_dynamic(query.transpose(1,2), key.transpose(1,2), freqs_cis=freqs_cis, seg=position_bias)
+            else:
+                query, key = apply_rotary_emb(query.transpose(1,2), key.transpose(1,2), freqs_cis=freqs_cis)
 
         if torch.__version__ < "2.0.0":
             scores = torch.matmul(query, key.transpose(-2, -1))
