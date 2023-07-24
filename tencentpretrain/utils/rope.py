@@ -41,7 +41,7 @@ def apply_rotary_emb_dynamic(
     xk_ = torch.view_as_complex(xk.float().reshape(*xk.shape[:-1], -1, 2))
     #freqs_cis = reshape_for_broadcast(freqs_cis, xq_)
     total_frecs = []
-    for i in bs:
+    for i in range(bs):
         seq_i = []
         counter = 0
         for j in seq_length:
