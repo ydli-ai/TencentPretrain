@@ -120,6 +120,7 @@ class TransformerEncoder(nn.Module):
                             counter = 0
                     seq_i.append(freqs_cis[:counter])
                     frec_i = torch.cat(seq_i, dim=0)
+                    print('frec_i', frec_i.size())
                     total_frecs.append(frec_i.view(*[1, seq_length, 1, self.head_size]))
                 freqs_cis = torch.cat(total_frecs, dim=0)
                 print(freqs_cis.size())
