@@ -109,6 +109,7 @@ class TransformerEncoder(nn.Module):
             if self.dynamic_rope:
                 position_bias = seg
                 freqs_cis = self.freqs_cis[:seq_length].to(hidden.device)
+                print("freqs_cis", freqs_cis.size())
                 total_frecs = []
                 for i in range(seg.size(0)):
                     seq_i = []
