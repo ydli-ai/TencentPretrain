@@ -73,7 +73,7 @@ class MultiHeadedAttention(nn.Module):
                             ]
         if freqs_cis is not None:
             if position_bias is not None:
-                query, key = apply_rotary_emb_dynamic(query.transpose(1,2), key.transpose(1,2), freqs_cis=freqs_cis, seg=position_bias)
+                query, key = apply_rotary_emb_dynamic(query.transpose(1,2), key.transpose(1,2), freqs_cis=freqs_cis)
             else:
                 query, key = apply_rotary_emb(query.transpose(1,2), key.transpose(1,2), freqs_cis=freqs_cis)
 
