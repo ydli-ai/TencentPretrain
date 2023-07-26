@@ -45,6 +45,7 @@ class TransformerEncoder(nn.Module):
                 self.layer_norm = LayerNorm(args.hidden_size)
 
         self.dynamic_rope = args.dynamic_rope
+        self.head_size = args.hidden_size // args.heads_num
 
         if self.relative_position_embedding:
             self.relative_pos_emb = RelativePositionEmbedding(bidirectional=True, heads_num=args.heads_num,
@@ -107,7 +108,24 @@ class TransformerEncoder(nn.Module):
         if self.rotary_position_embedding:
             if self.dynamic_rope:
                 position_bias = seg
-            freqs_cis = self.freqs_cis[:seq_length].to(hidden.device)
+                freqs_cis = self.freqs_cis[:seq_length].to(hidden.device)
+                total_frecs = []
+                for i in range(seg.size(0)):
+                    seq_i = []
+                    counter = 0
+                    for j in seq_length:
+                        counter += 1
+                        if seg[i][j] == 2:
+                            seq_i.append(freqs_cis[:counter])
+                            counter = 0
+                    seq_i.append(freqs_cis[:counter])
+                    frec_i = torch.cat(seq_i, dim=0)
+                    total_frecs.append(frec_i.view(*[1, seq_length, 1, self.head_size]))
+                freqs_cis = torch.cat(total_frecs, dim=0)
+                print(freqs_cis.size())
+            else:
+                freqs_cis = self.freqs_cis[:seq_length].to(hidden.device)
+
         else:
             freqs_cis = None
 
