@@ -194,6 +194,7 @@ class LmDataloader(Dataloader):
                 for i, token in enumerate(src_single):
                     if token == self.vocab.get(SEP_TOKEN):
                         seg_single[i] = 2
+                seg.append(seg_single)
 
             yield torch.LongTensor(src), \
                 torch.LongTensor(tgt), \
