@@ -113,7 +113,7 @@ class TransformerEncoder(nn.Module):
                 for i in range(seg.size(0)):
                     seq_i = []
                     counter = 0
-                    for j in seq_length:
+                    for j in range(seq_length):
                         counter += 1
                         if seg[i][j] == 2:
                             seq_i.append(freqs_cis[:counter])
