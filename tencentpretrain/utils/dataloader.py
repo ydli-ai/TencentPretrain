@@ -191,7 +191,11 @@ class LmDataloader(Dataloader):
                 tgt.append(src_single[1:])
                 #seg.append([1] * ins[1][0] + [0] * (len(src_single) - 1 - ins[1][0]))
                 seg_single = [1] * ins[1][0] + [0] * (len(src_single) - 1 - ins[1][0])
-                print(len(seg_single), len(src))
+                try:
+                    assert len(seg_single) == len(src_single)
+                except:
+                    print(len(seg_single), len(src_single))
+                    print(ins)
                 for i, token in enumerate(src_single):
                     if token == self.vocab.get(SEP_TOKEN):
                         seg_single[i] = 2
