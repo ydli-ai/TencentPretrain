@@ -540,12 +540,12 @@ class ChatflowDataset(Dataset):
                         instruction = data.get("instruction", "").replace('\\n', '\n')
                         input = data.get("input", "").replace('\\n', '\n')
                         output = data["output"].replace('\\n', '\n')
-
                         line = "### Instruction:" +instruction + input + "### Response:" + output
-
                         document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
 
                 except:
+                    if pos > end:
+                        break
                     continue
 
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
@@ -572,7 +572,7 @@ class ChatflowDataset(Dataset):
                     queue.append(((document, self.seq_length + 1 - len(document)), [len(document) - 1]))
                     #print("Append:" ,self.seq_length + 1 - len(document))
 
-                buff_size = 8000
+                buff_size = 5000
                 pop_size = 200
 
                 if len(queue) > buff_size:
