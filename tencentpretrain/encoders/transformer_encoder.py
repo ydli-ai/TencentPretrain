@@ -52,6 +52,7 @@ class TransformerEncoder(nn.Module):
                                                               num_buckets=args.relative_attention_buckets_num)
         elif self.rotary_position_embedding:
             self.freqs_cis = precompute_freqs_cis(args.hidden_size // args.heads_num, args.max_seq_length * 2)
+            print('freqs_cis-init', self.freqs_cis.size(), args.hidden_size // args.heads_num)
 
 
     def forward(self, emb, seg):
@@ -122,7 +123,7 @@ class TransformerEncoder(nn.Module):
                     seq_i.append(freqs_cis[:counter])
                     frec_i = torch.cat(seq_i, dim=0)
                     print('frec_i', frec_i.size())
-                    total_frecs.append(frec_i.view(*[1, seq_length, 1, self.head_size]))
+                    total_frecs.append(frec_i.view(*[1, seq_length, 1, self.head_size // 2]))
                 freqs_cis = torch.cat(total_frecs, dim=0)
                 print(freqs_cis.size())
             else:
