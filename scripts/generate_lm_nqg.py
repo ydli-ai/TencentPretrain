@@ -123,3 +123,4 @@ if __name__ == '__main__':
             generated_sentence = "".join(args.tokenizer.convert_ids_to_tokens(tokens))
 
         f.write(generated_sentence.replace('\n',' ').replace('\t',' ') + '\n')
+        f.flush()
