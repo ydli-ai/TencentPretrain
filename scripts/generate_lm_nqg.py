@@ -93,34 +93,36 @@ if __name__ == '__main__':
 
     with open(args.prediction_path, mode="w", encoding="utf-8") as f:
         for line in lines:
-            src = args.tokenizer.convert_tokens_to_ids([CLS_TOKEN] + args.tokenizer.tokenize(line + '\n' + \
-                  " 将以上文本改写成疑问句，可以是关于任何领域，或者是完成某个任务，风格像人工助手的prompt"))
+            src = args.tokenizer.convert_tokens_to_ids([CLS_TOKEN] + args.tokenizer.tokenize('### Instruction: ' + line + '\n' + \
+                  " 将以上文本改写成疑问句，可以是关于任何领域的问题，或者是完成某个任务 ### Response:"))
             seg = [1] * len(src)
             beginning_length = len(src)
             if len(src) > args.seq_length:
                 src = src[:args.seq_length]
                 seg = seg[:args.seq_length]
-        src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
+
+            src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
 
-        for i in range(args.seq_length - beginning_length):
-            output = model(src_tensor, seg_tensor)
-            next_token_logits = output[0][-1] / args.temperature
-            filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
-            next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+            for i in range(args.seq_length - beginning_length):
+                output = model(src_tensor, seg_tensor)
+                next_token_logits = output[0][-1] / args.temperature
+                filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
+                next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
 
-            src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
-            seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
+                src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
+                seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
 
-            if next_token.item() == args.tokenizer.vocab.get(SEP_TOKEN):
-                break
+                if next_token.item() == args.tokenizer.vocab.get(SEP_TOKEN):
+                    break
 
-        f.write(line + "\t")
-        tokens = [token_id.item() for token_id in src_tensor[0]]
-        if args.tokenizer.sp_model is not None:
-            generated_sentence = args.tokenizer.sp_model.decode(tokens)
-        else:
-            generated_sentence = "".join(args.tokenizer.convert_ids_to_tokens(tokens))
+            f.write(line + "\t")
+            tokens = [token_id.item() for token_id in src_tensor[0]]
+            tokens = tokens[beginning_length:]
+            if args.tokenizer.sp_model is not None:
+                generated_sentence = args.tokenizer.sp_model.decode(tokens)
+            else:
+                generated_sentence = "".join(args.tokenizer.convert_ids_to_tokens(tokens))
 
-        f.write(generated_sentence.replace('\n',' ').replace('\t',' ') + '\n')
-        f.flush()
+            f.write(generated_sentence.replace('\n',' ').replace('\t',' ') + '\n')
+            f.flush()
