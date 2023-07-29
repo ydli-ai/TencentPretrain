@@ -116,7 +116,7 @@ if __name__ == '__main__':
                 if next_token.item() == args.tokenizer.vocab.get(SEP_TOKEN):
                     break
 
-            f.write(line + "\t")
+            f.write(line.strip() + "\t")
             tokens = [token_id.item() for token_id in src_tensor[0]]
             tokens = tokens[beginning_length:]
             if args.tokenizer.sp_model is not None:
