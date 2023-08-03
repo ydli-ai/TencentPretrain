@@ -103,17 +103,20 @@ if __name__ == '__main__':
 
             src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
-            for i in range(args.seq_length - beginning_length):
-                output = model(src_tensor, seg_tensor)
-                next_token_logits = output[0][-1] / args.temperature
-                filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
-                next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+            try:
+                for i in range(args.seq_length - beginning_length):
+                    output = model(src_tensor, seg_tensor)
+                    next_token_logits = output[0][-1] / args.temperature
+                    filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
+                    next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
 
-                src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
-                seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
+                    src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
+                    seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
 
-                if next_token.item() == args.tokenizer.vocab.get(SEP_TOKEN):
-                    break
+                    if next_token.item() == args.tokenizer.vocab.get(SEP_TOKEN):
+                        break
+            except:
+                continue
 
             f.write(line.strip() + "\t")
             tokens = [token_id.item() for token_id in src_tensor[0]]
