@@ -464,7 +464,10 @@ class LmDataset(Dataset):
                         line = text
                     elif len(instruction + input + output) > 0:
                         if random.random() < 0.85:
-                            line = "### Instruction:" +instruction + input + "### Response:" + output
+                            if len(instruction) > 0:
+                                line = instruction +'\n' + "### Instruction:" + input + "### Response:" + output
+                            else:
+                                line = "### Instruction:" +instruction + input + "### Response:" + output
                         else:
                             line = instruction + input + '\n' + output
                     else:
