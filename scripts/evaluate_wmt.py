@@ -148,24 +148,23 @@ if __name__ == '__main__':
             questions = []
             dev_file = "_".join(file.split('_')[:-1]) + '_dev.tsv'
 
-            df = pd.read_csv('../../falcon/gaokao/dev/'+dev_file, names=["question", "answer"], header=None, sep='\t')
+            f = open('../../falcon/gaokao/dev/'+dev_file)
+            lines = f.readlines()
             prefix_list = []
-            print(df)
-            for index, row in df.iterrows():
+            for l in lines:
+                question, answer = l.strip().split('\t')
+                prefix = question + '答案： ' + answer + '\n\n'
 
-                prefix = row['question'] + '答案： ' + row['answer'] + '\n\n'
+                print(prefix)
 
                 prefix_list.append(prefix)
 
 
-            df = pd.read_csv('../../falcon/gaokao/test/'+file, names=["question", "answer"], header=None, sep='\t')
-            for index, row in df.iterrows():
-
-                answer = row['answer']
-                prompt = row['question'] + '答案： '
+            f = open('../../falcon/gaokao/test/'+file)
+            for l in lines:
+                question, answer = l.strip().split('\t')
+                prompt = question + '答案： '
                 answer_texts = ''
-
-
 
                 questions.append((prompt, answer, answer_texts))
 
