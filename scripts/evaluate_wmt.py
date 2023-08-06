@@ -206,7 +206,7 @@ if __name__ == '__main__':
             #print(args.tokenizer.sp_model.decode(tokens))
             tokens = tokens[len(src):]
 
-            pred = args.tokenizer.sp_model.decode(tokens)
+            pred = args.tokenizer.sp_model.decode(tokens).split('\n')[0]
             print('Question: ', que)
             print('Answer: ', answer)
             print("Pred: ", pred)
