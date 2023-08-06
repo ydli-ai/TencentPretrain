@@ -146,7 +146,7 @@ if __name__ == '__main__':
         for file in os.listdir('../../falcon/gaokao/test'):
             fw.write(file + '\t')
             questions = []
-            dev_file = "_".join(file.split('_')[:-1]) + '_dev.csv'
+            dev_file = "_".join(file.split('_')[:-1]) + '_dev.tsv'
 
             df = pd.read_csv('../../falcon/gaokao/dev/'+dev_file, names=["question", "answer"], header=None)
             prefix_list = []
