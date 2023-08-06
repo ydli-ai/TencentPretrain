@@ -143,85 +143,75 @@ if __name__ == '__main__':
     import pandas as pd
 
     with open(args.prediction_path, 'w') as fw:
-        for file in os.listdir('../../falcon/gaokao/test'):
-            fw.write(file + '\t')
-            questions = []
-            dev_file = "_".join(file.split('_')[:-1]) + '_dev.tsv'
+        f = open('datasets/news-commentary-v13-en-zh_sampled.txt')
+        lines = f.readlines()
 
-            f = open('../../falcon/gaokao/dev/'+dev_file)
-            lines = f.readlines()
-            prefix_list = []
-            for l in lines:
-                question, answer = l.strip().split('\t')
-                prefix = question + '答案： ' + answer + '\n\n'
+        questions = []
 
-                print(prefix)
+        prefix_list = []
+        for l in lines[:20]:
+            question, answer = l.strip().split('\t')
+            prefix = question + '\t' + answer + '\n'
 
-                prefix_list.append(prefix)
+            print(prefix)
+
+            prefix_list.append(prefix)
 
 
-            f = open('../../falcon/gaokao/test/'+file)
-            for l in lines:
-                question, answer = l.strip().split('\t')
-                prompt = question + '答案： '
-                answer_texts = ''
+        for l in lines[20:]:
+            question, answer = l.strip().split('\t')
+            prompt = question + '\t'
+            answer_texts = ''
 
-                questions.append((prompt, answer, answer_texts))
+            questions.append((prompt, answer, answer_texts))
 
-            t_right += right
-            t_wrong += wrong
-            t_no_answer += no_answer
+        t_right += right
+        t_wrong += wrong
+        t_no_answer += no_answer
+        from rouge import Rouge
+        rouge = Rouge()
 
-            right, wrong, no_answer = 0, 0, 0
-            for que, answer, answer_texts in questions:
-                instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
-                response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
-                #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
+        right, wrong, no_answer = 0, 0, 0
+        r_l = 0
+        for que, answer, answer_texts in questions:
+            instruction = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Instruction:"))
+            response = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize("### Response:"))
+            #src = instruction + args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que)) + response
 
-                prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(''.join(random.sample(prefix_list, args.shots))))
+            prefix1 = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(''.join(random.sample(prefix_list, args.shots))))
 
-                src = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
-                if args.shots > 0:
-                    src = prefix1 + src
-                if args.sft:
-                    src = instruction + src + response
-                seg = [1] * len(src)
-                beginning_length = len(src)
+            src = args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(que))
+            if args.shots > 0:
+                src = prefix1 + src
+            if args.sft:
+                src = instruction + src + response
+            seg = [1] * len(src)
+            beginning_length = len(src)
 
-                src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
+            src_tensor, seg_tensor = torch.LongTensor([src]).to(device), torch.LongTensor([seg]).to(device)
 
+            for i in range(args.seq_length - beginning_length):
                 output = model(src_tensor, seg_tensor)
+                next_token_logits = output[0][-1] / args.temperature
+                filtered_logits = top_k_top_p_filtering(next_token_logits, args.top_k, args.top_p)
+                next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
 
-                next_token_logits = F.softmax(output[0][-1])
+                src_tensor = torch.cat([src_tensor, next_token.view(1, 1)], dim=1)
+                seg_tensor = torch.cat([seg_tensor, torch.tensor([[1]]).to(device)], dim=1)
 
-                a_prob = next_token_logits[319]
-                b_prob = next_token_logits[350]
-                c_prob = next_token_logits[315]
-                d_prob = next_token_logits[360]
+                if next_token.item() == args.tokenizer.vocab.get('\n'):
+                    break
 
-                pred = [a_prob, b_prob, c_prob, d_prob]
+            tokens = [token_id.item() for token_id in src_tensor[0]]
+            tokens = tokens[len(src):]
 
-                print(pred)
+            pred = args.tokenizer.sp_model.decode(tokens)
+            score = rouge.get_scores(hyps=pred, refs=answer)
+            r_l += score[0]['rouge-l']['f']
 
-                min_p = 0
-                choice = -1
-                for i, p in enumerate(pred):
-                    if p > min_p:
-                        min_p = p
-                        choice = i
+        fw.write(str(r_l / len(questions)))
 
-                char2id = {0:'A', 1:'B', 2:'C', 3:'D'}
-                if char2id[choice] == answer:
-                    right += 1
-                else:
-                    wrong += 1
 
-                print(answer, right, wrong)
-                print('******************')
-                #print(que + "\n")
 
-            fw.write(str(right)+'\t'+str(wrong)+'\t' +str(no_answer)+'\n')
-            fw.flush()
-        fw.write("total: " + str(t_right)+'\t'+str(t_wrong)+'\t' +str(t_no_answer)+'\n')
-        fw.write("acc: " + str(t_right/(t_right+t_wrong)) +'\n')
+
 
