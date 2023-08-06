@@ -203,6 +203,7 @@ if __name__ == '__main__':
                     break
 
             tokens = [token_id.item() for token_id in src_tensor[0]]
+            print(args.tokenizer.sp_model.decode(tokens))
             tokens = tokens[len(src):]
 
             pred = args.tokenizer.sp_model.decode(tokens)
