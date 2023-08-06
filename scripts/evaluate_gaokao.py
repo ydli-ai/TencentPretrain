@@ -161,6 +161,7 @@ if __name__ == '__main__':
 
 
             f = open('../../falcon/gaokao/test/'+file)
+            lines = f.readlines()
             for l in lines:
                 question, answer = l.strip().split('\t')
                 prompt = question + '答案： '
