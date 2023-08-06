@@ -207,7 +207,9 @@ if __name__ == '__main__':
             tokens = tokens[len(src):]
 
             pred = args.tokenizer.sp_model.decode(tokens)
-            print(pred)
+            print('Question: ', que)
+            print('Answer: ', answer)
+            print("Pred: ", pred)
             score = rouge.get_scores(hyps=pred, refs=answer)
             r_l += score[0]['rouge-l']['f']
 
