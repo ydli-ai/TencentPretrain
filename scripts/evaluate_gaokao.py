@@ -150,9 +150,10 @@ if __name__ == '__main__':
 
             df = pd.read_csv('../../falcon/gaokao/dev/'+dev_file, names=["question", "answer"], header=None)
             prefix_list = []
+            print(df)
             for index, row in df.iterrows():
 
-                print( row['answer'])
+                print(index,row['question'],  row['answer'])
 
                 prefix = row['question'] + '答案： ' + row['answer'] + '\n\n'
 
