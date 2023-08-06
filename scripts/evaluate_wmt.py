@@ -165,6 +165,8 @@ if __name__ == '__main__':
 
             questions.append((prompt, answer, answer_texts))
 
+        print(args.tokenizer.vocab.get('\n'))
+
         t_right += right
         t_wrong += wrong
         t_no_answer += no_answer
