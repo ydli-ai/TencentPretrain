@@ -153,8 +153,6 @@ if __name__ == '__main__':
             print(df)
             for index, row in df.iterrows():
 
-                print(index,row['question'],  row['answer'])
-
                 prefix = row['question'] + '答案： ' + row['answer'] + '\n\n'
 
                 prefix_list.append(prefix)
