@@ -158,7 +158,7 @@ if __name__ == '__main__':
             prefix_list.append(prefix)
 
 
-        for l in lines[20:40]:
+        for l in lines[20:]:
             question, answer = l.strip().split('\t')
             prompt = question + '\t'
             answer_texts = ''
