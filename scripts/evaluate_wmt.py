@@ -213,6 +213,7 @@ if __name__ == '__main__':
             print('Answer: ', answer)
             print("Pred: ", pred)
             score = rouge.get_scores(hyps=pred, refs=answer)
+            print(score)
             r_l += score[0]['rouge-l']['f']
 
         fw.write(str(r_l / len(questions)))
