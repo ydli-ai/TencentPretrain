@@ -212,7 +212,8 @@ if __name__ == '__main__':
             print('Question: ', que)
             print('Answer: ', answer)
             print("Pred: ", pred)
-            score = rouge.get_scores(hyps=pred, refs=answer)
+            score = rouge.get_scores(hyps= " ".join(args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(pred))),
+                                     refs= " ".join(args.tokenizer.convert_tokens_to_ids(args.tokenizer.tokenize(answer))))
             print(score)
             r_l += score[0]['rouge-l']['f']
 
