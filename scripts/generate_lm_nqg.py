@@ -94,7 +94,8 @@ if __name__ == '__main__':
     with open(args.prediction_path, mode="w", encoding="utf-8") as f:
         for line in lines:
             src = args.tokenizer.convert_tokens_to_ids([CLS_TOKEN] + args.tokenizer.tokenize('### Instruction: ' + line + '\n' + \
-                  " 将以上文本改写成疑问句，可以是关于任何领域的问题，或者是完成某个任务 ### Response:"))
+            #      " 将以上文本改写成疑问句，可以是关于任何领域的问题，或者是完成某个任务 ### Response:"))
+              "  ### Response:"))
             seg = [1] * len(src)
             beginning_length = len(src)
             if len(src) > args.seq_length:
