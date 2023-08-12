@@ -24,7 +24,7 @@ def main():
     parser.add_argument("--total_steps", type=int, default=100000,
                         help="Total training steps.")
     parser.add_argument("--save_checkpoint_steps", type=int, default=10000,
-                        help="Specific steps to save model checkpoint.") 
+                        help="Specific steps to save model checkpoint.")
     parser.add_argument("--report_steps", type=int, default=100,
                         help="Specific steps to print prompt.")
     parser.add_argument("--accumulation_steps", type=int, default=1,
