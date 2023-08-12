@@ -5,7 +5,7 @@ import torch
 
 def convert_clip_transformer(input_model, output_model, layers_num):
 
-    for i in range(layers_num):
+    for i in range(12):
         output_model["text_model.encoder.layers." + str(i) + ".self_attn.q_proj.weight"] = \
             input_model["encoder.encoder_0.transformer." + str(i) + ".self_attn.linear_layers.0.weight"]
         output_model["text_model.encoder.layers." + str(i) + ".self_attn.q_proj.bias"] = \
@@ -45,7 +45,7 @@ def convert_clip_transformer(input_model, output_model, layers_num):
         output_model["text_model.encoder.layers." + str(i) + ".layer_norm2.bias"] = \
             input_model["encoder.encoder_0.transformer." + str(i) + ".layer_norm_2.beta"]
 
-
+    for i in range(24):
         output_model["vision_model.encoder.layers." + str(i) + ".self_attn.q_proj.weight"] = \
             input_model["encoder.encoder_1.transformer." + str(i) + ".self_attn.linear_layers.0.weight"]
         output_model["vision_model.encoder.layers." + str(i) + ".self_attn.q_proj.bias"] = \
@@ -119,7 +119,7 @@ def main():
     output_model["visual_projection.weight"] = input_model["target.clr.encoder_1_projection"].T
 
 
-    hf_input_model = torch.load('../clip-vit-base-patch16/pytorch_model.bin', map_location="cpu")
+    hf_input_model = torch.load('../clip-vit-large-patch14/pytorch_model.bin', map_location="cpu")
 
     output_model['text_model.embeddings.position_ids'] = hf_input_model['text_model.embeddings.position_ids']
     output_model['vision_model.embeddings.position_ids'] = hf_input_model['vision_model.embeddings.position_ids']
