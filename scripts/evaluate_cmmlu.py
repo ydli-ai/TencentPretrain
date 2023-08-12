@@ -143,29 +143,37 @@ if __name__ == '__main__':
     import pandas as pd
 
     with open(args.prediction_path, 'w') as fw:
-        for file in os.listdir('../../falcon/gaokao/test'):
+        for file in os.listdir('../../falcon/cmmlu/dev'):
             fw.write(file + '\t')
             questions = []
-            dev_file = "_".join(file.split('_')[:-1]) + '_dev.tsv'
 
-            f = open('../../falcon/gaokao/dev/'+dev_file)
-            lines = f.readlines()
+
+            df = pd.read_csv('../../falcon/cmmlu/dev/' + file)
             prefix_list = []
-            for l in lines:
-                question, answer = l.strip().split('\t')
-                prefix = '问题： ' + question + '\n' + '答案： ' + answer + '\n\n'
+            for index, row in df.iterrows():
 
-                print(prefix)
+                prompt = row['Question']
+
+                prompt = prompt + '\n选项：\n'
+
+                prefix = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] + \
+                         '\n' + "D." + row['D'] + '\n' + '答案： '+ row['Answer'] + '\n\n'
 
                 prefix_list.append(prefix)
 
 
-            f = open('../../falcon/gaokao/test/'+file)
-            lines = f.readlines()
-            for l in lines:
-                question, answer = l.strip().split('\t')
-                prompt = '问题： ' + question + '\n' + '答案： '
-                answer_texts = ''
+            df = pd.read_csv('../../falcon/ceval/test/'+file)
+            for index, row in df.iterrows():
+
+                prompt = row['Question']
+                answer = row['Answer']
+                answer_texts = ["A." + row['A'], "B." + row['B'], "C." + row['C'], "D." + row['D']]
+
+                prompt = prompt + '\n选项：\n'
+
+                prompt = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] + \
+                         '\n' + "D." + row['D'] + '\n' + '答案： '
+
                 questions.append((prompt, answer, answer_texts))
 
             t_right += right
