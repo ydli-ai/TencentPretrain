@@ -162,7 +162,7 @@ if __name__ == '__main__':
                 prefix_list.append(prefix)
 
 
-            df = pd.read_csv('../../falcon/ceval/test/'+file)
+            df = pd.read_csv('../../falcon/cmmlu/test/'+file)
             for index, row in df.iterrows():
 
                 prompt = row['Question']
