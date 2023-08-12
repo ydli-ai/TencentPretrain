@@ -156,8 +156,8 @@ if __name__ == '__main__':
 
                 prompt = prompt + '\n选项：\n'
 
-                prefix = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] + \
-                         '\n' + "D." + row['D'] + '\n' + '答案： '+ row['Answer'] + '\n\n'
+                prefix = prompt + "A." + str(row['A']) + '\n' + "B." + str(row['B']) + '\n' + "C." + str(row['C']) + \
+                         '\n' + "D." + str(row['D']) + '\n' + '答案： '+ row['Answer'] + '\n\n'
 
                 prefix_list.append(prefix)
 
@@ -171,8 +171,8 @@ if __name__ == '__main__':
 
                 prompt = prompt + '\n选项：\n'
 
-                prompt = prompt + "A." + row['A'] + '\n' + "B." + row['B'] + '\n' + "C." + row['C'] + \
-                         '\n' + "D." + row['D'] + '\n' + '答案： '
+                prompt = prompt + "A." + str(row['A']) + '\n' + "B." + str(row['B']) + '\n' + "C." + str(row['C']) + \
+                         '\n' + "D." + str(row['D']) + '\n' + '答案： '
 
                 questions.append((prompt, answer, answer_texts))
 
