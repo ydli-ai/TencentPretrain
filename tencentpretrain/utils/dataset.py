@@ -443,6 +443,7 @@ class LmDataset(Dataset):
         dataset_writer = open("dataset-tmp-" + str(proc_id) + ".pt", "wb")
         pos = 0
         buffer = []
+        counter = 0
         with open(self.corpus_path, mode="r", encoding="utf-8") as f:
             while pos < start:
                 f.readline()
@@ -464,6 +465,7 @@ class LmDataset(Dataset):
                         seg_pos = [self.seq_length]
                         src = (src, 0)
                         pickle.dump((src, seg_pos), dataset_writer)
+                        counter += 1
                     buffer = buffer[instances_num * (self.seq_length + 1): ]
 
                 else:
@@ -473,6 +475,7 @@ class LmDataset(Dataset):
                         seg_pos = [self.seq_length]
                         src = (src, 0)
                         pickle.dump((src, seg_pos), dataset_writer)
+                        counter += 1
 
                     src = document[instances_num * (self.seq_length + 1):]
                     if len(src) > 0:
@@ -480,10 +483,12 @@ class LmDataset(Dataset):
                         pad_num = self.seq_length + 1 - len(src)
                         src = (src, pad_num)
                         pickle.dump((src, seg_pos), dataset_writer)
+                        counter += 1
 
                 if pos >= end:
                     break
 
+            print(counter)
         dataset_writer.close()
 
 
