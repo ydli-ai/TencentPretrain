@@ -510,6 +510,7 @@ class LmDataset(Dataset):
 
                 if pos >= end:
                     break
+            print(counter)
 
         dataset_writer.close()
 
