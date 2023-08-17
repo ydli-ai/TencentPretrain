@@ -9,7 +9,7 @@
     "max_seq_length": 77,
     "embedding": ["word", "pos"],
     "encoder": "transformer",
-    "mask": "causal",
+    "mask": "fully_visible",
     "remove_embedding_layernorm": true,
     "layernorm_positioning": "pre",
     "pooling": "last"
