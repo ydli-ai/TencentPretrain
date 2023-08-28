@@ -118,14 +118,12 @@ def main():
     output_model["text_projection.weight"] = input_model["target.clr.encoder_0_projection"].T
     output_model["visual_projection.weight"] = input_model["target.clr.encoder_1_projection"].T
 
-
     hf_input_model = torch.load('../clip-vit-base-patch16/pytorch_model.bin', map_location="cpu")
 
     output_model['text_model.embeddings.position_ids'] = hf_input_model['text_model.embeddings.position_ids']
     output_model['vision_model.embeddings.position_ids'] = hf_input_model['vision_model.embeddings.position_ids']
 
     torch.save(output_model, args.output_model_path)
-
 
 if __name__ == "__main__":
     main()
