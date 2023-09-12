@@ -515,6 +515,93 @@ class LmDataset(Dataset):
         dataset_writer.close()
 
 
+class Lmv2Dataset(Dataset):
+    def __init__(self, args, vocab, tokenizer):
+        super(Lmv2Dataset, self).__init__(args, vocab, tokenizer)
+        self.full_sentences = args.full_sentences
+        self.json_format_corpus = args.json_format_corpus
+
+        from tencentpretrain.utils import str2tokenizer
+
+        args.spm_model_path = '../llama-7b-hf/tokenizer.model'
+        self.tokenizer_old = str2tokenizer[args.tokenizer](args)
+        self.id_dict = {}
+        for i in range(32000, 40076):
+            token_ext = self.tokenizer.sp_model.IdToPiece(i)
+            ids_old = self.tokenizer_old.sp_model.tokenize(token_ext)
+            if ids_old[0] == 29871:
+                ids_old = ids_old[1:]
+            self.id_dict[i] = ids_old
+
+    def worker(self, proc_id, start, end):
+        print("Worker %d is building dataset ... " % proc_id)
+        set_seed(self.seed)
+        dataset_writer = open("dataset-tmp-" + str(proc_id) + ".pt", "wb")
+        pos = 0
+        buffer = []
+        counter = 0
+        with open(self.corpus_path, mode="r", encoding="utf-8") as f:
+            while pos < start:
+                f.readline()
+                pos += 1
+            while True:
+                line = f.readline().strip()
+                pos += 1
+
+                prob = pos * 0.00005 # 0.00005 * 2000000 = 100
+
+                if self.json_format_corpus:
+                    try:
+                        data = json.loads(line)
+                        text = data.get("text", "")
+                    except:
+                        continue
+
+                    if len(text) > 0:
+                        line = text
+                    else:
+                        continue
+
+                if len(line) < 10:
+                    continue
+
+                document_ext = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
+
+                replace = {}
+                for i, t_id in enumerate(document_ext):
+                    if t_id > 32000 and prob < random.randint(0,100):
+                        replace[i] = self.id_dict[t_id]
+
+                document = document_ext
+                bias = 0
+                for idx in replace.keys():
+                    document[idx + bias: idx + bias + 1] = replace[idx]
+                    bias += (len(replace[idx]) - 1)
+
+
+
+                document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
+
+                buffer.extend(document)
+                instances_num = len(buffer) // (self.seq_length + 1)
+                for i in range(instances_num):
+                    src = buffer[i * (self.seq_length + 1): (i + 1) * (self.seq_length + 1)]
+                    seg_pos = [self.seq_length]
+                    src = (src, 0)
+                    pickle.dump((src, seg_pos), dataset_writer)
+                    counter += 1
+                buffer = buffer[instances_num * (self.seq_length + 1): ]
+
+
+
+                if pos >= end:
+                    break
+            print(counter)
+
+        dataset_writer.close()
+
+
+
 class ChatflowDataset(Dataset):
     def __init__(self, args, vocab, tokenizer):
         super(ChatflowDataset, self).__init__(args, vocab, tokenizer)

@@ -26,7 +26,7 @@ def main():
                         help="Split the whole dataset into `processes_num` parts, "
                              "and process them with `processes_num` processes.")
     parser.add_argument("--data_processor",
-                        choices=["bert", "lm", "mlm", "bilm", "albert", "mt", "t5", "cls", "prefixlm",
+                        choices=["bert", "lm", "mlm", "bilm", "albert", "mt", "t5", "cls", "prefixlm", "lmv2",
                                  "gsg", "bart", "cls_mlm", "vit", "vilt", "clip", "s2t", "beit", "dalle", "alpaca", "chatflow"], default="bert",
                         help="The data processor of the pretraining model.")
     parser.add_argument("--docs_buffer_size", type=int, default=100000,

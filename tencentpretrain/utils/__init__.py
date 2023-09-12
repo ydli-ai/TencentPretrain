@@ -12,7 +12,7 @@ str2dataset = {"bert": BertDataset, "lm": LmDataset, "mlm": MlmDataset,
                "bilm": BilmDataset, "albert": AlbertDataset, "mt": MtDataset,
                "t5": T5Dataset, "gsg": GsgDataset, "bart": BartDataset,
                "cls": ClsDataset, "prefixlm": PrefixlmDataset, "cls_mlm": ClsMlmDataset,
-               "vit": VitDataset, "vilt": ViltDataset, "clip": ClipDataset, "s2t": S2tDataset,
+               "vit": VitDataset, "vilt": ViltDataset, "clip": ClipDataset, "s2t": S2tDataset, "lmv2": Lmv2Dataset,
                "beit":BeitDataset, "dalle": DalleDataset, "alpaca": AlpacaDataset, 'chatflow': ChatflowDataset}
 str2dataloader = {"bert": BertDataloader, "lm": LmDataloader, "mlm": MlmDataloader,
                   "bilm": BilmDataloader, "albert": AlbertDataloader, "mt": MtDataloader,
