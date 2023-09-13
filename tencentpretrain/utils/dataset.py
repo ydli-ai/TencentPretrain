@@ -569,17 +569,18 @@ class Lmv2Dataset(Dataset):
                 document_ext = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
 
                 replace = {}
-                for i, t_id in enumerate(document_ext):
-                    rand = random.randint(0,100)
-                    print(prob, rand)
-                    if t_id > 32000 and prob < rand:
-                        replace[i] = self.id_dict[t_id]
-
                 document = document_ext
-                bias = 0
-                for idx in replace.keys():
-                    document[idx + bias: idx + bias + 1] = replace[idx]
-                    bias += (len(replace[idx]) - 1)
+                if prob < 100:
+                    for i, t_id in enumerate(document_ext):
+                        rand = random.randint(0,100)
+                        print(prob, rand)
+                        if t_id > 32000 and prob > rand:
+                            replace[i] = self.id_dict[t_id]
+
+                    bias = 0
+                    for idx in replace.keys():
+                        document[idx + bias: idx + bias + 1] = replace[idx]
+                        bias += (len(replace[idx]) - 1)
 
 
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
