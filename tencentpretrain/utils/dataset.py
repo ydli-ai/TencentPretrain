@@ -479,6 +479,7 @@ class LmDataset(Dataset):
 
 
                 document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
+                print(len(document))
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
                 if self.full_sentences:
                     buffer.extend(document)
@@ -579,8 +580,8 @@ class Lmv2Dataset(Dataset):
                     bias += (len(replace[idx]) - 1)
 
 
-
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
+                print(len(document))
 
                 buffer.extend(document)
                 instances_num = len(buffer) // (self.seq_length + 1)
@@ -591,8 +592,6 @@ class Lmv2Dataset(Dataset):
                     pickle.dump((src, seg_pos), dataset_writer)
                     counter += 1
                 buffer = buffer[instances_num * (self.seq_length + 1): ]
-
-
 
                 if pos >= end:
                     break
