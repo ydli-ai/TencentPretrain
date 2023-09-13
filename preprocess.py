@@ -40,6 +40,7 @@ def main():
                              "The larger value, the higher probability of using short (truncated) sequence.")
     parser.add_argument("--full_sentences", action="store_true", help="Full sentences.")
     parser.add_argument("--seed", type=int, default=7, help="Random seed.")
+    parser.add_argument("--token_steps", type=int, default=1000000, help="Random seed.")
 
     # Masking options.
     parser.add_argument("--dynamic_masking", action="store_true", help="Dynamic masking.")

@@ -521,6 +521,8 @@ class Lmv2Dataset(Dataset):
         super(Lmv2Dataset, self).__init__(args, vocab, tokenizer)
         self.full_sentences = args.full_sentences
         self.json_format_corpus = args.json_format_corpus
+        self.frac = 100.0 / args.token_steps
+        print("frac: ", self.frac)
 
         from tencentpretrain.utils import str2tokenizer
 
@@ -549,7 +551,7 @@ class Lmv2Dataset(Dataset):
                 line = f.readline().strip()
                 pos += 1
 
-                prob = pos * 0.00005 # 0.00005 * 2000000 = 100
+                prob = pos * self.frac # 0.00005 * 2000000 = 100
 
                 if self.json_format_corpus:
                     try:
