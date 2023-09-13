@@ -479,7 +479,7 @@ class LmDataset(Dataset):
 
 
                 document = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(line))
-                print(len(document))
+                print(len(document), document)
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
                 if self.full_sentences:
                     buffer.extend(document)
@@ -570,7 +570,9 @@ class Lmv2Dataset(Dataset):
 
                 replace = {}
                 for i, t_id in enumerate(document_ext):
-                    if t_id > 32000 and prob < random.randint(0,100):
+                    rand = random.randint(0,100)
+                    print(prob, rand)
+                    if t_id > 32000 and prob < rand:
                         replace[i] = self.id_dict[t_id]
 
                 document = document_ext
@@ -581,7 +583,7 @@ class Lmv2Dataset(Dataset):
 
 
                 document = [self.vocab.get(CLS_TOKEN)] + document + [self.vocab.get(SEP_TOKEN)]
-                print(len(document))
+                print(len(document), document)
 
                 buffer.extend(document)
                 instances_num = len(buffer) // (self.seq_length + 1)
