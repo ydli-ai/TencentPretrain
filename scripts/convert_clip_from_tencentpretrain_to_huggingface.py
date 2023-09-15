@@ -45,7 +45,7 @@ def convert_clip_transformer(input_model, output_model, layers_num):
         output_model["text_model.encoder.layers." + str(i) + ".layer_norm2.bias"] = \
             input_model["encoder.encoder_0.transformer." + str(i) + ".layer_norm_2.beta"]
 
-    for i in range(24):
+    for i in range(12):
         output_model["vision_model.encoder.layers." + str(i) + ".self_attn.q_proj.weight"] = \
             input_model["encoder.encoder_1.transformer." + str(i) + ".self_attn.linear_layers.0.weight"]
         output_model["vision_model.encoder.layers." + str(i) + ".self_attn.q_proj.bias"] = \
