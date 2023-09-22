@@ -456,6 +456,8 @@ class LmDataset(Dataset):
                         data = json.loads(line)
 
                         text = data.get("text", "")
+                        content = data.get("content", "")
+                        title = data.get("title", "")
                         instruction = data.get("instruction", "").replace('\\n', '\n')
                         input = data.get("input", "").replace('\\n', '\n')
                         output = data.get("output", "").replace('\\n', '\n')
@@ -463,16 +465,23 @@ class LmDataset(Dataset):
                         continue
                     if len(text) > 0:
                         line = text
-                    elif len(instruction + input + output) > 0:
-                        if random.random() < 0.85:
-                            if len(instruction) > 0:
-                                line = instruction +'\n' + "### Instruction:" + input + "### Response:" + output
-                            else:
-                                line = "### Instruction:" +instruction + input + "### Response:" + output
-                        else:
-                            line = instruction + input + '\n' + output
+                    elif len(content) > 0:
+                        line = content
                     else:
                         continue
+
+                    if len(title) > 0:
+                        line = title + '\n' + line
+
+                    #elif len(instruction + input + output) > 0:
+                    #    if random.random() < 0.85:
+                    #        if len(instruction) > 0:
+                    #            line = instruction +'\n' + "### Instruction:" + input + "### Response:" + output
+                    #        else:
+                    #            line = "### Instruction:" +instruction + input + "### Response:" + output
+                    #    else:
+                    #        line = instruction + input + '\n' + output
+
 
                 if len(line) < 10:
                     continue
