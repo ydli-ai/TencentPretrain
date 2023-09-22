@@ -458,9 +458,9 @@ class LmDataset(Dataset):
                         text = data.get("text", "")
                         content = data.get("content", "")
                         title = data.get("title", "")
-                        instruction = data.get("instruction", "").replace('\\n', '\n')
-                        input = data.get("input", "").replace('\\n', '\n')
-                        output = data.get("output", "").replace('\\n', '\n')
+                        #instruction = data.get("instruction", "").replace('\\n', '\n')
+                        #input = data.get("input", "").replace('\\n', '\n')
+                        #output = data.get("output", "").replace('\\n', '\n')
                     except:
                         continue
                     if len(text) > 0:
