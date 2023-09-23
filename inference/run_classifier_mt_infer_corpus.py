@@ -117,6 +117,8 @@ def main():
                     text_a = text_a[:300]
                 except:
                     continue
+                if len(text_a) == 0:
+                    continue
                 print(text_a)
                 src = args.tokenizer.convert_tokens_to_ids([CLS_TOKEN] + args.tokenizer.tokenize(text_a) + [SEP_TOKEN])
                 seg = [1] * len(src)
