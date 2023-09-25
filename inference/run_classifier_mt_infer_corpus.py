@@ -122,7 +122,7 @@ def main():
                 data = json.loads(line.strip())
                 try:
                     text_a = data.get('text', '') + data.get('content', '')
-                    text_a = text_a[:300]
+                    text_a = text_a[:300].replace('\n', '')
                 except:
                     continue
                 if len(text_a) == 0:
