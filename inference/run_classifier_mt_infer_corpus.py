@@ -138,6 +138,7 @@ def main():
                     src.append(PAD_ID)
                     seg.append(0)
                 dataset.append((src, seg))
+                print(text_a)
                 print(dataset[-1])
                 cache.append(line)
 
