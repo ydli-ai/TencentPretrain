@@ -130,6 +130,7 @@ def main():
                     src.append(PAD_ID)
                     seg.append(0)
                 dataset.append((src, seg))
+                print(dataset[-1])
                 cache.append(line)
 
 
@@ -160,7 +161,6 @@ def main():
         #all_objects = muppy.get_objects()
         #sum1 = summary.summarize(all_objects)# Prints out a summary of the large objects
         #summary.print_(sum1)# Get references to certain types of objects such as dataframe
-
 
 if __name__ == "__main__":
     main()
