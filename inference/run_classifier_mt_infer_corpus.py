@@ -17,13 +17,21 @@ sys.path.append(tencentpretrain_dir)
 
 from tencentpretrain.embeddings import *
 from tencentpretrain.encoders import *
-from tencentpretrain.utils.constants import *
 from tencentpretrain.utils import *
 from tencentpretrain.utils.config import load_hyperparam
 from tencentpretrain.utils.seed import set_seed
 from tencentpretrain.model_loader import load_model
 from tencentpretrain.opts import infer_opts, tokenizer_opts
 from tencentpretrain.utils.misc import pooling
+
+with open("models/special_tokens_map.json", mode="r", encoding="utf-8") as f:
+    special_tokens_map = json.load(f)
+
+UNK_TOKEN = special_tokens_map["unk_token"]
+CLS_TOKEN = special_tokens_map["cls_token"]
+SEP_TOKEN = special_tokens_map["sep_token"]
+MASK_TOKEN = special_tokens_map["mask_token"]
+PAD_TOKEN = special_tokens_map["pad_token"]
 
 
 class MultitaskClassifier(nn.Module):
@@ -119,7 +127,7 @@ def main():
                     continue
                 if len(text_a) == 0:
                     continue
-                print(text_a)
+                #print(text_a)
                 src = args.tokenizer.convert_tokens_to_ids([CLS_TOKEN] + args.tokenizer.tokenize(text_a) + [SEP_TOKEN])
                 seg = [1] * len(src)
                 if len(src) > args.seq_length:
@@ -130,7 +138,7 @@ def main():
                     src.append(PAD_ID)
                     seg.append(0)
                 dataset.append((src, seg))
-                print(dataset[-1])
+                #print(dataset[-1])
                 cache.append(line)
 
 
