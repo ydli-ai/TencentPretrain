@@ -33,6 +33,7 @@ SEP_TOKEN = special_tokens_map["sep_token"]
 MASK_TOKEN = special_tokens_map["mask_token"]
 PAD_TOKEN = special_tokens_map["pad_token"]
 
+print(UNK_TOKEN)
 
 class MultitaskClassifier(nn.Module):
     def __init__(self, args):
