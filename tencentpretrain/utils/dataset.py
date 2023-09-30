@@ -451,6 +451,10 @@ class LmDataset(Dataset):
             while True:
                 line = f.readline().strip()
                 pos += 1
+
+                if pos >= end:
+                    break
+
                 if self.json_format_corpus:
                     try:
                         data = json.loads(line)
@@ -461,9 +465,9 @@ class LmDataset(Dataset):
                         #instruction = data.get("instruction", "").replace('\\n', '\n')
                         #input = data.get("input", "").replace('\\n', '\n')
                         #output = data.get("output", "").replace('\\n', '\n')
-                        if data.get('score', None) is not None:
-                            if data['score'][1] > 0.9:
-                                continue
+                        #if data.get('score', None) is not None:
+                        #    if data['score'][1] > 0.9:
+                        #        continue
                     except:
                         continue
                     if len(text) > 0:
