@@ -234,8 +234,8 @@ def main():
         dev_result.extend(evaluate(args, read_dataset(args, os.path.join(path, "dev.tsv"))))
         test_result.extend(evaluate(args, read_dataset(args, os.path.join(path, "test.tsv"))))
 
-    print('\t'.join(dev_result))
-    print('\t'.join(test_result))
+    print('\t'.join([str(i*100) for i in dev_result]))
+    print('\t'.join([str(i*100) for i in test_result]))
 
     save_model(model, args.output_model_path)
 
